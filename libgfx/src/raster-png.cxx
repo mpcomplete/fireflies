@@ -16,6 +16,7 @@
 #ifdef HAVE_LIBPNG
 
 #include <png.h>
+#include <string.h> /* memcpy() */
 
 ByteRaster *read_png_image(const char *file_name)
 {
