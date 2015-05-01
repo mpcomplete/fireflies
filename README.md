@@ -5,6 +5,12 @@ haven't even compiled it in a while, but I suspect it would take a bit of work.
 
 For information on how to compile, read COMPILE.
 
+## Screenshots
+![screenshot](http://mpcomplete.org/proj/fireflies/screenshot-1.jpg)
+![screenshot](http://mpcomplete.org/proj/fireflies/screenshot-2.jpg)
+![screenshot](http://mpcomplete.org/proj/fireflies/screenshot-3.jpg)
+![screenshot](http://mpcomplete.org/proj/fireflies/screenshot-4.jpg)
+
 ## MODES:
 New to 2.0 are modes.  There are two types, per-swarm modes, and major
 modes.  Per-swarm modes affect a single swarm (but two swarms may decide to
