@@ -1,0 +1,88 @@
+#include <windows.h>
+#include <winbase.h>
+#include <scrnsave.h>
+#include <string.h>
+#include <time.h>
+#include "resource.h"
+#include "../config.h"
+
+#define X1 10
+#define W1 70
+#define X2 90
+#define W2 25
+#define X3 125
+#define W3 70
+#define X4 190
+#define W4 25
+
+#define Y1(n)	2+15*n
+#define Y2(n)	15*n
+
+#define H1 12
+
+#define WIDTH 235
+
+#define BOX_COL1(row, text, id)\
+  LTEXT text,IDC_STATIC,X1,Y1(row),W1,H1\
+  EDITTEXT id,		X2,Y2(row),W2,H1,ES_AUTOHSCROLL|ES_NUMBER
+#define BOX_COL2(row, text, id)\
+  LTEXT text,IDC_STATIC,X3,Y1(row),W3,H1\
+  EDITTEXT id,		X4,Y2(row),W4,H1,ES_AUTOHSCROLL|ES_NUMBER
+
+// Dialog
+DLG_SCRNSAVECONFIGURE DIALOG DISCARDABLE  34, 32, WIDTH, Y1(22)
+STYLE DS_MODALFRAME|WS_POPUP|WS_VISIBLE|WS_CAPTION|WS_SYSMENU
+CAPTION "Fireflies Screen Saver"
+FONT 8, "Helv"
+BEGIN
+  CTEXT "Fireflies " PACKAGE_VERSION,IDC_STATIC,0,5,WIDTH,8
+  CTEXT "by Matt Perry",IDC_STATIC,0,15,WIDTH,8
+  CTEXT "http://somewhere.fscked.org",IDC_STATIC,0,25,WIDTH,8
+  BOX_COL1(3, "Frames per sec:", IDC_CONF_FPS)
+  BOX_COL2(3, "Fast forward speed:", IDC_CONF_FASTFORWARD)
+  BOX_COL1(4, "Minimum baits:", IDC_CONF_MINBAITS)
+  BOX_COL2(4, "Minimum fireflies:", IDC_CONF_MINFLIES)
+  BOX_COL1(5, "Maximum baits:", IDC_CONF_MAXBAITS)
+  BOX_COL2(5, "Maximum fireflies:", IDC_CONF_MAXFLIES)
+  CONTROL "Draw baits",IDC_CONF_DRAWBAIT,"Button",
+	BS_AUTOCHECKBOX|WS_TABSTOP,	X1,Y1(6),W1,10
+  BOX_COL2(6, "Firefly size:", IDC_CONF_FSIZE)
+  BOX_COL1(7, "Firefly speed:", IDC_CONF_FSPEED)
+  BOX_COL2(7, "Firefly acceleration:", IDC_CONF_FACCEL)
+  BOX_COL1(8, "Bait speed:", IDC_CONF_BSPEED)
+  BOX_COL2(8, "Bait acceleration:", IDC_CONF_BACCEL)
+  BOX_COL1(9, "Color cycle speed:", IDC_CONF_HUERATE)
+  BOX_COL2(9, "Glow factor:", IDC_CONF_GLOWFACTOR)
+  BOX_COL1(10, "Tail length:", IDC_CONF_TAILLENGTH)
+  BOX_COL2(10, "Tail width:", IDC_CONF_TAILWIDTH)
+  BOX_COL1(11, "Tail opacity (0-100):", IDC_CONF_TAILOPAQ)
+  BOX_COL2(11, "Wind speed:", IDC_CONF_WIND)
+
+  CTEXT "Per-swarm mode frequency:",IDC_STATIC,	X1,Y1(12),X3-10 - X1,H1
+  CTEXT "Major mode frequency:",IDC_STATIC,	X3,Y1(12),WIDTH-10 - X3,H1
+
+  BOX_COL1(13, "Normal mode:", IDC_CONF_BMODE(1))
+  BOX_COL1(14, "Bait takes a breather:", IDC_CONF_BMODE(2))
+  BOX_COL1(15, "Bait goes in a loop:", IDC_CONF_BMODE(3))
+  BOX_COL1(16, "Psychadelic tails:", IDC_CONF_BMODE(4))
+  BOX_COL1(17, "Glowing tails:", IDC_CONF_BMODE(5))
+  BOX_COL1(18, "Swarms get hyper:", IDC_CONF_BMODE(6))
+  BOX_COL1(19, "Faded colors:", IDC_CONF_BMODE(7))
+
+  BOX_COL2(13, "All-Swarm mode:", IDC_CONF_SMODE(1))
+  BOX_COL2(14, "Kill some flies:", IDC_CONF_SMODE(2))
+  BOX_COL2(15, "Create some flies:", IDC_CONF_SMODE(3))
+  BOX_COL2(16, "Wind picks up:", IDC_CONF_SMODE(4))
+  BOX_COL2(17, "Matrix mode:", IDC_CONF_SMODE(5))
+  BOX_COL2(18, "A swarm splits in 2:", IDC_CONF_SMODE(6))
+  BOX_COL2(19, "Two swarms merge:", IDC_CONF_SMODE(7))
+
+  DEFPUSHBUTTON "OK",IDOK,		X1+10,Y1(21),50,14,WS_GROUP
+  PUSHBUTTON    "Restore Defaults",IDC_DEFAULTS,X1+75,Y1(21),70,14
+  PUSHBUTTON    "Cancel",IDCANCEL,	X3+40,Y1(21),50,14
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_DESCRIPTION         "Fireflies"
+END

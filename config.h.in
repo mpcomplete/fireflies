@@ -1,0 +1,5 @@
+#undef HAVE_SDL
+
+#undef HAVE_GLX
+
+#undef PACKAGE_VERSION

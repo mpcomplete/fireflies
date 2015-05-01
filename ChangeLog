@@ -1,0 +1,78 @@
+version 2.07:
+	* fix for dual-headed display bug.  Thanks to an anonymous tip for finding
+	this.
+	* new FC4 spec courtesy of Simon Roberts.
+
+version 2.06:
+    * fixed a bug with mode probalities where every part was off by 1.
+    * added a French resource.rc (resource.rc.french).  Rename it if you're
+    French.  Thanks to Stephane Sudre for this and the Mac OS X port.
+
+version 2.05:
+    * put back autoconf GLX detection into configure.ac (don't know how that
+    disappeared).
+    * code cleanup: separated GLCanvas into CanvasGLX and CanvasSDL for the
+    different backends.
+
+version 2.04:
+    * whoops: I broke it pretty good.  This release fixes it
+    * small addition: fixed jaggy lines caused when fireflies runs on a slow
+    or busy machine.
+
+version 2.03:
+    * added a default "do nothing" mode with hardcoded probability 10 (so you
+    can make modes less frequent)
+    * added small shell script to add a fireflies entry to your xscreensaver
+    config file.
+    * new package support: Redhat
+    * new package support: Debian (much thanks to Serge Koenigsmann
+    <serge@koenigsmann.de>)
+    * MesaGL support
+
+version 2.02:
+    * fixed xscreensaver support which 2.01 broke
+
+version 2.01:
+    * changed how number of flies and baits work: you now specify a minimum
+    and maximum for each, so that things don't get out of control when
+    adding/killing baits and flies.
+    * -fast_forward option
+    * -fps (frames per second) option
+    * new Faded swarm mode: colors get lighter
+    * added short delays between frames so as not to waste ALL your CPU
+    * some cool new "features" in the SDL standalone program
+    * fixed mode probabilities: made fly birth/kill and swarm merge/split
+    equally likely, so you don't end up with a million flies in 1 swarm after
+    a few hours.
+    * uses autoconf to automatically determine what system you're compiling on,
+    and whether you have SDL, glX, etc
+    * option parsing: uses argp instead of getopt (not that you will notice,
+    it just makes me feel better about myself)
+    * put mode functions in their own file
+
+version 2.0: Fri Feb 21, 2003
+    * new motion algorithm: the fireflies chase after baits that fly
+    around, and freely switch who they're chasing
+    * modes: swarms go through mode changes, such as speeding up, stopping
+    for a breather, and going psychadelic. The overall scene also undergoes
+    mode changes, such as the wind picking up, creation/deletion of new
+    flies/baits, and an... interesting.. matrix mode
+    * new diamond particle shape
+    * sporting a nifty (read: ugly) xscreensaver configuration interface
+    file (Linux only)
+
+version 1.02: Thu Feb 13, 2003
+    * ported to windows (using MinGW)
+    * made it a windows screensaver! even made a config box!
+    * added a -fullscreen option
+    * fixed blending
+
+version 1.01: Sun Feb 10, 2003
+    * added wind to blow the tails around
+    * made it compatible with xscreensaver!
+    * removed dependence on GLUT (incidentally, making it slightly faster)
+
+version 1.0: Sun Feb 10, 2003
+    * First release
+
+began: Sun Jan 26, 2003

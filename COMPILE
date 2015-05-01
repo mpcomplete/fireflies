@@ -1,0 +1,50 @@
+# Fireflies v2.07
+
+TO COMPILE/INSTALL:
+type:
+    ./configure [--with-bindir=PATH_TO_YOUR_XSCREENSAVER_HACK_DIR]
+	[--with-confdir=PATH_TO_YOUR_XSCREENSAVER_CONFIG_DIR]
+    make
+    make install
+    ./add-xscreensaver PATH_TO_YOUR_XSCREENSAVER_FILE
+
+NOTES for Linux:
+The default installation directory for fireflies is /usr/lib/xscreensaver.
+The default installation directory for fireflies.xml (the xscreensaver
+config file) is /usr/share/xscreensaver/config.  If yours differ from this
+(as it almost certainly will), you need to run ./configure with the
+--with-bindir and/or --with-confdir options to tell it where to install.
+Alternatively, you could just copy the binary and .xml file to the right
+places yourself.
+To use with xscreensaver, you must add the fireflies entry to your
+~/.xscreensaver file.  ./add-xscreensaver does this for you.  Just run
+    ./add-xscreensaver PATH
+where PATH would usually look like ~/.xscreensaver
+
+TO INSTALL (windows):
+If you want the standalone program (for which you need SDL, see below),
+run "./configure --disable-screensaver".  Copy the 'fireflies.exe' program
+to wherever you want to put it.
+If you want the screensaver, configure and compile as usual (screensaver is
+the default).  By default, "make install" will put fireflies.scr in your
+C:\Windows\ directory, which is where it should be.  Leave it there.  You
+can set it up by changing your Display Properties (right click on the
+desktop), and selecting 'fireflies' from the pulldown menu.  Clicking on
+Settings will open up a configuration window.
+
+NOTES:
+This program uses the libgfx graphics library (included with this package)
+for basic vertex and rotation processing, available from
+http://graphics.cs.uiuc.edu/~garland/software/libgfx.html
+
+Requirements:
+    openGL and GLU (available from www.opengl.org)
+
+Optional:
+    SDL (available from www.libsdl.org)
+	- SDL will allow you to run fireflies as a standalone program and
+	  let you do cool things like pause and move the camera, and
+	  trigger major modes by pressing number keys [0-6]  If you don't
+	  have it, fireflies will only be able to draw to the root window
+          (ie, as a screensaver), and will not respond to input.
+    Linux only: glX for xscreensaver support

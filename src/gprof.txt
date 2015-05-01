@@ -1,0 +1,563 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+ no time accumulated
+
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  Ts/call  Ts/call  name    
+  0.00      0.00     0.00    39198     0.00     0.00  clamp_vec(TVec3<float>&, double)
+  0.00      0.00     0.00    38923     0.00     0.00  hsv_to_rgb(TVec4<float> const&)
+  0.00      0.00     0.00    38920     0.00     0.00  Arrow::point(TVec3<float>)
+  0.00      0.00     0.00    38086     0.00     0.00  Tail::draw()
+  0.00      0.00     0.00    38086     0.00     0.00  Tail::elapse(double)
+  0.00      0.00     0.00    38086     0.00     0.00  Arrow::draw()
+  0.00      0.00     0.00    38086     0.00     0.00  Firefly::calc_accel()
+  0.00      0.00     0.00    38086     0.00     0.00  Firefly::draw()
+  0.00      0.00     0.00    38086     0.00     0.00  Firefly::elapse(double)
+  0.00      0.00     0.00    38086     0.00     0.00  Firefly::set_color()
+  0.00      0.00     0.00     3288     0.00     0.00  std::deque<Tail::Link, std::allocator<Tail::Link> >::_M_push_front_aux(Tail::Link const&)
+  0.00      0.00     0.00     2466     0.00     0.00  std::deque<Tail::Link, std::allocator<Tail::Link> >::_M_pop_back_aux()
+  0.00      0.00     0.00      837     0.00     0.00  Bait::set_color()
+  0.00      0.00     0.00      834     0.00     0.00  Bait::calc_accel()
+  0.00      0.00     0.00      834     0.00     0.00  Bait::draw()
+  0.00      0.00     0.00      834     0.00     0.00  Bait::elapse(double)
+  0.00      0.00     0.00      834     0.00     0.00  Timer::is_ready(double)
+  0.00      0.00     0.00      748     0.00     0.00  CanvasGLX::get_ms()
+  0.00      0.00     0.00      746     0.00     0.00  CanvasBase::tick()
+  0.00      0.00     0.00      746     0.00     0.00  CanvasGLX::handle_events()
+  0.00      0.00     0.00      548     0.00     0.00  std::deque<Tail::Link, std::allocator<Tail::Link> >::_M_reallocate_map(unsigned int, bool)
+  0.00      0.00     0.00      468     0.00     0.00  CanvasGLX::delay(int)
+  0.00      0.00     0.00      278     0.00     0.00  CanvasBase::draw()
+  0.00      0.00     0.00      278     0.00     0.00  Scene::elapse_once(double)
+  0.00      0.00     0.00      278     0.00     0.00  Scene::apply_camera()
+  0.00      0.00     0.00      278     0.00     0.00  Scene::draw()
+  0.00      0.00     0.00      278     0.00     0.00  Scene::elapse(double)
+  0.00      0.00     0.00      278     0.00     0.00  CanvasGLX::draw()
+  0.00      0.00     0.00      137     0.00     0.00  Tail::Tail(Firefly*)
+  0.00      0.00     0.00      137     0.00     0.00  Firefly::Firefly(Bait*, TVec3<float>, double)
+  0.00      0.00     0.00      137     0.00     0.00  Firefly::~Firefly()
+  0.00      0.00     0.00      137     0.00     0.00  std::_Deque_base<Tail::Link, std::allocator<Tail::Link> >::_M_create_nodes(Tail::Link**, Tail::Link**)
+  0.00      0.00     0.00      137     0.00     0.00  std::_Deque_base<Tail::Link, std::allocator<Tail::Link> >::_M_initialize_map(unsigned int)
+  0.00      0.00     0.00       16     0.00     0.00  RandVar::add(int, double)
+  0.00      0.00     0.00        9     0.00     0.00  std::vector<Tail*, std::allocator<Tail*> >::_M_insert_aux(__gnu_cxx::__normal_iterator<Tail**, std::vector<Tail*, std::allocator<Tail*> > >, Tail* const&)
+  0.00      0.00     0.00        8     0.00     0.00  std::vector<std::pair<int, double>, std::allocator<std::pair<int, double> > >::_M_insert_aux(__gnu_cxx::__normal_iterator<std::pair<int, double>*, std::vector<std::pair<int, double>, std::allocator<std::pair<int, double> > > >, std::pair<int, double> const&)
+  0.00      0.00     0.00        4     0.00     0.00  RandVar::rand()
+  0.00      0.00     0.00        3     0.00     0.00  bait_start_mode(Bait*, int)
+  0.00      0.00     0.00        3     0.00     0.00  Bait::Bait()
+  0.00      0.00     0.00        3     0.00     0.00  Bait::~Bait()
+  0.00      0.00     0.00        3     0.00     0.00  RandVar::change(int, double)
+  0.00      0.00     0.00        3     0.00     0.00  std::_Deque_base<std::pair<int, double>, std::allocator<std::pair<int, double> > >::_M_create_nodes(std::pair<int, double>**, std::pair<int, double>**)
+  0.00      0.00     0.00        3     0.00     0.00  std::_Deque_base<std::pair<int, double>, std::allocator<std::pair<int, double> > >::_M_destroy_nodes(std::pair<int, double>**, std::pair<int, double>**)
+  0.00      0.00     0.00        3     0.00     0.00  std::_Deque_base<std::pair<int, double>, std::allocator<std::pair<int, double> > >::_M_initialize_map(unsigned int)
+  0.00      0.00     0.00        3     0.00     0.00  std::_Deque_base<std::pair<int, double>, std::allocator<std::pair<int, double> > >::~_Deque_base()
+  0.00      0.00     0.00        2     0.00     0.00  RandVar::clear()
+  0.00      0.00     0.00        1     0.00     0.00  global constructors keyed to _Z15bait_start_modeP4Baiti
+  0.00      0.00     0.00        1     0.00     0.00  global constructors keyed to _Z8draw_boxRK5TVec3IfES2_
+  0.00      0.00     0.00        1     0.00     0.00  global constructors keyed to _Z9clamp_vecR5TVec3IfEd
+  0.00      0.00     0.00        1     0.00     0.00  global constructors keyed to _ZN10CanvasBaseC2EP5Scenebi
+  0.00      0.00     0.00        1     0.00     0.00  global constructors keyed to _ZN4BaitC2Ev
+  0.00      0.00     0.00        1     0.00     0.00  global constructors keyed to _ZN4TailC2EP7Firefly
+  0.00      0.00     0.00        1     0.00     0.00  global constructors keyed to _ZN7FireflyC2EP4Bait5TVec3IfEd
+  0.00      0.00     0.00        1     0.00     0.00  global constructors keyed to _ZN9CanvasGLXC2EP5Scenebim
+  0.00      0.00     0.00        1     0.00     0.00  global constructors keyed to canvas
+  0.00      0.00     0.00        1     0.00     0.00  global constructors keyed to world
+  0.00      0.00     0.00        1     0.00     0.00  scene_start_mode(int)
+  0.00      0.00     0.00        1     0.00     0.00  VirtualRootWindowOfScreen(Screen*)
+  0.00      0.00     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
+  0.00      0.00     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
+  0.00      0.00     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
+  0.00      0.00     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
+  0.00      0.00     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
+  0.00      0.00     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
+  0.00      0.00     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
+  0.00      0.00     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
+  0.00      0.00     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
+  0.00      0.00     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
+  0.00      0.00     0.00        1     0.00     0.00  CanvasBase::init()
+  0.00      0.00     0.00        1     0.00     0.00  CanvasBase::loop()
+  0.00      0.00     0.00        1     0.00     0.00  CanvasBase::resize()
+  0.00      0.00     0.00        1     0.00     0.00  CanvasBase::CanvasBase(Scene*, bool, int)
+  0.00      0.00     0.00        1     0.00     0.00  Scene::set_defaults()
+  0.00      0.00     0.00        1     0.00     0.00  Scene::create()
+  0.00      0.00     0.00        1     0.00     0.00  Scene::resize(int, int)
+  0.00      0.00     0.00        1     0.00     0.00  Scene::add_flies(unsigned int)
+  0.00      0.00     0.00        1     0.00     0.00  Scene::Scene()
+  0.00      0.00     0.00        1     0.00     0.00  CanvasGLX::create_window()
+  0.00      0.00     0.00        1     0.00     0.00  CanvasGLX::resize()
+  0.00      0.00     0.00        1     0.00     0.00  CanvasGLX::CanvasGLX(Scene*, bool, int, unsigned long)
+  0.00      0.00     0.00        1     0.00     0.00  std::vector<Bait*, std::allocator<Bait*> >::reserve(unsigned int)
+  0.00      0.00     0.00        1     0.00     0.00  std::vector<Firefly*, std::allocator<Firefly*> >::reserve(unsigned int)
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+ 
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this 
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) no time propagated
+
+index % time    self  children    called     name
+                0.00    0.00     278/39198       Scene::elapse_once(double) [31]
+                0.00    0.00     834/39198       Bait::elapse(double) [23]
+                0.00    0.00   38086/39198       Firefly::elapse(double) [16]
+[8]      0.0    0.00    0.00   39198         clamp_vec(TVec3<float>&, double) [8]
+-----------------------------------------------
+                0.00    0.00     837/38923       Bait::set_color() [20]
+                0.00    0.00   38086/38923       Firefly::set_color() [17]
+[9]      0.0    0.00    0.00   38923         hsv_to_rgb(TVec4<float> const&) [9]
+-----------------------------------------------
+                0.00    0.00     834/38920       Bait::elapse(double) [23]
+                0.00    0.00   38086/38920       Firefly::elapse(double) [16]
+[10]     0.0    0.00    0.00   38920         Arrow::point(TVec3<float>) [10]
+-----------------------------------------------
+                0.00    0.00   38086/38086       Scene::draw() [33]
+[11]     0.0    0.00    0.00   38086         Tail::draw() [11]
+-----------------------------------------------
+                0.00    0.00   38086/38086       Scene::elapse_once(double) [31]
+[12]     0.0    0.00    0.00   38086         Tail::elapse(double) [12]
+                0.00    0.00    3288/3288        std::deque<Tail::Link, std::allocator<Tail::Link> >::_M_push_front_aux(Tail::Link const&) [18]
+                0.00    0.00    2466/2466        std::deque<Tail::Link, std::allocator<Tail::Link> >::_M_pop_back_aux() [19]
+-----------------------------------------------
+                0.00    0.00   38086/38086       Firefly::draw() [15]
+[13]     0.0    0.00    0.00   38086         Arrow::draw() [13]
+-----------------------------------------------
+                0.00    0.00   38086/38086       Firefly::elapse(double) [16]
+[14]     0.0    0.00    0.00   38086         Firefly::calc_accel() [14]
+-----------------------------------------------
+                0.00    0.00   38086/38086       Scene::draw() [33]
+[15]     0.0    0.00    0.00   38086         Firefly::draw() [15]
+                0.00    0.00   38086/38086       Arrow::draw() [13]
+-----------------------------------------------
+                0.00    0.00   38086/38086       Scene::elapse_once(double) [31]
+[16]     0.0    0.00    0.00   38086         Firefly::elapse(double) [16]
+                0.00    0.00   38086/38086       Firefly::calc_accel() [14]
+                0.00    0.00   38086/39198       clamp_vec(TVec3<float>&, double) [8]
+                0.00    0.00   38086/38920       Arrow::point(TVec3<float>) [10]
+                0.00    0.00   38086/38086       Firefly::set_color() [17]
+-----------------------------------------------
+                0.00    0.00   38086/38086       Firefly::elapse(double) [16]
+[17]     0.0    0.00    0.00   38086         Firefly::set_color() [17]
+                0.00    0.00   38086/38923       hsv_to_rgb(TVec4<float> const&) [9]
+-----------------------------------------------
+                0.00    0.00    3288/3288        Tail::elapse(double) [12]
+[18]     0.0    0.00    0.00    3288         std::deque<Tail::Link, std::allocator<Tail::Link> >::_M_push_front_aux(Tail::Link const&) [18]
+                0.00    0.00     548/548         std::deque<Tail::Link, std::allocator<Tail::Link> >::_M_reallocate_map(unsigned int, bool) [28]
+-----------------------------------------------
+                0.00    0.00    2466/2466        Tail::elapse(double) [12]
+[19]     0.0    0.00    0.00    2466         std::deque<Tail::Link, std::allocator<Tail::Link> >::_M_pop_back_aux() [19]
+-----------------------------------------------
+                0.00    0.00       3/837         Bait::Bait() [46]
+                0.00    0.00     834/837         Scene::elapse_once(double) [31]
+[20]     0.0    0.00    0.00     837         Bait::set_color() [20]
+                0.00    0.00     837/38923       hsv_to_rgb(TVec4<float> const&) [9]
+-----------------------------------------------
+                0.00    0.00     834/834         Bait::elapse(double) [23]
+[21]     0.0    0.00    0.00     834         Bait::calc_accel() [21]
+-----------------------------------------------
+                0.00    0.00     834/834         Scene::draw() [33]
+[22]     0.0    0.00    0.00     834         Bait::draw() [22]
+-----------------------------------------------
+                0.00    0.00     834/834         Scene::elapse_once(double) [31]
+[23]     0.0    0.00    0.00     834         Bait::elapse(double) [23]
+                0.00    0.00     834/834         Timer::is_ready(double) [24]
+                0.00    0.00     834/834         Bait::calc_accel() [21]
+                0.00    0.00     834/39198       clamp_vec(TVec3<float>&, double) [8]
+                0.00    0.00     834/38920       Arrow::point(TVec3<float>) [10]
+-----------------------------------------------
+                0.00    0.00     834/834         Bait::elapse(double) [23]
+[24]     0.0    0.00    0.00     834         Timer::is_ready(double) [24]
+-----------------------------------------------
+                0.00    0.00       2/748         CanvasBase::loop() [77]
+                0.00    0.00     746/748         CanvasBase::tick() [26]
+[25]     0.0    0.00    0.00     748         CanvasGLX::get_ms() [25]
+-----------------------------------------------
+                0.00    0.00     746/746         CanvasBase::loop() [77]
+[26]     0.0    0.00    0.00     746         CanvasBase::tick() [26]
+                0.00    0.00     746/748         CanvasGLX::get_ms() [25]
+                0.00    0.00     278/278         Scene::elapse(double) [34]
+                0.00    0.00     278/278         CanvasGLX::draw() [35]
+-----------------------------------------------
+                0.00    0.00     746/746         CanvasBase::loop() [77]
+[27]     0.0    0.00    0.00     746         CanvasGLX::handle_events() [27]
+-----------------------------------------------
+                0.00    0.00     548/548         std::deque<Tail::Link, std::allocator<Tail::Link> >::_M_push_front_aux(Tail::Link const&) [18]
+[28]     0.0    0.00    0.00     548         std::deque<Tail::Link, std::allocator<Tail::Link> >::_M_reallocate_map(unsigned int, bool) [28]
+-----------------------------------------------
+                0.00    0.00     468/468         CanvasBase::loop() [77]
+[29]     0.0    0.00    0.00     468         CanvasGLX::delay(int) [29]
+-----------------------------------------------
+                0.00    0.00     278/278         CanvasGLX::draw() [35]
+[30]     0.0    0.00    0.00     278         CanvasBase::draw() [30]
+                0.00    0.00     278/278         Scene::apply_camera() [32]
+-----------------------------------------------
+                0.00    0.00     278/278         Scene::elapse(double) [34]
+[31]     0.0    0.00    0.00     278         Scene::elapse_once(double) [31]
+                0.00    0.00   38086/38086       Tail::elapse(double) [12]
+                0.00    0.00   38086/38086       Firefly::elapse(double) [16]
+                0.00    0.00     834/837         Bait::set_color() [20]
+                0.00    0.00     834/834         Bait::elapse(double) [23]
+                0.00    0.00     278/39198       clamp_vec(TVec3<float>&, double) [8]
+-----------------------------------------------
+                0.00    0.00     278/278         CanvasBase::draw() [30]
+[32]     0.0    0.00    0.00     278         Scene::apply_camera() [32]
+-----------------------------------------------
+                0.00    0.00     278/278         CanvasGLX::draw() [35]
+[33]     0.0    0.00    0.00     278         Scene::draw() [33]
+                0.00    0.00   38086/38086       Tail::draw() [11]
+                0.00    0.00   38086/38086       Firefly::draw() [15]
+                0.00    0.00     834/834         Bait::draw() [22]
+-----------------------------------------------
+                0.00    0.00     278/278         CanvasBase::tick() [26]
+[34]     0.0    0.00    0.00     278         Scene::elapse(double) [34]
+                0.00    0.00     278/278         Scene::elapse_once(double) [31]
+-----------------------------------------------
+                0.00    0.00     278/278         CanvasBase::tick() [26]
+[35]     0.0    0.00    0.00     278         CanvasGLX::draw() [35]
+                0.00    0.00     278/278         Scene::draw() [33]
+                0.00    0.00     278/278         CanvasBase::draw() [30]
+-----------------------------------------------
+                0.00    0.00     137/137         Firefly::Firefly(Bait*, TVec3<float>, double) [37]
+[36]     0.0    0.00    0.00     137         Tail::Tail(Firefly*) [36]
+                0.00    0.00     137/137         std::_Deque_base<Tail::Link, std::allocator<Tail::Link> >::_M_initialize_map(unsigned int) [40]
+-----------------------------------------------
+                0.00    0.00     137/137         Scene::add_flies(unsigned int) [83]
+[37]     0.0    0.00    0.00     137         Firefly::Firefly(Bait*, TVec3<float>, double) [37]
+                0.00    0.00     137/137         Tail::Tail(Firefly*) [36]
+-----------------------------------------------
+                0.00    0.00     137/137         Scene::~Scene() [119]
+[38]     0.0    0.00    0.00     137         Firefly::~Firefly() [38]
+                0.00    0.00       9/9           std::vector<Tail*, std::allocator<Tail*> >::_M_insert_aux(__gnu_cxx::__normal_iterator<Tail**, std::vector<Tail*, std::allocator<Tail*> > >, Tail* const&) [42]
+-----------------------------------------------
+                0.00    0.00     137/137         std::_Deque_base<Tail::Link, std::allocator<Tail::Link> >::_M_initialize_map(unsigned int) [40]
+[39]     0.0    0.00    0.00     137         std::_Deque_base<Tail::Link, std::allocator<Tail::Link> >::_M_create_nodes(Tail::Link**, Tail::Link**) [39]
+-----------------------------------------------
+                0.00    0.00     137/137         Tail::Tail(Firefly*) [36]
+[40]     0.0    0.00    0.00     137         std::_Deque_base<Tail::Link, std::allocator<Tail::Link> >::_M_initialize_map(unsigned int) [40]
+                0.00    0.00     137/137         std::_Deque_base<Tail::Link, std::allocator<Tail::Link> >::_M_create_nodes(Tail::Link**, Tail::Link**) [39]
+-----------------------------------------------
+                0.00    0.00      16/16          Scene::set_defaults() [80]
+[41]     0.0    0.00    0.00      16         RandVar::add(int, double) [41]
+                0.00    0.00       8/8           std::vector<std::pair<int, double>, std::allocator<std::pair<int, double> > >::_M_insert_aux(__gnu_cxx::__normal_iterator<std::pair<int, double>*, std::vector<std::pair<int, double>, std::allocator<std::pair<int, double> > > >, std::pair<int, double> const&) [43]
+-----------------------------------------------
+                0.00    0.00       9/9           Firefly::~Firefly() [38]
+[42]     0.0    0.00    0.00       9         std::vector<Tail*, std::allocator<Tail*> >::_M_insert_aux(__gnu_cxx::__normal_iterator<Tail**, std::vector<Tail*, std::allocator<Tail*> > >, Tail* const&) [42]
+-----------------------------------------------
+                0.00    0.00       8/8           RandVar::add(int, double) [41]
+[43]     0.0    0.00    0.00       8         std::vector<std::pair<int, double>, std::allocator<std::pair<int, double> > >::_M_insert_aux(__gnu_cxx::__normal_iterator<std::pair<int, double>*, std::vector<std::pair<int, double>, std::allocator<std::pair<int, double> > > >, std::pair<int, double> const&) [43]
+-----------------------------------------------
+                0.00    0.00       1/4           scene_start_mode(int) [64]
+                0.00    0.00       3/4           bait_start_mode(Bait*, int) [45]
+[44]     0.0    0.00    0.00       4         RandVar::rand() [44]
+-----------------------------------------------
+                0.00    0.00       3/3           Bait::Bait() [46]
+[45]     0.0    0.00    0.00       3         bait_start_mode(Bait*, int) [45]
+                0.00    0.00       3/4           RandVar::rand() [44]
+-----------------------------------------------
+                0.00    0.00       3/3           Scene::create() [81]
+[46]     0.0    0.00    0.00       3         Bait::Bait() [46]
+                0.00    0.00       3/3           std::_Deque_base<std::pair<int, double>, std::allocator<std::pair<int, double> > >::_M_initialize_map(unsigned int) [51]
+                0.00    0.00       3/3           bait_start_mode(Bait*, int) [45]
+                0.00    0.00       3/837         Bait::set_color() [20]
+-----------------------------------------------
+                0.00    0.00       3/3           Scene::~Scene() [119]
+[47]     0.0    0.00    0.00       3         Bait::~Bait() [47]
+                0.00    0.00       3/3           std::_Deque_base<std::pair<int, double>, std::allocator<std::pair<int, double> > >::~_Deque_base() [52]
+-----------------------------------------------
+                0.00    0.00       3/3           Scene::set_defaults() [80]
+[48]     0.0    0.00    0.00       3         RandVar::change(int, double) [48]
+-----------------------------------------------
+                0.00    0.00       3/3           std::_Deque_base<std::pair<int, double>, std::allocator<std::pair<int, double> > >::_M_initialize_map(unsigned int) [51]
+[49]     0.0    0.00    0.00       3         std::_Deque_base<std::pair<int, double>, std::allocator<std::pair<int, double> > >::_M_create_nodes(std::pair<int, double>**, std::pair<int, double>**) [49]
+-----------------------------------------------
+                0.00    0.00       3/3           std::_Deque_base<std::pair<int, double>, std::allocator<std::pair<int, double> > >::~_Deque_base() [52]
+[50]     0.0    0.00    0.00       3         std::_Deque_base<std::pair<int, double>, std::allocator<std::pair<int, double> > >::_M_destroy_nodes(std::pair<int, double>**, std::pair<int, double>**) [50]
+-----------------------------------------------
+                0.00    0.00       3/3           Bait::Bait() [46]
+[51]     0.0    0.00    0.00       3         std::_Deque_base<std::pair<int, double>, std::allocator<std::pair<int, double> > >::_M_initialize_map(unsigned int) [51]
+                0.00    0.00       3/3           std::_Deque_base<std::pair<int, double>, std::allocator<std::pair<int, double> > >::_M_create_nodes(std::pair<int, double>**, std::pair<int, double>**) [49]
+-----------------------------------------------
+                0.00    0.00       3/3           Bait::~Bait() [47]
+[52]     0.0    0.00    0.00       3         std::_Deque_base<std::pair<int, double>, std::allocator<std::pair<int, double> > >::~_Deque_base() [52]
+                0.00    0.00       3/3           std::_Deque_base<std::pair<int, double>, std::allocator<std::pair<int, double> > >::_M_destroy_nodes(std::pair<int, double>**, std::pair<int, double>**) [50]
+-----------------------------------------------
+                0.00    0.00       2/2           Scene::set_defaults() [80]
+[53]     0.0    0.00    0.00       2         RandVar::clear() [53]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [144]
+[54]     0.0    0.00    0.00       1         global constructors keyed to _Z15bait_start_modeP4Baiti [54]
+                0.00    0.00       1/1           __static_initialization_and_destruction_0(int, int) [72]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [144]
+[55]     0.0    0.00    0.00       1         global constructors keyed to _Z8draw_boxRK5TVec3IfES2_ [55]
+                0.00    0.00       1/1           __static_initialization_and_destruction_0(int, int) [66]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [144]
+[56]     0.0    0.00    0.00       1         global constructors keyed to _Z9clamp_vecR5TVec3IfEd [56]
+                0.00    0.00       1/1           __static_initialization_and_destruction_0(int, int) [71]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [144]
+[57]     0.0    0.00    0.00       1         global constructors keyed to _ZN10CanvasBaseC2EP5Scenebi [57]
+                0.00    0.00       1/1           __static_initialization_and_destruction_0(int, int) [74]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [144]
+[58]     0.0    0.00    0.00       1         global constructors keyed to _ZN4BaitC2Ev [58]
+                0.00    0.00       1/1           __static_initialization_and_destruction_0(int, int) [67]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [144]
+[59]     0.0    0.00    0.00       1         global constructors keyed to _ZN4TailC2EP7Firefly [59]
+                0.00    0.00       1/1           __static_initialization_and_destruction_0(int, int) [70]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [144]
+[60]     0.0    0.00    0.00       1         global constructors keyed to _ZN7FireflyC2EP4Bait5TVec3IfEd [60]
+                0.00    0.00       1/1           __static_initialization_and_destruction_0(int, int) [68]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [144]
+[61]     0.0    0.00    0.00       1         global constructors keyed to _ZN9CanvasGLXC2EP5Scenebim [61]
+                0.00    0.00       1/1           __static_initialization_and_destruction_0(int, int) [75]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [144]
+[62]     0.0    0.00    0.00       1         global constructors keyed to canvas [62]
+                0.00    0.00       1/1           __static_initialization_and_destruction_0(int, int) [73]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [144]
+[63]     0.0    0.00    0.00       1         global constructors keyed to world [63]
+                0.00    0.00       1/1           __static_initialization_and_destruction_0(int, int) [69]
+-----------------------------------------------
+                0.00    0.00       1/1           Scene::create() [81]
+[64]     0.0    0.00    0.00       1         scene_start_mode(int) [64]
+                0.00    0.00       1/4           RandVar::rand() [44]
+-----------------------------------------------
+                0.00    0.00       1/1           CanvasGLX::create_window() [85]
+[65]     0.0    0.00    0.00       1         VirtualRootWindowOfScreen(Screen*) [65]
+-----------------------------------------------
+                0.00    0.00       1/1           global constructors keyed to _Z8draw_boxRK5TVec3IfES2_ [55]
+[66]     0.0    0.00    0.00       1         __static_initialization_and_destruction_0(int, int) [66]
+-----------------------------------------------
+                0.00    0.00       1/1           global constructors keyed to _ZN4BaitC2Ev [58]
+[67]     0.0    0.00    0.00       1         __static_initialization_and_destruction_0(int, int) [67]
+-----------------------------------------------
+                0.00    0.00       1/1           global constructors keyed to _ZN7FireflyC2EP4Bait5TVec3IfEd [60]
+[68]     0.0    0.00    0.00       1         __static_initialization_and_destruction_0(int, int) [68]
+-----------------------------------------------
+                0.00    0.00       1/1           global constructors keyed to world [63]
+[69]     0.0    0.00    0.00       1         __static_initialization_and_destruction_0(int, int) [69]
+-----------------------------------------------
+                0.00    0.00       1/1           global constructors keyed to _ZN4TailC2EP7Firefly [59]
+[70]     0.0    0.00    0.00       1         __static_initialization_and_destruction_0(int, int) [70]
+-----------------------------------------------
+                0.00    0.00       1/1           global constructors keyed to _Z9clamp_vecR5TVec3IfEd [56]
+[71]     0.0    0.00    0.00       1         __static_initialization_and_destruction_0(int, int) [71]
+-----------------------------------------------
+                0.00    0.00       1/1           global constructors keyed to _Z15bait_start_modeP4Baiti [54]
+[72]     0.0    0.00    0.00       1         __static_initialization_and_destruction_0(int, int) [72]
+-----------------------------------------------
+                0.00    0.00       1/1           global constructors keyed to canvas [62]
+[73]     0.0    0.00    0.00       1         __static_initialization_and_destruction_0(int, int) [73]
+                0.00    0.00       1/1           Scene::Scene() [84]
+-----------------------------------------------
+                0.00    0.00       1/1           global constructors keyed to _ZN10CanvasBaseC2EP5Scenebi [57]
+[74]     0.0    0.00    0.00       1         __static_initialization_and_destruction_0(int, int) [74]
+-----------------------------------------------
+                0.00    0.00       1/1           global constructors keyed to _ZN9CanvasGLXC2EP5Scenebim [61]
+[75]     0.0    0.00    0.00       1         __static_initialization_and_destruction_0(int, int) [75]
+-----------------------------------------------
+                0.00    0.00       1/1           main [7]
+[76]     0.0    0.00    0.00       1         CanvasBase::init() [76]
+                0.00    0.00       1/1           CanvasGLX::create_window() [85]
+                0.00    0.00       1/1           CanvasGLX::resize() [86]
+-----------------------------------------------
+                0.00    0.00       1/1           main [7]
+[77]     0.0    0.00    0.00       1         CanvasBase::loop() [77]
+                0.00    0.00     746/746         CanvasBase::tick() [26]
+                0.00    0.00     746/746         CanvasGLX::handle_events() [27]
+                0.00    0.00     468/468         CanvasGLX::delay(int) [29]
+                0.00    0.00       2/748         CanvasGLX::get_ms() [25]
+-----------------------------------------------
+                0.00    0.00       1/1           CanvasGLX::resize() [86]
+[78]     0.0    0.00    0.00       1         CanvasBase::resize() [78]
+                0.00    0.00       1/1           Scene::resize(int, int) [82]
+-----------------------------------------------
+                0.00    0.00       1/1           CanvasGLX::CanvasGLX(Scene*, bool, int, unsigned long) [87]
+[79]     0.0    0.00    0.00       1         CanvasBase::CanvasBase(Scene*, bool, int) [79]
+-----------------------------------------------
+                0.00    0.00       1/1           Scene::Scene() [84]
+[80]     0.0    0.00    0.00       1         Scene::set_defaults() [80]
+                0.00    0.00      16/16          RandVar::add(int, double) [41]
+                0.00    0.00       3/3           RandVar::change(int, double) [48]
+                0.00    0.00       2/2           RandVar::clear() [53]
+-----------------------------------------------
+                0.00    0.00       1/1           main [7]
+[81]     0.0    0.00    0.00       1         Scene::create() [81]
+                0.00    0.00       3/3           Bait::Bait() [46]
+                0.00    0.00       1/1           scene_start_mode(int) [64]
+                0.00    0.00       1/1           std::vector<Bait*, std::allocator<Bait*> >::reserve(unsigned int) [88]
+                0.00    0.00       1/1           Scene::add_flies(unsigned int) [83]
+-----------------------------------------------
+                0.00    0.00       1/1           CanvasBase::resize() [78]
+[82]     0.0    0.00    0.00       1         Scene::resize(int, int) [82]
+-----------------------------------------------
+                0.00    0.00       1/1           Scene::create() [81]
+[83]     0.0    0.00    0.00       1         Scene::add_flies(unsigned int) [83]
+                0.00    0.00     137/137         Firefly::Firefly(Bait*, TVec3<float>, double) [37]
+                0.00    0.00       1/1           std::vector<Firefly*, std::allocator<Firefly*> >::reserve(unsigned int) [89]
+-----------------------------------------------
+                0.00    0.00       1/1           __static_initialization_and_destruction_0(int, int) [73]
+[84]     0.0    0.00    0.00       1         Scene::Scene() [84]
+                0.00    0.00       1/1           Scene::set_defaults() [80]
+-----------------------------------------------
+                0.00    0.00       1/1           CanvasBase::init() [76]
+[85]     0.0    0.00    0.00       1         CanvasGLX::create_window() [85]
+                0.00    0.00       1/1           VirtualRootWindowOfScreen(Screen*) [65]
+-----------------------------------------------
+                0.00    0.00       1/1           CanvasBase::init() [76]
+[86]     0.0    0.00    0.00       1         CanvasGLX::resize() [86]
+                0.00    0.00       1/1           CanvasBase::resize() [78]
+-----------------------------------------------
+                0.00    0.00       1/1           main [7]
+[87]     0.0    0.00    0.00       1         CanvasGLX::CanvasGLX(Scene*, bool, int, unsigned long) [87]
+                0.00    0.00       1/1           CanvasBase::CanvasBase(Scene*, bool, int) [79]
+-----------------------------------------------
+                0.00    0.00       1/1           Scene::create() [81]
+[88]     0.0    0.00    0.00       1         std::vector<Bait*, std::allocator<Bait*> >::reserve(unsigned int) [88]
+-----------------------------------------------
+                0.00    0.00       1/1           Scene::add_flies(unsigned int) [83]
+[89]     0.0    0.00    0.00       1         std::vector<Firefly*, std::allocator<Firefly*> >::reserve(unsigned int) [89]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+
+Index by function name
+
+  [54] global constructors keyed to _Z15bait_start_modeP4Baiti (modes.cc) [26] CanvasBase::tick() [37] Firefly::Firefly(Bait*, TVec3<float>, double)
+  [55] global constructors keyed to _Z8draw_boxRK5TVec3IfES2_ (arrow.cc) [78] CanvasBase::resize() [38] Firefly::~Firefly()
+  [56] global constructors keyed to _Z9clamp_vecR5TVec3IfEd (utils.cc) [79] CanvasBase::CanvasBase(Scene*, bool, int) [41] RandVar::add(int, double)
+  [57] global constructors keyed to _ZN10CanvasBaseC2EP5Scenebi (canvas_base.cc) [21] Bait::calc_accel() [44] RandVar::rand()
+  [58] global constructors keyed to _ZN4BaitC2Ev (bait.cc) [22] Bait::draw() [53] RandVar::clear()
+  [59] global constructors keyed to _ZN4TailC2EP7Firefly (tail.cc) [23] Bait::elapse(double) [48] RandVar::change(int, double)
+  [60] global constructors keyed to _ZN7FireflyC2EP4Bait5TVec3IfEd (firefly.cc) [20] Bait::set_color() [85] CanvasGLX::create_window()
+  [61] global constructors keyed to _ZN9CanvasGLXC2EP5Scenebim (canvas_glx.cc) [46] Bait::Bait() [27] CanvasGLX::handle_events()
+  [62] global constructors keyed to canvas (main.cc) [47] Bait::~Bait() [35] CanvasGLX::draw()
+  [63] global constructors keyed to world (scene.cc) [11] Tail::draw() [29] CanvasGLX::delay(int)
+   [9] hsv_to_rgb(TVec4<float> const&) [12] Tail::elapse(double) [25] CanvasGLX::get_ms()
+  [45] bait_start_mode(Bait*, int) [36] Tail::Tail(Firefly*) [86] CanvasGLX::resize()
+  [64] scene_start_mode(int)  [13] Arrow::draw()          [87] CanvasGLX::CanvasGLX(Scene*, bool, int, unsigned long)
+  [65] VirtualRootWindowOfScreen(Screen*) (vroot.h) [10] Arrow::point(TVec3<float>) [39] std::_Deque_base<Tail::Link, std::allocator<Tail::Link> >::_M_create_nodes(Tail::Link**, Tail::Link**)
+  [66] __static_initialization_and_destruction_0(int, int) (arrow.cc) [31] Scene::elapse_once(double) [40] std::_Deque_base<Tail::Link, std::allocator<Tail::Link> >::_M_initialize_map(unsigned int)
+  [67] __static_initialization_and_destruction_0(int, int) (bait.cc) [32] Scene::apply_camera() [49] std::_Deque_base<std::pair<int, double>, std::allocator<std::pair<int, double> > >::_M_create_nodes(std::pair<int, double>**, std::pair<int, double>**)
+  [68] __static_initialization_and_destruction_0(int, int) (firefly.cc) [80] Scene::set_defaults() [50] std::_Deque_base<std::pair<int, double>, std::allocator<std::pair<int, double> > >::_M_destroy_nodes(std::pair<int, double>**, std::pair<int, double>**)
+  [69] __static_initialization_and_destruction_0(int, int) (scene.cc) [33] Scene::draw() [51] std::_Deque_base<std::pair<int, double>, std::allocator<std::pair<int, double> > >::_M_initialize_map(unsigned int)
+  [70] __static_initialization_and_destruction_0(int, int) (tail.cc) [81] Scene::create() [52] std::_Deque_base<std::pair<int, double>, std::allocator<std::pair<int, double> > >::~_Deque_base()
+  [71] __static_initialization_and_destruction_0(int, int) (utils.cc) [34] Scene::elapse(double) [19] std::deque<Tail::Link, std::allocator<Tail::Link> >::_M_pop_back_aux()
+  [72] __static_initialization_and_destruction_0(int, int) (modes.cc) [82] Scene::resize(int, int) [18] std::deque<Tail::Link, std::allocator<Tail::Link> >::_M_push_front_aux(Tail::Link const&)
+  [73] __static_initialization_and_destruction_0(int, int) (main.cc) [83] Scene::add_flies(unsigned int) [28] std::deque<Tail::Link, std::allocator<Tail::Link> >::_M_reallocate_map(unsigned int, bool)
+  [74] __static_initialization_and_destruction_0(int, int) (canvas_base.cc) [84] Scene::Scene() [88] std::vector<Bait*, std::allocator<Bait*> >::reserve(unsigned int)
+  [75] __static_initialization_and_destruction_0(int, int) (canvas_glx.cc) [24] Timer::is_ready(double) [42] std::vector<Tail*, std::allocator<Tail*> >::_M_insert_aux(__gnu_cxx::__normal_iterator<Tail**, std::vector<Tail*, std::allocator<Tail*> > >, Tail* const&)
+   [8] clamp_vec(TVec3<float>&, double) [14] Firefly::calc_accel() [89] std::vector<Firefly*, std::allocator<Firefly*> >::reserve(unsigned int)
+  [30] CanvasBase::draw()     [15] Firefly::draw()        [43] std::vector<std::pair<int, double>, std::allocator<std::pair<int, double> > >::_M_insert_aux(__gnu_cxx::__normal_iterator<std::pair<int, double>*, std::vector<std::pair<int, double>, std::allocator<std::pair<int, double> > > >, std::pair<int, double> const&)
+  [76] CanvasBase::init()     [16] Firefly::elapse(double)
+  [77] CanvasBase::loop()     [17] Firefly::set_color()

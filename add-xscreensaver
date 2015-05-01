@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# This script will add a Fireflies entry to every file you give it,
+# assuming they of xscreensaverrc file format.
+
+tmpfile=`mktemp /tmp/xrc.XXXXXX`
+for file in "$@"; do
+    [ -f $file ] || continue
+    grep -q 'fireflies' $file && continue
+    cp $file $tmpfile
+    cat $tmpfile | sed '
+/programs:/ a\
+  GL:          "Fireflies 3D"   fireflies -root                             \\n\\
+' > $file
+done
+
+rm $tmpfile

@@ -1,0 +1,335 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.5.4	//
+ARGP_ERR_UNKNOWN	main.cc	36;"	d	file:
+ARGP_KEY_ARG	main.cc	35;"	d	file:
+ARGP_LONG_ONLY	main.cc	38;"	d	file:
+Arrow	arrow.h	/^    Arrow() : hsv(0.0f, 0.8f, 0.8f, 1.0f) {}$/;"	f	class:Arrow
+Arrow	arrow.h	/^class Arrow : public Control$/;"	c
+BMODE_ATTRACTOR	modes.h	17;"	d
+BMODE_FADED	modes.h	21;"	d
+BMODE_GLOW	modes.h	19;"	d
+BMODE_HYPERSPEED	modes.h	20;"	d
+BMODE_NORMAL	modes.h	15;"	d
+BMODE_NOTHING	modes.h	14;"	d
+BMODE_RAINBOW	modes.h	18;"	d
+BMODE_STOP	modes.h	16;"	d
+BMODE_WAIT	modes.cc	5;"	d	file:
+BORDER_COLOR	canvas_sdl.cc	66;"	d	file:
+Bait	bait.cc	/^Bait::Bait()$/;"	f	class:Bait
+Bait	bait.h	/^class Bait : public Arrow$/;"	c
+CANVAS_GLX	main.cc	/^enum {CANVAS_SDL, CANVAS_GLX} canvas_type = CANVAS_SDL;$/;"	e	file:
+CANVAS_SDL	main.cc	/^enum {CANVAS_SDL, CANVAS_GLX} canvas_type = CANVAS_SDL;$/;"	e	file:
+CanvasBase	canvas_base.cc	/^CanvasBase::CanvasBase(Scene *s, bool fs, int m)$/;"	f	class:CanvasBase
+CanvasBase	canvas_base.h	/^class CanvasBase {$/;"	c
+CanvasGLX	canvas_glx.cc	/^CanvasGLX::CanvasGLX(Scene *s, bool fs, int m, Window wid)$/;"	f	class:CanvasGLX
+CanvasGLX	canvas_glx.h	/^class CanvasGLX : public CanvasBase {$/;"	c
+CanvasSDL	canvas_sdl.cc	/^CanvasSDL::CanvasSDL(Scene *s, bool fs, int m, char *t, char *c)$/;"	f	class:CanvasSDL
+CanvasSDL	canvas_sdl.h	/^class CanvasSDL : public CanvasBase {$/;"	c
+Control	control.h	/^    Control() : rot_angle(0)$/;"	f	class:Control
+Control	control.h	/^class Control {$/;"	c
+DEG_TO_RAD	arrow.h	4;"	d
+DEG_TO_RAD	control.h	7;"	d
+DO_POINT	tail.cc	12;"	d	file:
+DefaultRootWindow	vroot.h	153;"	d
+DefaultRootWindow	vroot.h	154;"	d
+Event	utils.h	/^    typedef pair<int, double> Event;$/;"	t	class:RandVar
+Event	utils.h	/^    typedef pair<int, double> Event;$/;"	t	class:Timer
+Firefly	firefly.cc	/^Firefly::Firefly(Bait *_bait, Vec3f ctr, double spread)$/;"	f	class:Firefly
+Firefly	firefly.h	/^class Firefly : public Arrow$/;"	c
+IDC_CONF_BACCEL	resource.h	8;"	d
+IDC_CONF_BMODE	resource.h	20;"	d
+IDC_CONF_BSPEED	resource.h	7;"	d
+IDC_CONF_DRAWBAIT	resource.h	17;"	d
+IDC_CONF_FACCEL	resource.h	10;"	d
+IDC_CONF_FASTFORWARD	resource.h	18;"	d
+IDC_CONF_FPS	resource.h	19;"	d
+IDC_CONF_FSIZE	resource.h	6;"	d
+IDC_CONF_FSPEED	resource.h	9;"	d
+IDC_CONF_GLOWFACTOR	resource.h	15;"	d
+IDC_CONF_HUERATE	resource.h	11;"	d
+IDC_CONF_MAXBAITS	resource.h	3;"	d
+IDC_CONF_MAXFLIES	resource.h	5;"	d
+IDC_CONF_MINBAITS	resource.h	2;"	d
+IDC_CONF_MINFLIES	resource.h	4;"	d
+IDC_CONF_SMODE	resource.h	21;"	d
+IDC_CONF_TAILLENGTH	resource.h	12;"	d
+IDC_CONF_TAILOPAQ	resource.h	14;"	d
+IDC_CONF_TAILWIDTH	resource.h	13;"	d
+IDC_CONF_WIND	resource.h	16;"	d
+IDC_DEFAULTS	resource.h	23;"	d
+IDC_STATIC	resource.h	25;"	d
+Link	tail.h	/^	Link(Vec3f _pos, rgbColor _color, bool _glow)$/;"	f	struct:Tail::Link
+Link	tail.h	/^    struct Link {$/;"	s	class:Tail
+MAX3	utils.h	12;"	d
+MAX_ELAPSE	scene.cc	13;"	d	file:
+MIN3	utils.h	13;"	d
+MY_HKEY	winsaver.cc	14;"	d	file:
+NDEBUG	utils.cc	4;"	d	file:
+NUM_BMODES	modes.h	22;"	d
+NUM_SMODES	modes.h	12;"	d
+OFFSCREEN_VEC3	scene.cc	9;"	d	file:
+OPTION_DOC	main.cc	33;"	d	file:
+OPTION_HIDDEN	main.cc	32;"	d	file:
+OPT_FASTFORWARD	main.cc	188;"	d	file:
+OPT_FPS	main.cc	187;"	d	file:
+OPT_FULLSCREEN	main.cc	186;"	d	file:
+RAD_TO_DEG	arrow.h	5;"	d
+RAD_TO_DEG	control.h	8;"	d
+RandVar	utils.h	/^    RandVar() : max_prob(0.0) {}$/;"	f	class:RandVar
+RandVar	utils.h	/^class RandVar {$/;"	c
+RegisterDialogClasses	winsaver.cc	/^BOOL WINAPI RegisterDialogClasses(HANDLE hInst)$/;"	f
+RootWindow	vroot.h	150;"	d
+RootWindow	vroot.h	151;"	d
+RootWindowOfScreen	vroot.h	147;"	d
+RootWindowOfScreen	vroot.h	148;"	d
+SET_COLOR	tail.cc	10;"	d	file:
+SET_VERTEX	tail.cc	11;"	d	file:
+SIGN	utils.h	10;"	d
+SMODE_FLYBIRTH	modes.h	7;"	d
+SMODE_FLYKILL	modes.h	6;"	d
+SMODE_MATRIX	modes.h	9;"	d
+SMODE_NOTHING	modes.h	4;"	d
+SMODE_SWARMMERGE	modes.h	11;"	d
+SMODE_SWARMS	modes.h	5;"	d
+SMODE_SWARMSPLIT	modes.h	10;"	d
+SMODE_WAIT	modes.cc	6;"	d	file:
+SMODE_WINDY	modes.h	8;"	d
+Scene	scene.cc	/^Scene::Scene() : matrix(-1.0)$/;"	f	class:Scene
+Scene	scene.h	/^class Scene {$/;"	c
+ScreenSaverConfigureDialog	winsaver.cc	/^ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)$/;"	f
+ScreenSaverProc	winsaver.cc	/^ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)$/;"	f
+TIMER	winsaver.cc	17;"	d	file:
+Tail	tail.cc	/^Tail::Tail(Firefly *_owner)$/;"	f	class:Tail
+Tail	tail.h	/^class Tail$/;"	c
+Timer	utils.h	/^    Timer() {}$/;"	f	class:Timer
+Timer	utils.h	/^class Timer {$/;"	c
+VirtualRootWindowOfScreen	vroot.h	/^VirtualRootWindowOfScreen(Screen *screen)$/;"	f
+WIND_WAIT	scene.cc	8;"	d	file:
+_Arrow_H	arrow.h	2;"	d
+_Bait_H	bait.h	2;"	d
+_CANVASBASE_H	canvas_base.h	2;"	d
+_CANVASGLX_H	canvas_glx.h	2;"	d
+_CANVASSDL_H	canvas_sdl.h	2;"	d
+_CONTROL_H	control.h	2;"	d
+_MAIN_H	main.h	2;"	d
+_MODES_H	modes.h	2;"	d
+_PARTICLE_H	firefly.h	2;"	d
+_SCENE_H	scene.h	2;"	d
+_TAIL_H	tail.h	2;"	d
+_UTILS_H	utils.h	2;"	d
+_VROOT_H_	vroot.h	72;"	d
+_XSCREENSAVER_VROOT_H_	vroot.h	73;"	d
+accel	arrow.h	/^    Vec3f accel;		\/\/ current acceleration$/;"	m	class:Arrow
+accel	scene.h	/^    Vec3f accel;		\/\/ wind is changing$/;"	m	class:Scene
+add	utils.cc	/^void RandVar::add(int val, double prob)$/;"	f	class:RandVar
+add	utils.cc	/^void Timer::add(int what, double when)$/;"	f	class:Timer
+add_flies	scene.cc	/^void Scene::add_flies(unsigned n)$/;"	f	class:Scene
+age	bait.h	/^    double age;		\/\/ timer with random initial value$/;"	m	class:Bait
+age	firefly.h	/^    double age;		\/\/ how long I've been alive$/;"	m	class:Firefly
+age	tail.h	/^	double age;	\/\/ how long this link has existed (in seconds)$/;"	m	struct:Tail::Link
+animate	canvas_base.h	/^    bool animate;$/;"	m	class:CanvasBase
+apply_camera	scene.cc	/^void Scene::apply_camera()$/;"	f	class:Scene
+apply_transform	control.h	/^    void apply_transform()$/;"	f	class:Control
+arg	main.cc	/^    const char *arg;$/;"	m	struct:argp_option	file:
+argc	main.cc	/^    int argc;$/;"	m	struct:argp_state	file:
+argp	main.cc	/^struct argp {$/;"	s	file:
+argp_help	main.cc	/^void argp_help(struct argp *argp_s)$/;"	f
+argp_option	main.cc	/^struct argp_option {$/;"	s	file:
+argp_parse	main.cc	/^int argp_parse(struct argp *argp_s, int argc, char *argv[], int, int *, void *)$/;"	f
+argp_parser_t	main.cc	/^typedef int (*argp_parser_t)(int, char*, struct argp_state*);$/;"	t	file:
+argp_program_version	main.cc	/^const char *argp_program_version =$/;"	v
+argp_s	main.cc	/^static struct argp argp_s = { options, parse_opt, 0, doc };$/;"	v	file:
+argp_state	main.cc	/^struct argp_state {$/;"	s	file:
+args_doc	main.cc	/^    const char *args_doc;$/;"	m	struct:argp	file:
+argv	main.cc	/^    char **argv;$/;"	m	struct:argp_state	file:
+attractor	bait.h	/^    Vec3f *attractor;$/;"	m	class:Bait
+baccel	bait.h	/^    double baccel;	\/\/ my accel$/;"	m	class:Bait
+baccel	scene.h	/^    double baccel;$/;"	m	class:Scene
+bait	firefly.h	/^    Bait *bait;		\/\/ the bait I'm after$/;"	m	class:Firefly
+bait_start_mode	modes.cc	/^void bait_start_mode(Bait *b, int mode)$/;"	f
+bait_stop_mode	modes.cc	/^void bait_stop_mode(Bait* b, int mode)$/;"	f
+baits	scene.h	/^    vector<Bait*> baits;$/;"	m	class:Scene
+bmodes	scene.h	/^    RandVar bmodes;	\/\/ enabled modes for baits$/;"	m	class:Scene
+bspeed	bait.h	/^    double bspeed;	\/\/ my speed$/;"	m	class:Bait
+bspeed	scene.h	/^    double bspeed;$/;"	m	class:Scene
+calc_accel	bait.cc	/^void Bait::calc_accel()$/;"	f	class:Bait
+calc_accel	firefly.cc	/^void Firefly::calc_accel()$/;"	f	class:Firefly
+camera	scene.h	/^    Control camera;	\/\/ camera orientation$/;"	m	class:Scene
+canvas	main.cc	/^CanvasBase *canvas;$/;"	v
+canvas_type	main.cc	/^enum {CANVAS_SDL, CANVAS_GLX} canvas_type = CANVAS_SDL;$/;"	v
+change	utils.cc	/^void RandVar::change(int val, double newprob)$/;"	f	class:RandVar
+clamp_vec	utils.cc	/^void clamp_vec(Vec3f& vec, double max)$/;"	f
+clear	utils.cc	/^void RandVar::clear()$/;"	f	class:RandVar
+clear	utils.cc	/^void Timer::clear()$/;"	f	class:Timer
+close_gl	winsaver.cc	/^void close_gl(HWND hWnd, HDC hDC, HGLRC hRC)$/;"	f
+color	arrow.h	/^    rgbColor color;$/;"	m	class:Arrow
+color	tail.h	/^	rgbColor color;	\/\/ color$/;"	m	struct:Tail::Link
+create	scene.cc	/^void Scene::create()$/;"	f	class:Scene
+create_window	canvas_base.cc	/^int CanvasBase::create_window()$/;"	f	class:CanvasBase
+create_window	canvas_glx.cc	/^int CanvasGLX::create_window()$/;"	f	class:CanvasGLX
+create_window	canvas_sdl.cc	/^int CanvasSDL::create_window()$/;"	f	class:CanvasSDL
+curtime	scene.h	/^    double curtime;	\/\/ total time the program's been running$/;"	m	class:Scene
+dead_tails	scene.h	/^    vector<Tail*> dead_tails;$/;"	m	class:Scene
+delay	canvas_base.cc	/^void CanvasBase::delay(int ms)$/;"	f	class:CanvasBase
+delay	canvas_glx.cc	/^void CanvasGLX::delay(int ms)$/;"	f	class:CanvasGLX
+delay	canvas_sdl.cc	/^void CanvasSDL::delay(int ms)$/;"	f	class:CanvasSDL
+display	canvas_glx.h	/^    Display *display;$/;"	m	class:CanvasGLX
+doc	main.cc	/^    const char *doc;$/;"	m	struct:argp	file:
+doc	main.cc	/^    const char *doc;$/;"	m	struct:argp_option	file:
+doc	main.cc	/^static char doc[] =$/;"	v	file:
+draw	arrow.cc	/^void Arrow::draw()$/;"	f	class:Arrow
+draw	bait.cc	/^void Bait::draw()$/;"	f	class:Bait
+draw	canvas_base.cc	/^void CanvasBase::draw()$/;"	f	class:CanvasBase
+draw	canvas_glx.cc	/^void CanvasGLX::draw()$/;"	f	class:CanvasGLX
+draw	canvas_sdl.cc	/^void CanvasSDL::draw()$/;"	f	class:CanvasSDL
+draw	firefly.cc	/^void Firefly::draw()$/;"	f	class:Firefly
+draw	scene.cc	/^void Scene::draw()$/;"	f	class:Scene
+draw	tail.cc	/^void Tail::draw()$/;"	f	class:Tail
+draw_bait	scene.h	/^    bool draw_bait;$/;"	m	class:Scene
+draw_box	arrow.cc	/^void draw_box(const Vec3f& min, const Vec3f& max)$/;"	f
+elapse	bait.cc	/^void Bait::elapse(double t)$/;"	f	class:Bait
+elapse	firefly.cc	/^void Firefly::elapse(double t)$/;"	f	class:Firefly
+elapse	scene.cc	/^void Scene::elapse(double t)$/;"	f	class:Scene
+elapse	tail.cc	/^bool Tail::elapse(double t)$/;"	f	class:Tail
+elapse_once	scene.cc	/^void Scene::elapse_once(double t)$/;"	f	class:Scene
+events	utils.h	/^    deque<Event> events;$/;"	m	class:Timer
+events	utils.h	/^    vector<Event> events;$/;"	m	class:RandVar
+faccel	bait.h	/^    double faccel;	\/\/ acceleration of the fireflies chasing me$/;"	m	class:Bait
+faccel	scene.h	/^    double faccel;$/;"	m	class:Scene
+fast_forward	scene.h	/^    unsigned fast_forward;$/;"	m	class:Scene
+flags	main.cc	/^    int flags;$/;"	m	struct:argp_option	file:
+flies	scene.h	/^    vector<Firefly*> flies;$/;"	m	class:Scene
+fps	winsaver.cc	/^double fps = 20;$/;"	v
+fsize	scene.h	/^    double fsize;$/;"	m	class:Scene
+fspeed	bait.h	/^    double fspeed;	\/\/ speed of the fireflies chasing me$/;"	m	class:Bait
+fspeed	scene.h	/^    double fspeed;$/;"	m	class:Scene
+full_screen	canvas_base.h	/^    bool full_screen;	\/\/ use full screen?$/;"	m	class:CanvasBase
+full_screen	main.cc	/^bool full_screen = false;$/;"	v
+fuzz	bait.h	/^    double fuzz;	\/\/ my little bit of randomness$/;"	m	class:Bait
+get_ms	canvas_base.cc	/^int CanvasBase::get_ms()$/;"	f	class:CanvasBase
+get_ms	canvas_glx.cc	/^int CanvasGLX::get_ms()$/;"	f	class:CanvasGLX
+get_ms	canvas_sdl.cc	/^int CanvasSDL::get_ms()$/;"	f	class:CanvasSDL
+glow	bait.h	/^    bool glow;		\/\/ should tails glow$/;"	m	class:Bait
+glow	tail.h	/^	bool glow;	\/\/ glow = wider size and higher alpha$/;"	m	struct:Tail::Link
+glow_factor	scene.h	/^    double glow_factor;$/;"	m	class:Scene
+group	main.cc	/^    int group;$/;"	m	struct:argp_option	file:
+handle_events	canvas_base.cc	/^int CanvasBase::handle_events()$/;"	f	class:CanvasBase
+handle_events	canvas_glx.cc	/^int CanvasGLX::handle_events()$/;"	f	class:CanvasGLX
+handle_events	canvas_sdl.cc	/^int CanvasSDL::handle_events()$/;"	f	class:CanvasSDL
+height	canvas_base.h	/^    int height;$/;"	m	class:CanvasBase
+hsv	arrow.h	/^    hsvColor hsv;$/;"	m	class:Arrow
+hsvColor	utils.h	/^typedef Vec4f hsvColor;$/;"	t
+hsv_to_rgb	utils.cc	/^rgbColor hsv_to_rgb(const hsvColor& hsv)$/;"	f
+hue_rate	bait.h	/^    double hue_rate;	\/\/ my color-cycling rate$/;"	m	class:Bait
+hue_rate	scene.h	/^    double hue_rate;$/;"	m	class:Scene
+init	canvas_base.cc	/^int CanvasBase::init()$/;"	f	class:CanvasBase
+init_gl	winsaver.cc	/^void init_gl(HWND hWnd, HDC & hDC, HGLRC & hRC)$/;"	f
+is_ready	utils.cc	/^bool Timer::is_ready(double now)$/;"	f	class:Timer
+key	main.cc	/^    int key;$/;"	m	struct:argp_option	file:
+last_tick	canvas_base.h	/^    int last_tick;$/;"	m	class:CanvasBase
+links	tail.h	/^    deque<Link> links;$/;"	m	class:Tail
+loop	canvas_base.cc	/^int CanvasBase::loop()$/;"	f	class:CanvasBase
+main	main.cc	/^int main(int argc, char **argv)$/;"	f
+matrix	scene.h	/^    double matrix;	\/\/ -1 if not active, else a timer for how long $/;"	m	class:Scene
+matrix_axis	scene.h	/^    Vec3f matrix_axis;	\/\/ the axis to rotate around matrix-style$/;"	m	class:Scene
+max_prob	utils.h	/^    double max_prob; \/\/ the sum of probabilities of all events$/;"	m	class:RandVar
+maxbaits	scene.h	/^    unsigned maxbaits;$/;"	m	class:Scene
+maxflies	scene.h	/^    unsigned maxflies;$/;"	m	class:Scene
+minbaits	scene.h	/^    unsigned minbaits;$/;"	m	class:Scene
+minflies	scene.h	/^    unsigned minflies;$/;"	m	class:Scene
+mode_help	main.cc	/^char *mode_help =$/;"	v
+mode_next	bait.h	/^    int mode_next;	\/\/ the next mode to activate$/;"	m	class:Bait
+mode_next	scene.h	/^    int mode_next;	\/\/ the next mode to activate$/;"	m	class:Scene
+mode_when	bait.h	/^    double mode_when;	\/\/ next time to activate a mode (ref timer)$/;"	m	class:Bait
+mode_when	scene.h	/^    double mode_when;	\/\/ next time to activate a mode$/;"	m	class:Scene
+mspf	canvas_base.h	/^    int mspf;		\/\/ ms per frame (ie, 1000\/30 mspf instead of 30 fps)$/;"	m	class:CanvasBase
+mspf	main.cc	/^int mspf = 1000\/30;$/;"	v
+name	main.cc	/^    char *name;$/;"	m	struct:argp_state	file:
+name	main.cc	/^    const char *name;$/;"	m	struct:argp_option	file:
+need_refresh	canvas_base.h	/^    bool need_refresh; 	\/\/ do we need to redraw the canvas?$/;"	m	class:CanvasBase
+next	main.cc	/^    int next;$/;"	m	struct:argp_state	file:
+on_keydown	canvas_sdl.cc	/^int CanvasSDL::on_keydown(SDL_KeyboardEvent& event)$/;"	f	class:CanvasSDL
+on_mouse_drag	canvas_sdl.cc	/^int CanvasSDL::on_mouse_drag(SDL_MouseMotionEvent& event)$/;"	f	class:CanvasSDL
+on_timer	winsaver.cc	/^void on_timer(HDC hDC) \/\/increment and display$/;"	f
+options	main.cc	/^    const struct argp_option *options;$/;"	m	struct:argp	file:
+options	main.cc	/^static struct argp_option options[] = {$/;"	v	file:
+owner	tail.h	/^    Firefly *owner;	\/\/ the firefly I'm attached to$/;"	m	class:Tail
+parse_opt	main.cc	/^int parse_opt(int key, char *arg, struct argp_state *state)$/;"	f
+parser	main.cc	/^    argp_parser_t parser;$/;"	m	struct:argp	file:
+point	arrow.cc	/^void Arrow::point(Vec3f dir)$/;"	f	class:Arrow
+pop	utils.cc	/^int Timer::pop()$/;"	f	class:Timer
+pos	control.h	/^    Vec3f pos;$/;"	m	class:Control
+pos	tail.h	/^	Vec3f pos;	\/\/ position of this link$/;"	m	struct:Tail::Link
+rand	utils.cc	/^int RandVar::rand()$/;"	f	class:RandVar
+rand_int	utils.h	/^inline int rand_int(int lo, int hi)$/;"	f
+rand_other	utils.cc	/^int rand_other(int lo, int hi, int other)$/;"	f
+rand_real	utils.h	/^inline double rand_real(double lo, double hi)$/;"	f
+rand_vec3	utils.h	/^inline Vec3f rand_vec3(double lo, double hi)$/;"	f
+read_config	winsaver.cc	/^void read_config()$/;"	f
+reg_get_val	winsaver.cc	/^void reg_get_val(HKEY key, char *str, bool *val)$/;"	f
+reg_get_val	winsaver.cc	/^void reg_get_val(HKEY key, char *str, double *val)$/;"	f
+reg_get_val	winsaver.cc	/^void reg_get_val(HKEY key, char *str, int *val)$/;"	f
+reg_get_val	winsaver.cc	/^void reg_get_val(HKEY key, char *str, unsigned *val)$/;"	f
+reg_get_val_div10	winsaver.cc	/^void reg_get_val_div10(HKEY key, char *str, double *val)$/;"	f
+reg_get_val_div100	winsaver.cc	/^void reg_get_val_div100(HKEY key, char *str, double *val)$/;"	f
+reg_set_val	winsaver.cc	/^void reg_set_val(HKEY key, char *str, bool val)$/;"	f
+reg_set_val	winsaver.cc	/^void reg_set_val(HKEY key, char *str, double val)$/;"	f
+reg_set_val	winsaver.cc	/^void reg_set_val(HKEY key, char *str, int val)$/;"	f
+reg_set_val	winsaver.cc	/^void reg_set_val(HKEY key, char *str, unsigned val)$/;"	f
+reg_set_val_tim10	winsaver.cc	/^void reg_set_val_tim10(HKEY key, char *str, double val)$/;"	f
+reg_set_val_tim100	winsaver.cc	/^void reg_set_val_tim100(HKEY key, char *str, double val)$/;"	f
+rem_flies	scene.cc	/^void Scene::rem_flies(unsigned n)$/;"	f	class:Scene
+resize	canvas_base.cc	/^void CanvasBase::resize()$/;"	f	class:CanvasBase
+resize	canvas_glx.cc	/^void CanvasGLX::resize()$/;"	f	class:CanvasGLX
+resize	canvas_sdl.cc	/^void CanvasSDL::resize()$/;"	f	class:CanvasSDL
+resize	scene.cc	/^void Scene::resize(int width, int height)$/;"	f	class:Scene
+rgbColor	utils.h	/^typedef Vec4f rgbColor;$/;"	t
+rgb_to_hsv	utils.cc	/^hsvColor rgb_to_hsv(const rgbColor& rgb)$/;"	f
+rot_angle	control.h	/^    double rot_angle; \/\/ in degrees$/;"	m	class:Control
+rot_axis	control.h	/^    Vec3f rot_axis;$/;"	m	class:Control
+scene	canvas_base.h	/^    Scene *scene;	\/\/ the thing that handles drawing and such$/;"	m	class:CanvasBase
+scene	main.cc	/^Scene scene;$/;"	v
+scene	winsaver.cc	/^Scene scene;$/;"	v
+scene_start_mode	modes.cc	/^void scene_start_mode(int mode)$/;"	f
+screen	canvas_glx.h	/^    int screen;$/;"	m	class:CanvasGLX
+set_color	bait.cc	/^void Bait::set_color()$/;"	f	class:Bait
+set_color	firefly.cc	/^void Firefly::set_color()$/;"	f	class:Firefly
+set_defaults	scene.cc	/^void Scene::set_defaults()$/;"	f	class:Scene
+set_dialog	winsaver.cc	/^void set_dialog(HWND hDlg)$/;"	f
+smodes	scene.h	/^    RandVar smodes;	\/\/ enabled modes for scene$/;"	m	class:Scene
+start_animate	winsaver.cc	/^void start_animate(int width, int height)$/;"	f
+stop_timer	bait.h	/^    Timer stop_timer;	\/\/ timer for stopping events$/;"	m	class:Bait
+surface	canvas_sdl.h	/^    SDL_Surface *surface;$/;"	m	class:CanvasSDL
+tail	firefly.h	/^    Tail *tail;		\/\/ my pretty tail$/;"	m	class:Firefly
+tail_length	scene.h	/^    double tail_length;$/;"	m	class:Scene
+tail_opaq	scene.h	/^    double tail_opaq;$/;"	m	class:Scene
+tail_width	scene.h	/^    double tail_width;$/;"	m	class:Scene
+then	winsaver.cc	/^static struct timeb then;$/;"	v	file:
+tick	canvas_base.cc	/^int CanvasBase::tick()$/;"	f	class:CanvasBase
+turn_delay	bait.h	/^    double turn_delay;	\/\/ max delay before turning (higher = slower changing)$/;"	m	class:Bait
+turn_when	bait.h	/^    double turn_when;	\/\/ when to change acceleration (referenced from timer)$/;"	m	class:Bait
+unit_vec	utils.h	/^inline Vec3f unit_vec(const Vec3f& v)$/;"	f
+velocity	arrow.h	/^    Vec3f velocity;	\/\/ current velocity$/;"	m	class:Arrow
+vroot_rcsid	vroot.h	/^static const char vroot_rcsid[] =$/;"	v
+width	canvas_base.h	/^    int width;$/;"	m	class:CanvasBase
+wind	scene.h	/^    Vec3f wind;		\/\/ current wind direction$/;"	m	class:Scene
+wind_speed	scene.h	/^    double wind_speed;$/;"	m	class:Scene
+wind_when	scene.h	/^    double wind_when;	\/\/ time before next wind change$/;"	m	class:Scene
+window	canvas_glx.h	/^    Window window;$/;"	m	class:CanvasGLX
+window_id	canvas_glx.h	/^    Window window_id;$/;"	m	class:CanvasGLX
+window_id	main.cc	/^int window_id = 0;$/;"	v
+wm_class	canvas_sdl.h	/^    char *wm_class;$/;"	m	class:CanvasSDL
+wm_title	canvas_sdl.h	/^    char *wm_title;$/;"	m	class:CanvasSDL
+world	scene.cc	/^Vec3f world;$/;"	v
+write_config	winsaver.cc	/^void write_config(HWND hDlg)$/;"	f
+~Arrow	arrow.h	/^    virtual ~Arrow() {}$/;"	f	class:Arrow
+~CanvasBase	canvas_base.h	/^    virtual ~CanvasBase() {}$/;"	f	class:CanvasBase
+~CanvasGLX	canvas_glx.h	/^    virtual ~CanvasGLX() {}$/;"	f	class:CanvasGLX
+~CanvasSDL	canvas_sdl.h	/^    virtual ~CanvasSDL() {}$/;"	f	class:CanvasSDL
+~Firefly	firefly.cc	/^Firefly::~Firefly()$/;"	f	class:Firefly
+~Scene	scene.cc	/^Scene::~Scene()$/;"	f	class:Scene
+~Tail	tail.h	/^    virtual ~Tail() {}$/;"	f	class:Tail

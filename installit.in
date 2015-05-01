@@ -1,0 +1,34 @@
+#!/bin/sh
+
+prefix=$1
+
+install="@INSTALL@"
+prog='@PROGRAM@'
+bindir='@BINDIR@'
+confdir='@CONFDIR@'
+rcfile='@RCFILE@'
+
+case `uname` in
+CYGWIN*|cygwin*|MINGW*|mingw*)
+    $install src/$prog $prefix$bindir || exit 1
+    echo "Installed $prog in $bindir/"
+    ;;
+*)
+    mkdir -p "$prefix$bindir"
+    $install -m 755 src/$prog "$prefix$bindir" || exit 1
+    echo "Installed $prog in $prefix$bindir/"
+    mkdir -p "$prefix$confdir"
+    $install -m 644 fireflies.xml "$prefix$confdir" || exit 1
+    echo "Installed fireflies.xml in $prefix$confdir/"
+    if [ "$rcfile" != "" ]; then
+	sh ./add-xscreensaver "$prefix$rcfile"
+	echo "Added 'fireflies' entry to $prefix$rcfile"
+    else
+	echo "Could not find global XScreensaver file." 
+	echo "You can add fireflies to your xscreensaver file by typing:"
+	echo "  ./add-xscreensaver <filename>"
+	echo "from the build directory.  <filename> would usually look like"
+	echo "/home/user/.xscreensaver"
+    fi
+    ;;
+esac

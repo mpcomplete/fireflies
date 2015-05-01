@@ -1,0 +1,38 @@
+# $Id: gfx-config.in,v 1.9 2002/06/13 18:34:59 garland Exp $
+
+CC = gcc
+CXX = g++
+RANLIB = ranlib
+RM = /bin/rm
+FLTKCONFIG = :
+
+WIN_FLAGS =  -I/usr/X11R6/include
+WIN_LFLAGS =  -L/usr/X11R6/lib
+CFLAGS = -g -O2  -I/home/guy/src/fireflies/libgfx/include -DHAVE_CONFIG_H $(WIN_FLAGS)
+CXXFLAGS = -g -O2  -I/home/guy/src/fireflies/libgfx/include -DHAVE_CONFIG_H $(WIN_FLAGS)
+LDFLAGS =  -L/home/guy/src/fireflies/libgfx/src $(WIN_LFLAGS)
+
+WIN_LIBS  =  -lSM -lICE -lX11 -lXext 
+WIN_DLIBS  =  -lSM -lICE -lX11 -lXext 
+IMG_LIBS =  -lz -ljpeg -ltiff -lpng
+GL_LIBS = -lGL -lGLU
+FLTK_LIBS = -lfltk
+GUI_LIBS = $(FLTK_LIBS) $(IMG_LIBS) $(GL_LIBS) $(WIN_LIBS)
+
+CC_DEPEND = $(CC) -M $(CFLAGS)
+CXX_DEPEND = $(CXX) -M $(CXXFLAGS)
+
+.SUFFIXES:
+.SUFFIXES: .fl .c .cc .cxx .o
+
+.c.o:
+	$(CC) -c $(CFLAGS) $<
+
+.cxx.o:
+	$(CXX) -c $(CXXFLAGS) $<
+
+.fl.cxx:
+	fluid -c $<
+
+.fl.h:
+	fluid -c $<
