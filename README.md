@@ -42,21 +42,19 @@ features (mostly there so I could test things, but what the hell, they're
 fun for all).
 
 Mouse input:
-    * Left-click and drag to move the camera left/right/up/down.
-    * Right-click and drag up/down to zoom the camera in/out.
-    * Hold control and Left-click and drag to rotate the camera about the
-      origin.
+* Left-click and drag to move the camera left/right/up/down.
+* Right-click and drag up/down to zoom the camera in/out.
+* Hold control and Left-click and drag to rotate the camera about the origin.
 
 Keyboard input:
-    * q = quit
-    * p = pause the screensaver (you can move the camera, but nothing else
-	  happens)
-    * t = display elapsed time in seconds to the console window (this won't
-	  work in windows if you don't have a console window open)
-    * up arrow = fast forward 2x
-    * down arrow = fast forward 1/2x
-    * right arrow = fast forward +1x
-    * left arrow = fast forward -1x
-    * 0-6 = activate major mode corresponding to that digit
-    * shift + 0-6 = activate swarm mode corresponding to that digit
-    * control + 0-6 = stop swarm mode corresponding to that digit
+* q = quit
+* p = pause the screensaver (you can move the camera, but nothing else happens)
+* t = display elapsed time in seconds to the console window (this won't
+      work in windows if you don't have a console window open)
+* up arrow = fast forward 2x
+* down arrow = fast forward 1/2x
+* right arrow = fast forward +1x
+* left arrow = fast forward -1x
+* 0-6 = activate major mode corresponding to that digit
+* shift + 0-6 = activate swarm mode corresponding to that digit
+* control + 0-6 = stop swarm mode corresponding to that digit
