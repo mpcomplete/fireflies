@@ -49,7 +49,7 @@ CYGWIN*|cygwin*|MINGW*|mingw*)
 	    test -f $try && RCFILE=$try
     done
 
-    OPT_LIBS=""
+    OPT_LIBS="-lX11"
     OPT_OBJS="main.o canvas_base.o"
     PROGRAM="fireflies"
 
