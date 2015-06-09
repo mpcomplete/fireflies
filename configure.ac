@@ -54,10 +54,10 @@ CYGWIN*|cygwin*|MINGW*|mingw*)
     PROGRAM="fireflies"
 
     AC_CHECK_LIB([GL], [glXSwapBuffers],\
-	[AC_DEFINE(HAVE_GLX)
+	[AC_DEFINE([HAVE_GLX], [1], [Define to compile with GLX support.])
 	OPT_OBJS="$OPT_OBJS canvas_glx.o"],\
 	[AC_CHECK_LIB([MesaGL], [glXSwapBuffers],\
-	    [AC_DEFINE(HAVE_GLX)
+	    [AC_DEFINE([HAVE_GLX], [1], [Define to compile with GLX support.])
 	    OPT_OBJS="$OPT_OBJS canvas_glx.o"])])
 
     AC_CHECK_LIB([GL], [glBegin], \
@@ -70,7 +70,7 @@ CYGWIN*|cygwin*|MINGW*|mingw*)
 esac
 
 if test -n "$SDL_CONF"; then
-    AC_DEFINE(HAVE_SDL)
+    AC_DEFINE([HAVE_SDL], [1], [Define to compile with SDL support.])
     SDL_LIBS="\`sdl-config --libs\`"
     SDL_CFLAGS="\`sdl-config --cflags\`"
     OPT_OBJS="$OPT_OBJS canvas_sdl.o"
