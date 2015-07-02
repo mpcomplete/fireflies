@@ -49,28 +49,28 @@ CYGWIN*|cygwin*|MINGW*|mingw*)
 	    test -f $try && RCFILE=$try
     done
 
-    OPT_LIBS=""
+    OPT_LIBS="-lX11"
     OPT_OBJS="main.o canvas_base.o"
     PROGRAM="fireflies"
 
-    AC_CHECK_LIB(GL, glXSwapBuffers,\
-	AC_DEFINE(HAVE_GLX)
-	OPT_OBJS="$OPT_OBJS canvas_glx.o",\
-	AC_CHECK_LIB(MesaGL, glXSwapBuffers,\
-	    AC_DEFINE(HAVE_GLX)
-	    OPT_OBJS="$OPT_OBJS canvas_glx.o"))
+    AC_CHECK_LIB([GL], [glXSwapBuffers],\
+	[AC_DEFINE([HAVE_GLX], [1], [Define to compile with GLX support.])
+	OPT_OBJS="$OPT_OBJS canvas_glx.o"],\
+	[AC_CHECK_LIB([MesaGL], [glXSwapBuffers],\
+	    [AC_DEFINE([HAVE_GLX], [1], [Define to compile with GLX support.])
+	    OPT_OBJS="$OPT_OBJS canvas_glx.o"])])
 
-    AC_CHECK_LIB(GL, glBegin, \
-	GL_LIBS="-lGL -lGLU", \
-	AC_CHECK_LIB(MesaGL, glBegin, \
+    AC_CHECK_LIB([GL], [glBegin], \
+	[GL_LIBS="-lGL -lGLU"], \
+	[AC_CHECK_LIB([MesaGL], [glBegin], \
 	    [GL_LIBS="-lMesaGL -lMesaGLU"], \
-	    AC_MSG_ERROR([cannot find GL libraries])))
+	    [AC_MSG_ERROR([cannot find GL libraries])])])
 
     ;;
 esac
 
 if test -n "$SDL_CONF"; then
-    AC_DEFINE(HAVE_SDL)
+    AC_DEFINE([HAVE_SDL], [1], [Define to compile with SDL support.])
     SDL_LIBS="\`sdl-config --libs\`"
     SDL_CFLAGS="\`sdl-config --cflags\`"
     OPT_OBJS="$OPT_OBJS canvas_sdl.o"

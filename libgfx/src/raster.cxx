@@ -9,7 +9,7 @@
 #include <gfx/gfx.h>
 #include <gfx/raster.h>
 
-#include <string>
+#include <cstring>
 #include <cctype>
 
 ByteRaster::ByteRaster(const ByteRaster &img)
