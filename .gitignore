@@ -1,3 +1,14 @@
+# Generated files
+/Make.include
+/autom4te.cache
+/config.h
+/config.h.in
+/config.log
+/config.status
+/configure
+/fireflies.spec
+/installit
+
 # Compiled Object files
 *.slo
 *.lo

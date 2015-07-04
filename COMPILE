@@ -2,6 +2,7 @@
 
 TO COMPILE/INSTALL:
 type:
+    autoreconf -i && ( cd libgfx/ && autoreconf -i )
     ./configure [--with-bindir=PATH_TO_YOUR_XSCREENSAVER_HACK_DIR]
 	[--with-confdir=PATH_TO_YOUR_XSCREENSAVER_CONFIG_DIR]
     make
