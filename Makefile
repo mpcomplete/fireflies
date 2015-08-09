@@ -25,7 +25,7 @@ all:	libgfx/src/libgfx.a
 
 libgfx/src/libgfx.a:
 #	gunzip -c libgfx-1.0.1.tar.gz | tar x
-	cd libgfx && ./configure && cd src && make
+	$(MAKE) -C libgfx/src
 
 install: all
 	sh ./installit $(DESTDIR)

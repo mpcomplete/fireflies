@@ -2,6 +2,7 @@
 AC_INIT(fireflies, 2.07, mpcomplete@gmail.com)
 AC_CONFIG_SRCDIR([src/arrow.cc])
 AC_CONFIG_HEADER([config.h])
+AC_CONFIG_SUBDIRS([libgfx])
 
 sys=`uname`
 
