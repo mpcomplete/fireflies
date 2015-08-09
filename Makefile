@@ -21,7 +21,7 @@ libgfx-1.0.1.tar.gz \
 win32/
 
 all:	libgfx/src/libgfx.a
-	cd src && make
+	$(MAKE) -C src
 
 libgfx/src/libgfx.a:
 #	gunzip -c libgfx-1.0.1.tar.gz | tar x
@@ -31,8 +31,8 @@ install: all
 	sh ./installit $(DESTDIR)
 
 clean:
-	make -C src clean
-	make -C win32 clean
+	$(MAKE) -C src clean
+	$(MAKE) -C win32 clean
 
 dist:
 	rm -rf fireflies-$(VERSION)
@@ -42,7 +42,7 @@ dist:
 
 	# need Make.include temporarily to run make
 	cp Make.include fireflies-$(VERSION)
-	make -C fireflies-$(VERSION) clean
+	$(MAKE) -C fireflies-$(VERSION) clean
 	rm -f fireflies-$(VERSION)/Make.include
 
 	# don't want to include debian's buildroot
