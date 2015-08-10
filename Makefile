@@ -23,6 +23,7 @@ win32/
 all:	libgfx/src/libgfx.a
 	$(MAKE) -C src
 
+.PHONY: libgfx/src/libgfx.a
 libgfx/src/libgfx.a:
 	$(MAKE) -C libgfx/src
 
