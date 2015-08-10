@@ -45,8 +45,8 @@ FloatRaster::FloatRaster(const FloatRaster &img)
 
 
 
-static char *img_names[] = {"PPM", "PNG", "TIFF", "JPEG"};
-static char *img_ext[] = {"ppm", "png", "tif", "jpg"};
+static const char *img_names[] = {"PPM", "PNG", "TIFF", "JPEG"};
+static const char *img_ext[] = {"ppm", "png", "tif", "jpg"};
 
 const char *image_type_name(int type)
 	{ return type>=IMG_LIMIT ? NULL : img_names[type]; }
