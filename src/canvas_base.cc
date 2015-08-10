@@ -60,15 +60,11 @@ int CanvasBase::loop()
 	int remain, ret;
 	last_tick = get_ms();
 
-	int first_tick = get_ms();
-
 	while (true) {
 		if ((remain = tick()) > 0) // time left till tick: sleep
 			delay(remain);
 		if ((ret = handle_events()) > 0) // wants us to quit
 			return ret;
-//		if (last_tick - first_tick > 10000)
-//			return ret;
 	}
 }
 
