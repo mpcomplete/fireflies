@@ -21,7 +21,7 @@
 CanvasBase *canvas;
 Scene scene;
 
-enum {CANVAS_SDL, CANVAS_GLX} canvas_type = CANVAS_SDL;
+static enum {CANVAS_SDL, CANVAS_GLX} canvas_type = CANVAS_SDL;
 int window_id = 0;
 int mspf = 1000/30;
 bool full_screen = false;
