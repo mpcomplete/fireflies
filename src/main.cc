@@ -21,7 +21,7 @@
 CanvasBase *canvas;
 Scene scene;
 
-enum {CANVAS_SDL, CANVAS_GLX} canvas_type = CANVAS_SDL;
+static enum {CANVAS_SDL, CANVAS_GLX} canvas_type = CANVAS_SDL;
 int window_id = 0;
 int mspf = 1000/30;
 bool full_screen = false;
@@ -187,7 +187,7 @@ int argp_parse(struct argp *argp_s, int argc, char *argv[], int, int *, void *)
 #define OPT_FPS 2
 #define OPT_FASTFORWARD 3
 
-char *mode_help =
+const char * const mode_help =
 "\n"
 "Per-swarm modes and their default probabilities:\n"
 "  1: normal                                         p=20\n"
