@@ -31,6 +31,7 @@ install: all
 
 clean:
 	$(MAKE) -C src clean
+	$(MAKE) -C libgfx/src clean
 	$(MAKE) -C win32 clean
 
 dist:
