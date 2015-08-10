@@ -217,9 +217,14 @@ AC_CHECK_HEADERS(limits.h)
 AC_CHECK_HEADERS(unistd.h)
 
 dnl -- OpenGL Extension headers
-AC_CHECK_HEADERS(GL/glext.h)
-AC_CHECK_HEADERS(GL/glxext.h)
-AC_CHECK_HEADERS(GL/wglext.h)
+AC_CHECK_HEADERS([X11/X.h GL/gl.h])
+AC_CHECK_HEADERS([GL/glext.h GL/glxext.h GL/wglext.h], [], [], [[
+	#ifdef HAVE_X11_X_H
+	# include <X11/X.h>
+	#endif
+	#ifdef HAVE_GL_GL_H
+	# include <GL/gl.h>
+	#endif]])
 
 dnl -- STL headers that aren't always available
 AC_CHECK_HEADERS(hash_map)
