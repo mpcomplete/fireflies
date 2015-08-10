@@ -8,7 +8,7 @@ HEADERS_GCH=$(HEADERS:.h=.h.gch)
 all:	$(PROGRAM)
 
 $(PROGRAM):	$(OBJECTS)
-	$(CXX) -o $(PROGRAM) $(OBJECTS) $(LIBS)
+	$(CXX) $(LDFLAGS) -o $(PROGRAM) $(OBJECTS) $(LIBS)
 #	strip $(PROGRAM)
 
 $(OBJECTS): $(HEADERS)

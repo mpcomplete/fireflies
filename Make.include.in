@@ -7,6 +7,7 @@ OPT_LIBS = @OPT_LIBS@
 
 CPPFLAGS = -I../libgfx/include/
 CXXFLAGS = -Wall $(SDL_CFLAGS) @CXXFLAGS@
+LDFLAGS = @LDFLAGS@
 LIBS = ../libgfx/src/libgfx.a $(GL_LIBS) $(SDL_LIBS) $(OPT_LIBS) @LIBS@
 
 OBJECTS = arrow.o bait.o firefly.o scene.o tail.o utils.o modes.o @OPT_OBJS@
