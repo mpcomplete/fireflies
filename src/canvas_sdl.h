@@ -9,13 +9,13 @@
 class CanvasSDL : public CanvasBase {
 protected:
     SDL_Surface *surface;
-    char *wm_title;
-    char *wm_class;
+    const char *wm_title;
+    const char *wm_class;
 
     // create the window (either SDL or GLX)
     virtual int create_window();
 public:
-    CanvasSDL(Scene *s, bool full_screen, int mspf, char *wm_title, char *wm_class);
+    CanvasSDL(Scene *s, bool full_screen, int mspf, const char *wm_title, const char *wm_class);
     virtual ~CanvasSDL() {}
 
     // resize the viewport and apply frustum transformation

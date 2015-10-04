@@ -9,7 +9,7 @@
 
 using namespace std;
 
-CanvasSDL::CanvasSDL(Scene *s, bool fs, int m, char *t, char *c)
+CanvasSDL::CanvasSDL(Scene *s, bool fs, int m, const char *t, const char *c)
     : CanvasBase(s, fs, m), wm_title(t), wm_class(c)
 {
     surface = 0;
