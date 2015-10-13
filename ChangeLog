@@ -1,3 +1,9 @@
+version 2.08:
+    * fixed compilation for recent libpng and recent GCC/G++ compiler
+    (Samuli Suominen, Jabari R. Roberts, Sebastian Pipping)
+    * fixed and improved build system (Sebastian Pipping)
+    * addressed compile warnings (Sebastian Pipping)
+
 version 2.07:
     * fix for dual-headed display bug.  Thanks to an anonymous tip for finding
     this.

@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(fireflies, 2.07, mpcomplete@gmail.com)
+AC_INIT(fireflies, 2.08, mpcomplete@gmail.com)
 AC_CONFIG_SRCDIR([src/arrow.cc])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_SUBDIRS([libgfx])
