@@ -1,3 +1,7 @@
+ifeq ("$(wildcard Make.include)","")
+  $(error Please run "autoreconf -i && ./configure", first)
+endif
+
 include Make.include
 
 DISTFILES=\
