@@ -39,6 +39,11 @@ clean:
 	$(MAKE) -C libgfx/src clean
 	$(MAKE) -C win32 clean
 
+.PHONY: deb
+deb:
+	debuild -us -uc
+	ls -l ../fireflies_*.deb
+
 dist:
 	rm -rf fireflies-$(VERSION)
 	mkdir fireflies-$(VERSION)

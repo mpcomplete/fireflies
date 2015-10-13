@@ -5,7 +5,7 @@ SDL_CFLAGS = @SDL_CFLAGS@
 GL_LIBS = @GL_LIBS@
 OPT_LIBS = @OPT_LIBS@
 
-CPPFLAGS = -I../libgfx/include/
+CPPFLAGS = -I../libgfx/include/ @CPPFLAGS@
 CXXFLAGS = -Wall $(SDL_CFLAGS) @CXXFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = ../libgfx/src/libgfx.a $(GL_LIBS) $(SDL_LIBS) $(OPT_LIBS) @LIBS@

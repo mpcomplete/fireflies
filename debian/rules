@@ -1,0 +1,35 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+export DH_VERBOSE=1
+
+# This has to be exported to make some magic below work.
+export DH_OPTIONS
+
+CPPFLAGS := $(shell dpkg-buildflags --get CPPFLAGS)
+CXXFLAGS := $(shell dpkg-buildflags --get CXXFLAGS)
+LDFLAGS := $(shell dpkg-buildflags --get LDFLAGS)
+
+_CLEAN_FILES = \
+	config.log \
+	config.status \
+	libgfx/config.log \
+	libgfx/config.status
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	CPPFLAGS="$(CPPFLAGS)" CXXFLAGS="$(CXXFLAGS)" LDFLAGS="$(LDFLAGS)" dh_auto_configure
+
+debian/fireflies-add-xscreensaver-user:
+	printf '#! /bin/sh\nfireflies-add-xscreensaver ~/.xscreensaver\n' > $@
+
+override_dh_auto_install: debian/fireflies-add-xscreensaver-user
+	dh_auto_install
+	install -D -m 0755 add-xscreensaver debian/fireflies/usr/bin/fireflies-add-xscreensaver
+	install -D -m 0755 debian/fireflies-add-xscreensaver-user debian/fireflies/usr/bin/fireflies-add-xscreensaver-user
+
+override_dh_clean:
+	dh_clean
+	$(RM) $(_CLEAN_FILES)
