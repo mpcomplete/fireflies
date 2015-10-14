@@ -1,7 +1,7 @@
 version 2.07:
-	* fix for dual-headed display bug.  Thanks to an anonymous tip for finding
-	this.
-	* new FC4 spec courtesy of Simon Roberts.
+    * fix for dual-headed display bug.  Thanks to an anonymous tip for finding
+    this.
+    * new FC4 spec courtesy of Simon Roberts.
 
 version 2.06:
     * fixed a bug with mode probalities where every part was off by 1.
