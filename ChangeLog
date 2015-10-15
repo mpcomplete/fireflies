@@ -1,7 +1,14 @@
+version 2.08:
+    * fixed compilation for recent libpng and recent GCC/G++ compiler
+    (Samuli Suominen, Jabari R. Roberts, Sebastian Pipping)
+    * fixed and improved build system (Sebastian Pipping)
+    * addressed compile warnings (Sebastian Pipping)
+    * re-made Debian packaging (Sebastian Pipping)
+
 version 2.07:
-	* fix for dual-headed display bug.  Thanks to an anonymous tip for finding
-	this.
-	* new FC4 spec courtesy of Simon Roberts.
+    * fix for dual-headed display bug.  Thanks to an anonymous tip for finding
+    this.
+    * new FC4 spec courtesy of Simon Roberts.
 
 version 2.06:
     * fixed a bug with mode probalities where every part was off by 1.

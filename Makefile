@@ -1,3 +1,7 @@
+ifeq ("$(wildcard Make.include)","")
+  $(error Please run "autoreconf -i && ./configure", first)
+endif
+
 include Make.include
 
 DISTFILES=\
@@ -34,6 +38,11 @@ clean:
 	$(MAKE) -C src clean
 	$(MAKE) -C libgfx/src clean
 	$(MAKE) -C win32 clean
+
+.PHONY: deb
+deb:
+	debuild -us -uc
+	ls -l ../fireflies_*.deb
 
 dist:
 	rm -rf fireflies-$(VERSION)
