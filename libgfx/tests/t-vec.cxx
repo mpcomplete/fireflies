@@ -4,7 +4,7 @@
 
   by Michael Garland, 2000.
   
-  $Id: t-vec.cxx,v 1.5 2002/03/12 19:49:12 garland Exp $
+  $Id: t-vec.cxx 426 2004-09-27 04:34:55Z garland $
 
  ************************************************************************/
 
@@ -61,7 +61,7 @@ void test_vector()
     cout << "  y = " << y << endl;
 }
 
-main()
+int main()
 {
     cout << "+ Testing class Vec2" << endl;
     test_vector<Vec2>();

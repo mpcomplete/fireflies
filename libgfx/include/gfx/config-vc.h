@@ -23,6 +23,13 @@
 /* Define if the STL hash_map template is available */
 /* #undef HAVE_HASH_MAP */
 
+/* Define if the STL hash_set template is available */
+/*#undef HAVE_HASH_SET */
+
+/* GCC v3 puts hash_map and hash_set in an 'ext' directory */
+/* #undef HAVE_EXT_HASH_MAP */
+/* #undef HAVE_EXT_HASH_SET */
+
 /* Define if the STL valarray  template is available */
 #define HAVE_VALARRAY 1
 

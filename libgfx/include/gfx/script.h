@@ -11,7 +11,7 @@
   This is the THIRD major revision of this code.  It represents a
   significant departure from the previous scripting structure.
     
-  $Id: script.h,v 1.12 2002/08/19 16:57:49 garland Exp $
+  $Id: script.h 443 2005-06-14 00:53:40Z garland $
 
  ************************************************************************/
 
@@ -21,12 +21,39 @@
 #include <map>
 //#include <hash_map>
 
+namespace gfx
+{
+
+// Define a set of exceptions that can occur during script parsing
+//
+    namespace script
+    {
+	struct Error
+	{
+	    std::string msg;
+	    Error(const std::string& m) : msg(m) {}
+	};
+
+	struct SyntaxError : public Error
+	    { SyntaxError(const std::string& m) : Error(m) {} };
+
+	struct NameError : public Error
+	    { NameError(const std::string& m) : Error(m) {} };
+
+	struct IOError : public Error
+	    { IOError(const std::string& m) : Error(m) {} };
+    }
+
+
+// These return codes are deprecated and will be going away in the near
+// future.  Start using the exceptions defined above instead.
 enum {
     SCRIPT_OK = 0,
     SCRIPT_ERR_UNDEF,
     SCRIPT_ERR_SYNTAX,
     SCRIPT_ERR_UNSUPPORTED,
     SCRIPT_ERR_NOFILE,
+    SCRIPT_END
 };
 
 class CmdLine
@@ -46,6 +73,7 @@ public:
     double token_to_double(int i) const;
     float token_to_float(int i) const;
     int token_to_int(int i) const;
+    std::string rest_to_string(int i) const;
     
 
     CmdLine(const std::string &l) : line(l) { }
@@ -65,7 +93,11 @@ public:
 
 typedef int (*CmdHandler)(const CmdLine&);
 
-struct CmdObject { virtual int operator()(const CmdLine& cmd) = 0; };
+struct CmdObject
+{
+    virtual ~CmdObject() {}
+    virtual int operator()(const CmdLine& cmd) = 0;
+};
 
 struct CmdFunction : public CmdObject
 {
@@ -84,6 +116,20 @@ template<class T> struct CmdMethod : public CmdObject
     virtual int operator()(const CmdLine& cmd) { return (self->*fn)(cmd); }
 };
 
+template<class T> struct CmdMethod2 : public CmdObject
+{
+    typedef void (T::*member_handler)(const CmdLine&);
+    T *self;
+    member_handler fn;
+
+    CmdMethod2(T &obj, member_handler p) { self=&obj; fn=p; }
+    virtual int operator()(const CmdLine& cmd)
+    {
+	(self->*fn)(cmd);
+	return SCRIPT_OK;
+    }
+};
+
 //typedef std::hash_map< std::string, CmdHandler > CmdTable;
 typedef std::map< std::string, CmdObject* > CmdTable;
 
@@ -93,12 +139,16 @@ private:
     CmdTable script_commands;
 
     int script_include(const CmdLine&);
+    int script_ignore(const CmdLine&);
+    int script_end(const CmdLine&);
+    int script_eval(const CmdLine&);
+
+    std::vector<CmdEnv*> scopes;
 
 public:
     CmdEnv();
     virtual ~CmdEnv();
 
-    virtual int script_fallback(const CmdLine&, void *);
     void register_command(const std::string& name, CmdObject *fn);
     CmdObject *lookup_command(const std::string& name);
 
@@ -109,20 +159,24 @@ public:
 						  int (T::*fn)(const CmdLine&))
     { register_command(name, new CmdMethod<T>(*obj, fn)); }
 
+    template<class T> inline void register_method(const std::string& name,
+						  T *obj,
+						  void (T::*fn)(const CmdLine&))
+    { register_command(name, new CmdMethod2<T>(*obj, fn)); }
+
+    void ignore_command(const std::string& name);
+
+    void register_vocabulary(const std::string& name, CmdEnv *env);
+    void begin_scope(CmdEnv *subenv);
+    void end_scope();
+
     int do_line(const std::string& line);
     int do_stream(std::istream& in);
     int do_file(const std::string& filename);
     int do_string(const std::string& line);
 };
 
-inline int script_do_line(const std::string &line, CmdEnv &env)
-	    { return env.do_line(line); }
-inline int script_do_stream(std::istream &in, CmdEnv &env)
-	    { return env.do_stream(in); }
-inline int script_do_file(const std::string& name, CmdEnv &env)
-	    { return env.do_file(name); }
-inline int script_do_string(const std::string& str, CmdEnv &env)
-	    { return env.do_string(str); }
+} // namespace gfx
 
 // GFXSCRIPT_INCLUDED
 #endif

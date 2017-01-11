@@ -5,7 +5,7 @@
   The I/O code in this file was originally based on the example.c
   skeleton code distributed with the PNG library.
 
-  $Id: raster-png.cxx,v 1.3 2002/03/13 17:59:55 garland Exp $
+  $Id: raster-png.cxx 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
@@ -16,7 +16,9 @@
 #ifdef HAVE_LIBPNG
 
 #include <png.h>
-#include <string.h> /* memcpy() */
+
+namespace gfx
+{
 
 ByteRaster *read_png_image(const char *file_name)
 {
@@ -40,7 +42,7 @@ ByteRaster *read_png_image(const char *file_name)
    // Because we didn't set up any error handlers, we need to be
    // prepared to handle longjmps out of the library on error
    // conditions.
-   if( setjmp(png_jmpbuf(png_ptr)) )
+   if( setjmp(png_ptr->jmpbuf) )
    {
       png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
       fclose(fp);
@@ -130,7 +132,7 @@ bool write_png_image(const char *file_name, const ByteRaster& img)
       return false;
    }
 
-   if( setjmp(png_jmpbuf(png_ptr)) )
+   if( setjmp(png_ptr->jmpbuf) )
    {
       fclose(fp);
       png_destroy_write_struct(&png_ptr,  (png_infopp)NULL);
@@ -165,9 +167,14 @@ bool write_png_image(const char *file_name, const ByteRaster& img)
    return true;
 }
 
+} // namespace gfx
+
 #else
 
+namespace gfx
+{
 bool write_png_image(const char *, const ByteRaster&) { return false; }
 ByteRaster *read_png_image(const char *) { return NULL; }
+} // namespace gfx
 
 #endif

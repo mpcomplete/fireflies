@@ -1,7 +1,8 @@
 #include <gfx/gfx.h>
 #include <gfx/symmat3.h>
 
-using namespace std;
+namespace gfx
+{
 
 SymMat3 SymMat3::I()
 {
@@ -29,13 +30,13 @@ SymMat3 operator*(const SymMat3& n, const SymMat3& m)
     return A;
 }
 
-ostream &operator<<(std::ostream &out, const SymMat3& M)
+std::ostream &operator<<(std::ostream &out, const SymMat3& M)
 {
     for(int i=0; i<M.dim(); i++)
     {
 	for(int j=0; j<M.dim(); j++)
 	    out << M(i, j) << " ";
-	out << endl;
+	out << std::endl;
     }
 
     return out;
@@ -56,3 +57,5 @@ double invert(Mat3& m_inv, const SymMat3& m)
 {
     return invert(m_inv, m.fullmatrix());
 }
+
+} // namespace gfx

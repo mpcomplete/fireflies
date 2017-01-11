@@ -2,7 +2,7 @@
 
   Routines for measuring time.
 
-  $Id: time.cxx,v 1.1 2000/04/26 18:56:26 garland Exp $
+  $Id: time.cxx 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
@@ -12,6 +12,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+namespace gfx
+{
 // Only Windows NT supports getting proper time usage information.
 // In Windows 95, we have to settle for measuring real time.
 double get_cpu_time()
@@ -45,11 +47,14 @@ double get_cpu_time()
     return (double)(i.QuadPart) / 1e7;
 #endif
 }
+}
 
 #elif defined(HAVE_GETRUSAGE)
 #include <sys/time.h>
 #include <sys/resource.h>
 
+namespace gfx
+{
 double get_cpu_time()
 {
     struct rusage t;
@@ -58,9 +63,12 @@ double get_cpu_time()
 
     return (double)t.ru_utime.tv_sec + (double)t.ru_utime.tv_usec/1000000;
 }
+}
 
 #elif defined(HAVE_TIMES)
 
+namespace gfx
+{
 double get_cpu_time()
 {
     struct tms t;
@@ -68,6 +76,7 @@ double get_cpu_time()
     times(&t);
 
     return (double)(t.tms_utime) / (double)CLK_TCK;
+}
 }
 
 #else

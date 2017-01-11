@@ -8,11 +8,14 @@
 
   4x4 Matrix class
 
-  $Id: mat4.h,v 1.10 2001/11/19 16:07:42 garland Exp $
+  $Id: mat4.h 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include "vec4.h"
+
+namespace gfx
+{
 
 class Mat4
 {
@@ -184,6 +187,8 @@ extern double invert(Mat4& m_inv, const Mat4& m);
 extern double invert_cramer(Mat4& m_inv, const Mat4& m);
 
 extern bool eigen(const Mat4& m, Vec4& eig_vals, Vec4 eig_vecs[4]);
+
+} // namespace gfx
 
 // GFXMAT4_INCLUDED
 #endif

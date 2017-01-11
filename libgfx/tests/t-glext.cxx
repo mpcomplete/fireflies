@@ -4,7 +4,7 @@
 
   by Michael Garland, 2001.
   
-  $Id: t-glext.cxx,v 1.1 2001/10/16 14:23:14 garland Exp $
+  $Id: t-glext.cxx 426 2004-09-27 04:34:55Z garland $
 
  ************************************************************************/
 
@@ -75,7 +75,7 @@ void GUI::setup_for_drawing()
     exit(0);
 }
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     gui.initialize(argc, argv);
     return gui.run();

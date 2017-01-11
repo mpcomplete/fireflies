@@ -8,7 +8,7 @@
 
   Main header file for the libgfx graphics library.
 
-  $Id: gfx.h,v 1.7 2002/09/11 18:51:19 garland Exp $
+  $Id: gfx.h 455 2005-08-17 18:10:25Z garland $
 
  ************************************************************************/
 
@@ -16,6 +16,8 @@
 #  include "config.h"
 #elif defined(_MSC_VER)
 #  include "config-vc.h"
+#elif defined(__APPLE__)
+#  include "config-osx.h"
 #endif
 
 #include <cstdlib>
@@ -44,6 +46,9 @@ const bool true = 1;
 #  define MIN(a,b) std::_cpp_min(a,b)
 #  define MAX(a,b) std::_cpp_max(a,b)
 #else
+#  if defined(__CYGWIN__)
+#    define NOMINMAX
+#  endif
 #  define MIN(a,b) std::min(a,b)
 #  define MAX(a,b) std::max(a,b)
 #endif
@@ -64,6 +69,8 @@ inline double rint(double x) { return floor(x + 0.5); }
 //
 //
 //
+namespace gfx
+{
 
 #if defined(HAVE_RANDOM)
   inline double random1() { return (double)random() / (double)LONG_MAX; }
@@ -87,6 +94,12 @@ inline bool FEQ2(double a, double b, double e=FEQ_EPS2) {return fabs(a-b)<e;}
 
 #define TIMING(t, cmd) { t=get_cpu_time(); cmd; t=get_cpu_time() - t; }
 extern double get_cpu_time();
+
+} // namespace gfx
+
+#ifndef GFX_NAMESPACE
+using namespace gfx;
+#endif
 
 // GFX_INCLUDED
 #endif

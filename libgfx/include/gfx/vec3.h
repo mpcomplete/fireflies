@@ -8,11 +8,14 @@
 
   3D Vector class
 
-  $Id: vec3.h,v 1.21 2002/09/20 16:02:25 garland Exp $
+  $Id: vec3.h 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include "vec2.h"
+
+namespace gfx
+{
 
 template<class T>
 class TVec3 {
@@ -174,6 +177,8 @@ template<class T> inline TVec2<T> proj(const TVec3<T>& v)
 
 typedef TVec3<double> Vec3;
 typedef TVec3<float>  Vec3f;
+
+} // namespace gfx
 
 // GFXVEC3_INCLUDED
 #endif

@@ -1,7 +1,7 @@
 # This is a test script meant to be fed to t-script.  It is not meant as an
 # exhaustive test, but mainly as a demonstration.
 #
-# $Id: test1.sc,v 1.1 2000/09/06 21:43:25 garland Exp $
+# $Id: test1.sc 170 2000-09-06 21:43:25Z garland $
 #
 
 echo The following sum should be 15

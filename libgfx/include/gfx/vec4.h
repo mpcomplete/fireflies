@@ -8,11 +8,14 @@
 
   4D Vector class
   
-  $Id: vec4.h,v 1.19 2002/09/20 16:02:25 garland Exp $
+  $Id: vec4.h 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include "vec3.h"
+
+namespace gfx
+{
 
 template<class T>
 class TVec4 {
@@ -173,6 +176,8 @@ template<class T> inline TVec3<T> proj(const TVec4<T>& v)
 
 typedef TVec4<double> Vec4;
 typedef TVec4<float>  Vec4f;
+
+} // namespace gfx
 
 // GFXVEC4_INCLUDED
 #endif

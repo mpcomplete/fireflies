@@ -1,0 +1,799 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1D5D8DBB08B3A109009C84F9 /* t-gui.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5D8DBA08B3A109009C84F9 /* t-gui.cxx */; };
+		1D5D8DD508B3A20A009C84F9 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D5D8DC208B3A20A009C84F9 /* OpenGL.framework */; };
+		1D5D8E5808B3A251009C84F9 /* libgfx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AAC046055464E500DB518D /* libgfx.a */; };
+		1D5D8E6608B3A6CF009C84F9 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D5D8E5908B3A6CF009C84F9 /* AGL.framework */; };
+		1D5D8E8F08B3A831009C84F9 /* libgfx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AAC046055464E500DB518D /* libgfx.a */; };
+		1D5D8E9708B3A849009C84F9 /* t-vec.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5D8E9608B3A849009C84F9 /* t-vec.cxx */; };
+		1D5F0B9708B399390048C9A2 /* trackball.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B8108B399390048C9A2 /* trackball.cxx */; };
+		1D5F0B9808B399390048C9A2 /* time.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B8208B399390048C9A2 /* time.cxx */; };
+		1D5F0B9908B399390048C9A2 /* symmat4.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B8308B399390048C9A2 /* symmat4.cxx */; };
+		1D5F0B9A08B399390048C9A2 /* symmat3.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B8408B399390048C9A2 /* symmat3.cxx */; };
+		1D5F0B9B08B399390048C9A2 /* symmat2.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B8508B399390048C9A2 /* symmat2.cxx */; };
+		1D5F0B9C08B399390048C9A2 /* script.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B8608B399390048C9A2 /* script.cxx */; };
+		1D5F0B9D08B399390048C9A2 /* raster.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B8708B399390048C9A2 /* raster.cxx */; };
+		1D5F0B9E08B399390048C9A2 /* raster-tiff.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B8808B399390048C9A2 /* raster-tiff.cxx */; };
+		1D5F0B9F08B399390048C9A2 /* raster-pnm.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B8908B399390048C9A2 /* raster-pnm.cxx */; };
+		1D5F0BA008B399390048C9A2 /* raster-png.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B8A08B399390048C9A2 /* raster-png.cxx */; };
+		1D5F0BA108B399390048C9A2 /* raster-jpeg.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B8B08B399390048C9A2 /* raster-jpeg.cxx */; };
+		1D5F0BA208B399390048C9A2 /* quat.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B8C08B399390048C9A2 /* quat.cxx */; };
+		1D5F0BA308B399390048C9A2 /* mat4.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B8D08B399390048C9A2 /* mat4.cxx */; };
+		1D5F0BA408B399390048C9A2 /* mat3.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B8E08B399390048C9A2 /* mat3.cxx */; };
+		1D5F0BA508B399390048C9A2 /* mat2.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B8F08B399390048C9A2 /* mat2.cxx */; };
+		1D5F0BA608B399390048C9A2 /* gui.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B9008B399390048C9A2 /* gui.cxx */; };
+		1D5F0BA708B399390048C9A2 /* gltools.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B9108B399390048C9A2 /* gltools.cxx */; };
+		1D5F0BA808B399390048C9A2 /* geom4d.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B9208B399390048C9A2 /* geom4d.cxx */; };
+		1D5F0BA908B399390048C9A2 /* geom3d.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B9308B399390048C9A2 /* geom3d.cxx */; };
+		1D5F0BAA08B399390048C9A2 /* color.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B9408B399390048C9A2 /* color.cxx */; };
+		1D5F0BAB08B399390048C9A2 /* baseball.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B9508B399390048C9A2 /* baseball.cxx */; };
+		1D5F0BAC08B399390048C9A2 /* arcball.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 1D5F0B9608B399390048C9A2 /* arcball.cxx */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildStyle section */
+		014CEA520018CE5811CA2923 /* Debug */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		014CEA530018CE5811CA2923 /* Release */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End PBXBuildStyle section */
+
+/* Begin PBXContainerItemProxy section */
+		1D5D8DB408B3A0D9009C84F9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D /* libgfx */;
+			remoteInfo = libgfx;
+		};
+		1D5D8E8B08B3A81A009C84F9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D /* libgfx */;
+			remoteInfo = libgfx;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		1D5D8DAD08B3A0CF009C84F9 /* t-gui.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "t-gui.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D5D8DAF08B3A0CF009C84F9 /* t-gui-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "t-gui-Info.plist"; sourceTree = "<group>"; };
+		1D5D8DBA08B3A109009C84F9 /* t-gui.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = "t-gui.cxx"; path = "../tests/t-gui.cxx"; sourceTree = SOURCE_ROOT; };
+		1D5D8DC208B3A20A009C84F9 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		1D5D8E5908B3A6CF009C84F9 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
+		1D5D8E8908B3A813009C84F9 /* t-vec */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "t-vec"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D5D8E9608B3A849009C84F9 /* t-vec.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = "t-vec.cxx"; path = "../tests/t-vec.cxx"; sourceTree = SOURCE_ROOT; };
+		1D5F0B8108B399390048C9A2 /* trackball.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = trackball.cxx; path = ../src/trackball.cxx; sourceTree = SOURCE_ROOT; };
+		1D5F0B8208B399390048C9A2 /* time.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = time.cxx; path = ../src/time.cxx; sourceTree = SOURCE_ROOT; };
+		1D5F0B8308B399390048C9A2 /* symmat4.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = symmat4.cxx; path = ../src/symmat4.cxx; sourceTree = SOURCE_ROOT; };
+		1D5F0B8408B399390048C9A2 /* symmat3.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = symmat3.cxx; path = ../src/symmat3.cxx; sourceTree = SOURCE_ROOT; };
+		1D5F0B8508B399390048C9A2 /* symmat2.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = symmat2.cxx; path = ../src/symmat2.cxx; sourceTree = SOURCE_ROOT; };
+		1D5F0B8608B399390048C9A2 /* script.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = script.cxx; path = ../src/script.cxx; sourceTree = SOURCE_ROOT; };
+		1D5F0B8708B399390048C9A2 /* raster.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = raster.cxx; path = ../src/raster.cxx; sourceTree = SOURCE_ROOT; };
+		1D5F0B8808B399390048C9A2 /* raster-tiff.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = "raster-tiff.cxx"; path = "../src/raster-tiff.cxx"; sourceTree = SOURCE_ROOT; };
+		1D5F0B8908B399390048C9A2 /* raster-pnm.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = "raster-pnm.cxx"; path = "../src/raster-pnm.cxx"; sourceTree = SOURCE_ROOT; };
+		1D5F0B8A08B399390048C9A2 /* raster-png.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = "raster-png.cxx"; path = "../src/raster-png.cxx"; sourceTree = SOURCE_ROOT; };
+		1D5F0B8B08B399390048C9A2 /* raster-jpeg.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = "raster-jpeg.cxx"; path = "../src/raster-jpeg.cxx"; sourceTree = SOURCE_ROOT; };
+		1D5F0B8C08B399390048C9A2 /* quat.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = quat.cxx; path = ../src/quat.cxx; sourceTree = SOURCE_ROOT; };
+		1D5F0B8D08B399390048C9A2 /* mat4.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = mat4.cxx; path = ../src/mat4.cxx; sourceTree = SOURCE_ROOT; };
+		1D5F0B8E08B399390048C9A2 /* mat3.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = mat3.cxx; path = ../src/mat3.cxx; sourceTree = SOURCE_ROOT; };
+		1D5F0B8F08B399390048C9A2 /* mat2.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = mat2.cxx; path = ../src/mat2.cxx; sourceTree = SOURCE_ROOT; };
+		1D5F0B9008B399390048C9A2 /* gui.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = gui.cxx; path = ../src/gui.cxx; sourceTree = SOURCE_ROOT; };
+		1D5F0B9108B399390048C9A2 /* gltools.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = gltools.cxx; path = ../src/gltools.cxx; sourceTree = SOURCE_ROOT; };
+		1D5F0B9208B399390048C9A2 /* geom4d.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = geom4d.cxx; path = ../src/geom4d.cxx; sourceTree = SOURCE_ROOT; };
+		1D5F0B9308B399390048C9A2 /* geom3d.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = geom3d.cxx; path = ../src/geom3d.cxx; sourceTree = SOURCE_ROOT; };
+		1D5F0B9408B399390048C9A2 /* color.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = color.cxx; path = ../src/color.cxx; sourceTree = SOURCE_ROOT; };
+		1D5F0B9508B399390048C9A2 /* baseball.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = baseball.cxx; path = ../src/baseball.cxx; sourceTree = SOURCE_ROOT; };
+		1D5F0B9608B399390048C9A2 /* arcball.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = arcball.cxx; path = ../src/arcball.cxx; sourceTree = SOURCE_ROOT; };
+		1D5F0BBE08B39AD90048C9A2 /* vec4.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = vec4.html; path = ../doc/vec4.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BBF08B39AD90048C9A2 /* vec3.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = vec3.html; path = ../doc/vec3.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BC008B39AD90048C9A2 /* vec2.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = vec2.html; path = ../doc/vec2.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BC108B39AD90048C9A2 /* vec.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = vec.html; path = ../doc/vec.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BC208B39AD90048C9A2 /* start.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = start.html; path = ../doc/start.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BC308B39AD90048C9A2 /* script.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = script.html; path = ../doc/script.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BC408B39AD90048C9A2 /* rotate.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = rotate.html; path = ../doc/rotate.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BC508B39AD90048C9A2 /* raster.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = raster.html; path = ../doc/raster.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BC608B39AD90048C9A2 /* quat.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = quat.html; path = ../doc/quat.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BC708B39AD90048C9A2 /* mat4.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = mat4.html; path = ../doc/mat4.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BC808B39AD90048C9A2 /* mat3.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = mat3.html; path = ../doc/mat3.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BC908B39AD90048C9A2 /* mat2.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = mat2.html; path = ../doc/mat2.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BCA08B39AD90048C9A2 /* mat.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = mat.html; path = ../doc/mat.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BCB08B39AD90048C9A2 /* license.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = license.html; path = ../doc/license.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BCC08B39AD90048C9A2 /* intvec.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = intvec.html; path = ../doc/intvec.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BCD08B39AD90048C9A2 /* index.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = index.html; path = ../doc/index.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BCE08B39AD90048C9A2 /* gui.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = gui.html; path = ../doc/gui.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BCF08B39AD90048C9A2 /* gl.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = gl.html; path = ../doc/gl.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BD008B39AD90048C9A2 /* geom3d.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = geom3d.html; path = ../doc/geom3d.html; sourceTree = SOURCE_ROOT; };
+		1D5F0BD108B39AD90048C9A2 /* ex-script.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = "ex-script.html"; path = "../doc/ex-script.html"; sourceTree = SOURCE_ROOT; };
+		1D5F0BD208B39AD90048C9A2 /* ex-gui.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = "ex-gui.html"; path = "../doc/ex-gui.html"; sourceTree = SOURCE_ROOT; };
+		1D5F0BD308B39AD90048C9A2 /* cdoc.css */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = cdoc.css; path = ../doc/cdoc.css; sourceTree = SOURCE_ROOT; };
+		1D5F0BD408B39AD90048C9A2 /* build.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = build.html; path = ../doc/build.html; sourceTree = SOURCE_ROOT; };
+		D2AAC046055464E500DB518D /* libgfx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libgfx.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1D5D8DAB08B3A0CF009C84F9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D5D8E5808B3A251009C84F9 /* libgfx.a in Frameworks */,
+				1D5D8DD508B3A20A009C84F9 /* OpenGL.framework in Frameworks */,
+				1D5D8E6608B3A6CF009C84F9 /* AGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1D5D8E8708B3A813009C84F9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D5D8E8F08B3A831009C84F9 /* libgfx.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D289987405E68DCB004EDB86 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* libgfx */ = {
+			isa = PBXGroup;
+			children = (
+				08FB7795FE84155DC02AAC07 /* Library Source */,
+				C6A0FF2B0290797F04C91782 /* Library Documentation */,
+				1D5D8E7408B3A743009C84F9 /* Test Applications */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+				1D5D8E6D08B3A728009C84F9 /* External Frameworks */,
+			);
+			name = libgfx;
+			sourceTree = "<group>";
+		};
+		08FB7795FE84155DC02AAC07 /* Library Source */ = {
+			isa = PBXGroup;
+			children = (
+				1D5F0B8108B399390048C9A2 /* trackball.cxx */,
+				1D5F0B8208B399390048C9A2 /* time.cxx */,
+				1D5F0B8308B399390048C9A2 /* symmat4.cxx */,
+				1D5F0B8408B399390048C9A2 /* symmat3.cxx */,
+				1D5F0B8508B399390048C9A2 /* symmat2.cxx */,
+				1D5F0B8608B399390048C9A2 /* script.cxx */,
+				1D5F0B8708B399390048C9A2 /* raster.cxx */,
+				1D5F0B8808B399390048C9A2 /* raster-tiff.cxx */,
+				1D5F0B8908B399390048C9A2 /* raster-pnm.cxx */,
+				1D5F0B8A08B399390048C9A2 /* raster-png.cxx */,
+				1D5F0B8B08B399390048C9A2 /* raster-jpeg.cxx */,
+				1D5F0B8C08B399390048C9A2 /* quat.cxx */,
+				1D5F0B8D08B399390048C9A2 /* mat4.cxx */,
+				1D5F0B8E08B399390048C9A2 /* mat3.cxx */,
+				1D5F0B8F08B399390048C9A2 /* mat2.cxx */,
+				1D5F0B9008B399390048C9A2 /* gui.cxx */,
+				1D5F0B9108B399390048C9A2 /* gltools.cxx */,
+				1D5F0B9208B399390048C9A2 /* geom4d.cxx */,
+				1D5F0B9308B399390048C9A2 /* geom3d.cxx */,
+				1D5F0B9408B399390048C9A2 /* color.cxx */,
+				1D5F0B9508B399390048C9A2 /* baseball.cxx */,
+				1D5F0B9608B399390048C9A2 /* arcball.cxx */,
+			);
+			name = "Library Source";
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D2AAC046055464E500DB518D /* libgfx.a */,
+				1D5D8DAD08B3A0CF009C84F9 /* t-gui.app */,
+				1D5D8E8908B3A813009C84F9 /* t-vec */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1D5D8E6D08B3A728009C84F9 /* External Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1D5D8E5908B3A6CF009C84F9 /* AGL.framework */,
+				1D5D8DC208B3A20A009C84F9 /* OpenGL.framework */,
+			);
+			name = "External Frameworks";
+			sourceTree = "<group>";
+		};
+		1D5D8E7408B3A743009C84F9 /* Test Applications */ = {
+			isa = PBXGroup;
+			children = (
+				1D5D8DAF08B3A0CF009C84F9 /* t-gui-Info.plist */,
+				1D5D8DBA08B3A109009C84F9 /* t-gui.cxx */,
+				1D5D8E9608B3A849009C84F9 /* t-vec.cxx */,
+			);
+			name = "Test Applications";
+			sourceTree = "<group>";
+		};
+		C6A0FF2B0290797F04C91782 /* Library Documentation */ = {
+			isa = PBXGroup;
+			children = (
+				1D5F0BBE08B39AD90048C9A2 /* vec4.html */,
+				1D5F0BBF08B39AD90048C9A2 /* vec3.html */,
+				1D5F0BC008B39AD90048C9A2 /* vec2.html */,
+				1D5F0BC108B39AD90048C9A2 /* vec.html */,
+				1D5F0BC208B39AD90048C9A2 /* start.html */,
+				1D5F0BC308B39AD90048C9A2 /* script.html */,
+				1D5F0BC408B39AD90048C9A2 /* rotate.html */,
+				1D5F0BC508B39AD90048C9A2 /* raster.html */,
+				1D5F0BC608B39AD90048C9A2 /* quat.html */,
+				1D5F0BC708B39AD90048C9A2 /* mat4.html */,
+				1D5F0BC808B39AD90048C9A2 /* mat3.html */,
+				1D5F0BC908B39AD90048C9A2 /* mat2.html */,
+				1D5F0BCA08B39AD90048C9A2 /* mat.html */,
+				1D5F0BCB08B39AD90048C9A2 /* license.html */,
+				1D5F0BCC08B39AD90048C9A2 /* intvec.html */,
+				1D5F0BCD08B39AD90048C9A2 /* index.html */,
+				1D5F0BCE08B39AD90048C9A2 /* gui.html */,
+				1D5F0BCF08B39AD90048C9A2 /* gl.html */,
+				1D5F0BD008B39AD90048C9A2 /* geom3d.html */,
+				1D5F0BD108B39AD90048C9A2 /* ex-script.html */,
+				1D5F0BD208B39AD90048C9A2 /* ex-gui.html */,
+				1D5F0BD308B39AD90048C9A2 /* cdoc.css */,
+				1D5F0BD408B39AD90048C9A2 /* build.html */,
+			);
+			name = "Library Documentation";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		D2AAC043055464E500DB518D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		1D5D8DAC08B3A0CF009C84F9 /* t-gui */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D5D8DB008B3A0D0009C84F9 /* Build configuration list for PBXNativeTarget "t-gui" */;
+			buildPhases = (
+				1D5D8DA908B3A0CF009C84F9 /* Resources */,
+				1D5D8DAA08B3A0CF009C84F9 /* Sources */,
+				1D5D8DAB08B3A0CF009C84F9 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
+				INFOPLIST_FILE = "t-gui-Info.plist";
+				INSTALL_PATH = "$(USER_APPS_DIR)";
+				OPTIMIZATION_CFLAGS = "";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Carbon,
+				);
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = "t-gui";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			dependencies = (
+				1D5D8DB508B3A0D9009C84F9 /* PBXTargetDependency */,
+			);
+			name = "t-gui";
+			productName = "t-gui";
+			productReference = 1D5D8DAD08B3A0CF009C84F9 /* t-gui.app */;
+			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>t-gui</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.yourcompany.t_gui</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>1.0</string>
+</dict>
+</plist>
+";
+			productType = "com.apple.product-type.application";
+		};
+		1D5D8E8808B3A813009C84F9 /* t-vec */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D5D8E9208B3A839009C84F9 /* Build configuration list for PBXNativeTarget "t-vec" */;
+			buildPhases = (
+				1D5D8E8608B3A813009C84F9 /* Sources */,
+				1D5D8E8708B3A813009C84F9 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = "$(HOME)/bin";
+				OPTIMIZATION_CFLAGS = "";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = "t-vec";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			dependencies = (
+				1D5D8E8C08B3A81A009C84F9 /* PBXTargetDependency */,
+			);
+			name = "t-vec";
+			productName = "t-vec";
+			productReference = 1D5D8E8908B3A813009C84F9 /* t-vec */;
+			productType = "com.apple.product-type.tool";
+		};
+		D2AAC045055464E500DB518D /* libgfx */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D5F0B7208B398A90048C9A2 /* Build configuration list for PBXNativeTarget "libgfx" */;
+			buildPhases = (
+				D2AAC043055464E500DB518D /* Headers */,
+				D2AAC044055464E500DB518D /* Sources */,
+				D289987405E68DCB004EDB86 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_STYLE = STATIC;
+				PREBINDING = NO;
+				PRODUCT_NAME = libgfx;
+			};
+			dependencies = (
+			);
+			name = libgfx;
+			productName = libgfx;
+			productReference = D2AAC046055464E500DB518D /* libgfx.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1D5F0B7608B398A90048C9A2 /* Build configuration list for PBXProject "libgfx" */;
+			buildSettings = {
+			};
+			buildStyles = (
+				014CEA520018CE5811CA2923 /* Debug */,
+				014CEA530018CE5811CA2923 /* Release */,
+			);
+			hasScannedForEncodings = 1;
+			mainGroup = 08FB7794FE84155DC02AAC07 /* libgfx */;
+			projectDirPath = "";
+			targets = (
+				D2AAC045055464E500DB518D /* libgfx */,
+				1D5D8DAC08B3A0CF009C84F9 /* t-gui */,
+				1D5D8E8808B3A813009C84F9 /* t-vec */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1D5D8DA908B3A0CF009C84F9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1D5D8DAA08B3A0CF009C84F9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D5D8DBB08B3A109009C84F9 /* t-gui.cxx in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1D5D8E8608B3A813009C84F9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D5D8E9708B3A849009C84F9 /* t-vec.cxx in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2AAC044055464E500DB518D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D5F0B9708B399390048C9A2 /* trackball.cxx in Sources */,
+				1D5F0B9808B399390048C9A2 /* time.cxx in Sources */,
+				1D5F0B9908B399390048C9A2 /* symmat4.cxx in Sources */,
+				1D5F0B9A08B399390048C9A2 /* symmat3.cxx in Sources */,
+				1D5F0B9B08B399390048C9A2 /* symmat2.cxx in Sources */,
+				1D5F0B9C08B399390048C9A2 /* script.cxx in Sources */,
+				1D5F0B9D08B399390048C9A2 /* raster.cxx in Sources */,
+				1D5F0B9E08B399390048C9A2 /* raster-tiff.cxx in Sources */,
+				1D5F0B9F08B399390048C9A2 /* raster-pnm.cxx in Sources */,
+				1D5F0BA008B399390048C9A2 /* raster-png.cxx in Sources */,
+				1D5F0BA108B399390048C9A2 /* raster-jpeg.cxx in Sources */,
+				1D5F0BA208B399390048C9A2 /* quat.cxx in Sources */,
+				1D5F0BA308B399390048C9A2 /* mat4.cxx in Sources */,
+				1D5F0BA408B399390048C9A2 /* mat3.cxx in Sources */,
+				1D5F0BA508B399390048C9A2 /* mat2.cxx in Sources */,
+				1D5F0BA608B399390048C9A2 /* gui.cxx in Sources */,
+				1D5F0BA708B399390048C9A2 /* gltools.cxx in Sources */,
+				1D5F0BA808B399390048C9A2 /* geom4d.cxx in Sources */,
+				1D5F0BA908B399390048C9A2 /* geom3d.cxx in Sources */,
+				1D5F0BAA08B399390048C9A2 /* color.cxx in Sources */,
+				1D5F0BAB08B399390048C9A2 /* baseball.cxx in Sources */,
+				1D5F0BAC08B399390048C9A2 /* arcball.cxx in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1D5D8DB508B3A0D9009C84F9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D2AAC045055464E500DB518D /* libgfx */;
+			targetProxy = 1D5D8DB408B3A0D9009C84F9 /* PBXContainerItemProxy */;
+		};
+		1D5D8E8C08B3A81A009C84F9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D2AAC045055464E500DB518D /* libgfx */;
+			targetProxy = 1D5D8E8B08B3A81A009C84F9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1D5D8DB108B3A0D0009C84F9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
+				INFOPLIST_FILE = "t-gui-Info.plist";
+				INSTALL_PATH = "$(USER_APPS_DIR)";
+				OPTIMIZATION_CFLAGS = "";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Carbon,
+					"-framework",
+					ApplicationServices,
+					"-lfltk_gl",
+					"-lfltk",
+					"-ljpeg",
+					"-lpng",
+					"-ltiff",
+					"-lz",
+				);
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = "t-gui";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Debug;
+		};
+		1D5D8DB208B3A0D0009C84F9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
+				INFOPLIST_FILE = "t-gui-Info.plist";
+				INSTALL_PATH = "$(USER_APPS_DIR)";
+				OPTIMIZATION_CFLAGS = "";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Carbon,
+					"-framework",
+					ApplicationServices,
+					"-lfltk_gl",
+					"-lfltk",
+					"-ljpeg",
+					"-lpng",
+					"-ltiff",
+					"-lz",
+				);
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = "t-gui";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Release;
+		};
+		1D5D8DB308B3A0D0009C84F9 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
+				INFOPLIST_FILE = "t-gui-Info.plist";
+				INSTALL_PATH = "$(USER_APPS_DIR)";
+				OPTIMIZATION_CFLAGS = "";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Carbon,
+					"-framework",
+					ApplicationServices,
+					"-lfltk_gl",
+					"-lfltk",
+					"-ljpeg",
+					"-lpng",
+					"-ltiff",
+					"-lz",
+				);
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = "t-gui";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Default;
+		};
+		1D5D8E9308B3A839009C84F9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = "$(HOME)/bin";
+				OPTIMIZATION_CFLAGS = "";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = "t-vec";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Debug;
+		};
+		1D5D8E9408B3A839009C84F9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = "$(HOME)/bin";
+				OPTIMIZATION_CFLAGS = "";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = "t-vec";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Release;
+		};
+		1D5D8E9508B3A839009C84F9 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = "$(HOME)/bin";
+				OPTIMIZATION_CFLAGS = "";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = "t-vec";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Default;
+		};
+		1D5F0B7308B398A90048C9A2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				EXECUTABLE_PREFIX = "";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_STYLE = STATIC;
+				PREBINDING = NO;
+				PRODUCT_NAME = libgfx;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		1D5F0B7408B398A90048C9A2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				EXECUTABLE_PREFIX = "";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_STYLE = STATIC;
+				PREBINDING = NO;
+				PRODUCT_NAME = libgfx;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		1D5F0B7508B398A90048C9A2 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = "";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_STYLE = STATIC;
+				PREBINDING = NO;
+				PRODUCT_NAME = libgfx;
+			};
+			name = Default;
+		};
+		1D5F0B7708B398A90048C9A2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					HAVE_CONFIG_H,
+					GFX_NAMESPACE,
+				);
+				HEADER_SEARCH_PATHS = ../include/;
+			};
+			name = Debug;
+		};
+		1D5F0B7808B398A90048C9A2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					HAVE_CONFIG_H,
+					GFX_NAMESPACE,
+				);
+				HEADER_SEARCH_PATHS = ../include/;
+			};
+			name = Release;
+		};
+		1D5F0B7908B398A90048C9A2 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					HAVE_CONFIG_H,
+					GFX_NAMESPACE,
+				);
+				HEADER_SEARCH_PATHS = ../include/;
+			};
+			name = Default;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D5D8DB008B3A0D0009C84F9 /* Build configuration list for PBXNativeTarget "t-gui" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D5D8DB108B3A0D0009C84F9 /* Debug */,
+				1D5D8DB208B3A0D0009C84F9 /* Release */,
+				1D5D8DB308B3A0D0009C84F9 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		1D5D8E9208B3A839009C84F9 /* Build configuration list for PBXNativeTarget "t-vec" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D5D8E9308B3A839009C84F9 /* Debug */,
+				1D5D8E9408B3A839009C84F9 /* Release */,
+				1D5D8E9508B3A839009C84F9 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		1D5F0B7208B398A90048C9A2 /* Build configuration list for PBXNativeTarget "libgfx" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D5F0B7308B398A90048C9A2 /* Debug */,
+				1D5F0B7408B398A90048C9A2 /* Release */,
+				1D5F0B7508B398A90048C9A2 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		1D5F0B7608B398A90048C9A2 /* Build configuration list for PBXProject "libgfx" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D5F0B7708B398A90048C9A2 /* Debug */,
+				1D5F0B7808B398A90048C9A2 /* Release */,
+				1D5F0B7908B398A90048C9A2 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}

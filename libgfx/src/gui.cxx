@@ -2,7 +2,7 @@
 
   MxGUI
   
-  $Id: gui.cxx,v 1.20 2002/04/02 16:57:53 garland Exp $
+  $Id: gui.cxx 447 2005-06-18 14:01:16Z garland $
 
  ************************************************************************/
 
@@ -13,12 +13,15 @@
 #include <gfx/gui.h>
 #include <gfx/raster.h>
 
-#include <FL/fl_file_chooser.H>
+#include <FL/Fl_File_Chooser.H>
 #include <FL/fl_ask.H>
 
 #include <cstdio>
 #include <cstdarg>
 #include <fstream>
+
+namespace gfx
+{
 
 MxGUI *MxGUI::current = NULL;
 
@@ -128,59 +131,48 @@ int MxGLCanvas::handle(int event)
 // own additional entries.
 //
 
-static void cb_exit(Fl_Menu_ *, void *)
-	{ MxGUI::current->cleanup_for_exit(); exit(0); }
+void MxGUI::cb_new() { }
 
-static void cb_animate(Fl_Menu_ *m, void *)
-    { MxGUI::current->animate(m->mvalue()->value()!=0); }
+void MxGUI::cb_exit() { cleanup_for_exit(); exit(0); }
 
-static void cb_fps(Fl_Menu_ *m, void *)
+void MxGUI::cb_animate(Fl_Menu_ *m)
+    { animate(m->mvalue()->value()!=0); }
+
+void MxGUI::cb_fps()
 {
-    MxGUI *gui = MxGUI::current;
-
     // Convert default_fps to a string
-    static char fps[64]; sprintf(fps, "%.1f", gui->default_fps);
+    static char fps[64]; sprintf(fps, "%.1f", default_fps);
 
     const char *result = fl_input("Number of frames per second to draw", fps);
     if( result )
     {
-	gui->default_fps = atof(result);
-	if( gui->target_fps>0 ) gui->target_fps=gui->default_fps;
+	default_fps = atof(result);
+	if( target_fps>0 ) target_fps=default_fps;
     }
 }
 
-static void cb_snapshot(Fl_Menu_ *m, int format)
+void MxGUI::cb_snapshot(int format)
 {
-    MxGUI::current->canvas->redraw();		// don't want to snap menu
-    MxGUI::current->snapshot_to_file(format);	// snapshot what's drawn
+    canvas->redraw();		// don't want to snap menu
+    snapshot_to_file(format);	// snapshot what's drawn
 }
 
-static void cb_save_view(Fl_Menu_ *m, void *)
-{	      
-  MxGUI::current->save_view_to_file();  
+void MxGUI::cb_vga_size(int xw)
+{
+    if( toplevel->resizable() )
+	resize_canvas(xw, (3*xw)/4);
 }
 
-static void cb_load_view(Fl_Menu_ *m, void *)
+void MxGUI::cb_hdtv_size(int xw)
 {
-  MxGUI::current->load_view_from_file();    
+    if( toplevel->resizable() )
+	MxGUI::current->resize_canvas(xw, (9*xw)/16);
 }
 
-static void cb_display_size(Fl_Menu_ *m, int xw)
+void MxGUI::cb_dv_size(int xw)
 {
-    if( MxGUI::current->toplevel->resizable() )
-    {
-	int yw = (3*xw)/4;
-	MxGUI::current->resize_canvas(xw, yw);
-    }
-}
-
-static void cb_hdtv_size(Fl_Menu_ *m, int xw)
-{
-    if( MxGUI::current->toplevel->resizable() )
-    {
-	int yw = (9*xw)/16;
-	MxGUI::current->resize_canvas(xw, yw);
-    }
+    if( toplevel->resizable() )
+	MxGUI::current->resize_canvas(xw, (2*xw)/3);
 }
 
 void MxGUI::cb_toggle(Fl_Menu_ *m, bool *flag)
@@ -189,54 +181,29 @@ void MxGUI::cb_toggle(Fl_Menu_ *m, bool *flag)
     current->canvas->redraw();
 }
 
-static Fl_Menu_Item default_layout[] =
+void MxGUI::cb_save_view_to_file() { save_view_to_file(); }
+void MxGUI::cb_load_view_from_file() { load_view_from_file(); }
+
+bool MxGUI::save_view_to_file()
 {
-    MXGUI_BEGIN_MENU("&File")
-    {"&New", FL_CTRL + 'n', NULL, NULL, FL_MENU_DIVIDER},
-        MXGUI_BEGIN_MENU("Snapshot to")
-#if defined(HAVE_LIBPNG)
-        {"&PNG", FL_CTRL+'p', (Fl_Callback *)cb_snapshot, (void *)IMG_PNG},
-#else
-        {"&PNG", FL_CTRL+'p', NULL, NULL, FL_MENU_INACTIVE },
-#endif
-#if defined(HAVE_LIBTIFF)
-        {"&TIFF", FL_CTRL+'P', (Fl_Callback *)cb_snapshot, (void *)IMG_TIFF},
-#else
-        {"&TIFF", FL_CTRL+'P', NULL, NULL, FL_MENU_INACTIVE},
-#endif
-        {"PP&M", 0, (Fl_Callback *)cb_snapshot, (void *)IMG_PNM},
-#if defined(HAVE_LIBJPEG)
-        {"&JPEG", 0, (Fl_Callback *)cb_snapshot, (void *)IMG_JPEG},
-#else
-        {"&JPEG", 0, NULL, NULL, FL_MENU_INACTIVE},
-#endif
-        MXGUI_END_MENU
-    {"E&xit", FL_CTRL + 'q',  (Fl_Callback *)cb_exit, NULL},
-    MXGUI_END_MENU
+    fl_alert("This application has not defined a scheme for saving the view.");
+    return false;
+}
 
-    MXGUI_BEGIN_MENU("&View")
-    {"Animation speed ...", FL_CTRL+'r', (Fl_Callback *)cb_fps, NULL},
-    {"&Animate", FL_CTRL+'a', (Fl_Callback *)cb_animate, NULL, FL_MENU_TOGGLE},
-    {"Save view",FL_CTRL+'s',(Fl_Callback *)cb_save_view,NULL},
-    {"Load view",FL_CTRL+'v',(Fl_Callback *)cb_load_view,NULL},
-
-      MXGUI_BEGIN_MENU("Display &size")
-      {"&320x240", 0, (Fl_Callback *)cb_display_size, (void*)320},
-      {"&640x480", 0, (Fl_Callback *)cb_display_size, (void*)640},
-      {"&800x600", 0, (Fl_Callback *)cb_display_size, (void*)800},
-      {"&1024x768", 0, (Fl_Callback *)cb_display_size, (void*)1024, FL_MENU_DIVIDER},
-      {"480x270", 0, (Fl_Callback *)cb_hdtv_size, (void*)480},
-      {"960x540", 0, (Fl_Callback *)cb_hdtv_size, (void*)960},
-      {"1920x1080", 0, (Fl_Callback *)cb_hdtv_size, (void*)1920},
-      MXGUI_END_MENU
-    MXGUI_END_MENU
-
-    MXGUI_FINISH_MENUBAR
-};
-
-int MxGUI::add_toggle_menu(const char *name, int key, bool& val, int flags)
+bool MxGUI::load_view_from_file()
 {
-    return menu_bar->add(name, key, (Fl_Callback *)cb_toggle, &val,
+    fl_alert("This application has not defined a scheme for loading the view.");
+    return false;
+}
+
+int MxGUI::add_menu(const std::string& s, int key, Fl_Callback *cb, int flags)
+{
+    return menu_bar->add(s.c_str(), key, cb, this, flags);
+}
+
+int MxGUI::add_toggle_menu(const std::string& s, int key, bool& val, int flags)
+{
+    return menu_bar->add(s.c_str(), key, (Fl_Callback *)cb_toggle, &val,
 			 FL_MENU_TOGGLE|(val?FL_MENU_VALUE:0)|flags);
 }
 
@@ -245,7 +212,7 @@ int MxGUI::add_toggle_menu(const char *name, int key, bool& val, int flags)
 #ifdef __CYGWIN__
 extern "C"{
     extern int mainCRTStartup();
-    int WinMainCRTStartup() { mainCRTStartup(); }
+    int WinMainCRTStartup() { mainCRTStartup(); return 1; }
 }
 #endif
 
@@ -276,6 +243,14 @@ Fl_Window *MxGUI::create_window(int xw, int yw, int pad)
       canvas = new MxGLCanvas(pad, yfill, xw, yw);
       canvas->box(FL_DOWN_FRAME);
       canvas->attach_app(this);
+
+      int glmode = 0;
+      if(canvas->can_do(FL_RGB8))    glmode|=FL_RGB8;
+      if(canvas->can_do(FL_DOUBLE))  glmode|=FL_DOUBLE;
+      if(canvas->can_do(FL_DEPTH))   glmode|=FL_DEPTH;
+      if(canvas->can_do(FL_ALPHA))   glmode|=FL_ALPHA;
+      if(glmode)                     canvas->mode(glmode);
+
       yfill += canvas->h();
 
       add_lower_controls(yfill, pad);
@@ -309,7 +284,7 @@ int arg_redirect(int argc, char **argv, int& index)
 void MxGUI::initialize(int argc, char **argv, Fl_Menu_Item *m, int xw, int yw)
 {
     Fl::visual(FL_RGB8);
-    menu_layout = m?m:default_layout;
+    menu_layout = m?m:NULL;
 
     int index = 0;
     if( argv )
@@ -317,6 +292,45 @@ void MxGUI::initialize(int argc, char **argv, Fl_Menu_Item *m, int xw, int yw)
 
     create_window(xw, yw);
     toplevel->label("Graphics Program");
+
+    // Add dynamic entries
+    typedef MxBinder<MxGUI> CB;
+    std::string snap = "&File/Snapshot to/";
+    std::string view = "&View/";
+    std::string size = "&View/Display &size/";
+
+    add_menu("&File/&New", FL_CTRL+'n', CB::to<&MxGUI::cb_new>);
+
+#if defined(HAVE_LIBPNG)
+    add_menu(snap+"&PNG",
+	    FL_CTRL+'p', CB::to_arg<&MxGUI::cb_snapshot, IMG_PNG>);
+#endif
+#if defined(HAVE_LIBTIFF)
+    add_menu("&File/Snapshot to/&TIFF",
+	    FL_CTRL+'P', CB::to_arg<&MxGUI::cb_snapshot, IMG_TIFF>);
+#endif
+#if defined(HAVE_LIBJPEG)
+    add_menu("&File/Snapshot to/&JPEG", 0, CB::to_arg<&MxGUI::cb_snapshot, IMG_JPEG>);
+#endif
+    add_menu("&File/Snapshot to/PP&M", 0, CB::to_arg<&MxGUI::cb_snapshot, IMG_PNM>);
+
+    add_menu("&File/E&xit", FL_CTRL+'q', CB::to<&MxGUI::cb_exit>);
+
+    add_menu(view+"Animation speed ...", FL_CTRL+'r', CB::to<&MxGUI::cb_fps>);
+    add_menu(view+"&Animate", FL_CTRL+'a', CB::to_menu<&MxGUI::cb_animate>, FL_MENU_TOGGLE);
+
+    add_menu(view+"Save view ...", 0, CB::to<&MxGUI::cb_save_view_to_file>);
+    add_menu(view+"Load view ...", 0, CB::to<&MxGUI::cb_load_view_from_file>);
+
+    add_menu(size+"320x240",0, CB::to_arg<&MxGUI::cb_vga_size, 320>);
+    add_menu(size+"640x480",0, CB::to_arg<&MxGUI::cb_vga_size, 640>);
+    add_menu(size+"800x600",0, CB::to_arg<&MxGUI::cb_vga_size, 800>);
+    add_menu(size+"1024x768",0,CB::to_arg<&MxGUI::cb_vga_size, 1024>,FL_MENU_DIVIDER);
+    add_menu(size+"720x480",0, CB::to_arg<&MxGUI::cb_dv_size, 720>,FL_MENU_DIVIDER);
+
+    add_menu(size+"480x270",0,   CB::to_arg<&MxGUI::cb_hdtv_size, 480>);
+    add_menu(size+"960x540",0,   CB::to_arg<&MxGUI::cb_hdtv_size, 960>);
+    add_menu(size+"1920x1080",0, CB::to_arg<&MxGUI::cb_hdtv_size, 1920>);
 
     if( argv )
     {
@@ -369,97 +383,44 @@ int MxGUI::status(const char *fmt, ...)
     return n;
 }
 
-bool MxGUI::snapshot_to_file(int format)
+bool MxGUI::snapshot_to_file(int format, const char *filenamep)
 {
     canvas->make_current();
     Fl::flush();
 
     GLint vp[4]; glGetIntegerv(GL_VIEWPORT, vp);
 
-    ByteRaster img(vp[2]-vp[0], vp[3]-vp[1], 3);
     glPushAttrib(GL_PIXEL_MODE_BIT);
     glReadBuffer(GL_FRONT);
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
-    glReadPixels(vp[0],vp[1],vp[2],vp[3],GL_RGB,GL_UNSIGNED_BYTE,img.head());
+
+    int nchan = 3;
+    if( format==IMG_PNG || format==IMG_TIFF )
+	// Currently, only TIFF and PNG writers support the alpha channel
+	nchan = 4;
+
+    ByteRaster img(vp[2]-vp[0], vp[3]-vp[1], nchan);
+    glReadPixels(vp[0],vp[1],vp[2],vp[3],
+	    nchan==4 ? GL_RGBA : GL_RGB,
+	    GL_UNSIGNED_BYTE,img.head());
+
     glPopAttrib();
     img.vflip();
 
-    char msg[80], pat[8], name[16];
-    sprintf(msg, "Save %s Snapshot", image_type_name(format));
-    sprintf(pat, "*.%s", image_type_ext(format));
-    sprintf(name, "snap.%s", image_type_ext(format));
+    if ( filenamep == NULL )
+    {
+        char msg[80], pat[8], name[16];
+        sprintf(msg, "Save %s Snapshot", image_type_name(format));
+        sprintf(pat, "*.%s", image_type_ext(format));
+        sprintf(name, "snap.%s", image_type_ext(format));
 
-    const char *filename = fl_file_chooser(msg, pat, name);
-    if( filename )
-	return write_image(filename, img, format);
+        filenamep = fl_file_chooser(msg, pat, name);
+    }
+
+    if( filenamep )
+	return write_image(filenamep, img, format);
     else
 	return false;
-}
-
-bool MxGUI::save_view_to_file()
-{
-  GLdouble M[16];
-  GLdouble P[16];
-  canvas->make_current();
-  Fl::flush();
-  
-  GLint vp[4]; glGetIntegerv(GL_VIEWPORT, vp);
-  GLint width = vp[2]-vp[0];
-  GLint height =vp[3]-vp[1];
-  glGetDoublev(GL_MODELVIEW_MATRIX,M);
-  glGetDoublev(GL_PROJECTION_MATRIX,P);
-
-  const char *filename = fl_file_chooser("Save view", "*.vw", "snap.vw");
-  if( filename )
-  {
-      std::ofstream outfile(filename);
-      outfile << width  << std::endl;
-      outfile << height << std::endl;
-
-      int i;
-      for(i=0;i<16;i++)  outfile << P[i] <<"\n";
-      for(i=0;i<16;i++)  outfile << M[i] <<"\n";
-
-      return true;
-  }
-  else
-      return false;
-}
- 
-bool MxGUI::load_view_from_file()
-{
-  canvas->make_current();
-  Fl::flush();
-  GLint height;
-  GLint width;
-  GLdouble M[16];
-  GLdouble P[16];
-  
-  const char *filename = fl_file_chooser("Load view", "*.vw", "snap.vw");
-  if (filename)
-  {
-      std::ifstream infile(filename);
-      if (!infile.is_open())
-      {
-	  std::cerr << "Error opening file " << filename << std::endl;
-	  return false;
-      }
-      infile >> width;
-      infile >> height;
-
-      int i;
-      for(i=0;i<16;i++)  infile >> P[i]; 
-      for(i=0;i<16;i++)  infile >> M[i];
-
-      glMatrixMode(GL_PROJECTION);
-      glLoadMatrixd(P);
-      glMatrixMode(GL_MODELVIEW);
-      glLoadMatrixd(M);
-      resize_canvas(width,height);
-      return true;
-  }
-  else
-      return false;
 }
 
 void MxGUI::lock_size()
@@ -542,5 +503,7 @@ int MxGUI::cmdline_option(int argc, char **argv, int& index)
 void MxGUI::cmdline_file(const char *file)
 {
 }
+
+} // namespace gfx
 
 #endif /* HAVE_FLTK */

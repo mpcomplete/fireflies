@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------
 
 			  libgfx: A Graphics Library
-				Version 1.0.1
+				Version 1.1.0
 
 		      Michael Garland <garland@uiuc.edu>
-	      http://www.uiuc.edu/~garland/software/libgfx.html
+          http://graphics.cs.uiuc.edu/~garland/software/libgfx.html
 
-		  Copyright (C) 1999-2002 Michael Garland.
+		  Copyright (C) 1999-2005 Michael Garland.
 
 ------------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ software.  Specifically, it is targeted towards cross-platform development
 using the OpenGL rendering API and the FLTK interface toolkit.  It attempts to
 provide facilities which are useful in the majority of graphics programs.  It
 is derived from the MixKit library I wrote for doing polygonal surface
-simplification (see http://www.uiuc.edu/~garland/software/qslim.html).
+simplification (see http://graphics.cs.uiuc.edu/~garland/software/qslim.html).
 
 Instructions on building and using the library can be found in the 'doc'
 subdirectory.
@@ -28,11 +28,12 @@ subdirectory.
 CURRENT STATUS
 --------------
 
-This is the second official release of the libgfx library.  After having
-gone through multiple pre-release versions, the first official version
-(1.0) was released in March 2002.  The changes made since that point
-have been generally quite minor.  The code has been cleaned up in spots,
-and a couple of small compilation bugs have been fixed.
+After having gone through multiple pre-release versions, the first
+official version (1.0) was released in March 2002.  The changes made in
+successive 1.0.x series releases were meant primarily to fix bugs and
+add new functionality.  The current 1.1.x series of releases makes
+certain incompatible changes to the code, such as moving headers and
+removing support for out-dated mechanisms.
 
 While the license for this library does not require it, I'd like to
 encourage you to contribute bug reports, patches, and whatever

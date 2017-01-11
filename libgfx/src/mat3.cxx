@@ -2,12 +2,15 @@
 
   3x3 Matrix class
 
-  $Id: mat3.cxx,v 1.3 2001/11/19 16:08:30 garland Exp $
+  $Id: mat3.cxx 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include <gfx/gfx.h>
 #include <gfx/mat3.h>
+
+namespace gfx
+{
 
 Mat3 Mat3::I() { return Mat3(Vec3(1,0,0), Vec3(0,1,0), Vec3(0,0,1)); }
 
@@ -75,3 +78,5 @@ double invert(Mat3& inv, const Mat3& m)
     inv = transpose(A) / d;
     return d;
 }
+
+} // namespace gfx

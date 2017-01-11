@@ -8,11 +8,14 @@
 
   Arcball rotation control.
   
-  $Id: arcball.h,v 1.6 2002/03/12 17:52:14 garland Exp $
+  $Id: arcball.h 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include "baseball.h"
+
+namespace gfx
+{
 
 class Arcball : public Baseball
 {
@@ -41,9 +44,12 @@ public:
     virtual void apply_transform();
     virtual void get_transform(Vec3 & c, Vec3 &t, Quat & q);
     virtual void set_transform(const Vec3 & c, const Vec3 & t, const Quat & q); 
+
+    virtual void write(std::ostream&);
+    virtual void read(std::istream&);
 };
 
-
+} // namespace gfx
 
 // GFXARCBALL_INCLUDED
 #endif

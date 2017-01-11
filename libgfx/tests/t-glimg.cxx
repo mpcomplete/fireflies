@@ -6,7 +6,7 @@
 
   by Michael Garland, 2000.
   
-  $Id: t-glimg.cxx,v 1.4 2003/02/03 20:59:01 garland Exp $
+  $Id: t-glimg.cxx 426 2004-09-27 04:34:55Z garland $
 
  ************************************************************************/
 
@@ -135,7 +135,7 @@ void GUI::draw_contents()
     draw_image(img);
 }
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     gui.initialize(argc, argv);
     if(gui.images.size() == 0)  return 0; // Exit if no images read

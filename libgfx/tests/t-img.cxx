@@ -6,7 +6,7 @@
 
   by Michael Garland, 1999.
   
-  $Id: t-img.cxx,v 1.2 2000/08/19 03:37:26 garland Exp $
+  $Id: t-img.cxx 426 2004-09-27 04:34:55Z garland $
 
  ************************************************************************/
 
@@ -73,7 +73,7 @@ void rgb_test()
     if( jpg )  write_jpeg_image("chex3-dup.jpg", *jpg);
 }
 
-main()
+int main()
 {
     grayscale_test();
     rgb_test();

@@ -1,3 +1,113 @@
+in Version 1.1
+--------------
+
+    o Got rid of the n-vector and n*n-matrix code as it was quite broken.
+
+    o All MxGUI menu commands are visible to external code now.
+
+    o Got rid of the command-line compilation stuff for VC.
+
+    o Moved all the Windows-specific headers -- which have never moved
+      beyond experimental -- into a Windows specific <gfx/win/...> location.
+
+    o Placed all libgfx code in the 'gfx' namespace.  To improve
+      compatibility with old code, the <gfx/gfx.h> header will
+      automatically import this namespace into the default global one.
+      This behavior can be turned off by defining the GFX_NAMESPACE
+      preprocessor symbol.
+
+    o The scripting framework now allows for encapsulation of one syntax
+      inside another.  However, this is experimental, and is likely to
+      change considerably in a future release.
+
+    o Extended the script interface to support void parsers that throw
+      exceptions on errors rather than passing return codes.  In future,
+      this will become the default way of writing parser functions.
+
+    o The script_do_xxx() functions formerly defined in <gfx/script.h>
+      have been removed.  They were long ago superseded by the
+      CmdEnv::do_xxx() methods.
+
+    o Fixed the unitize() method for quaternions, which did not in fact
+      result in a unit quaternion. 
+
+    o Added a small collection of useful color manipulation routines in
+      <gfx/color.h>.
+
+    o Added an ortho_camera_lookat() function to complement the
+      longstanding camera_lookat() perspective function.
+
+in Version 1.0.3
+----------------
+
+    o When compiling with GCC, warnings are turned on by default.  To
+      compile without warnings, you must use --disable-warnings when
+      running the 'configure' script.
+
+    o The tests used by the 'configure' script to detect OpenGL headers
+      were a bit broken.  These tests are now much more reliable.
+
+    o The quaternion SLERPing code in previous revisions was incorrect
+      due to a typo in the code.  This problem has been fixed.
+
+    o The file parser provided by <gfx/script.h> now supports the use of
+      libgzstream.  When using the library, the scripting code will
+      automatically decompress files ending with {.gz, .z, .Z} suffixes.
+      You must use the --enable-gzstream option when running ./configure.
+
+    o New experimental build files for use with Apple's XCode
+      development environment are available in the 'xcode' directory.
+
+    o Added functions to <gfx/geom3d.h> for computing the volume
+      of tetrahedra.
+
+    o The MIN/MAX macros were broken under Cygwin.
+
+    o Fixed up a few miscellaneous compiler warnings.
+
+    o Added an experimental MxBinder class to <gfx/gui.h>.  This makes
+      it fairly painless to bind MxGUI member functions to FLTK callbacks.  
+
+    o Moved management of libgfx source code from CVS to Subversion.
+
+
+in Version 1.0.2
+----------------
+
+    o The MxGUI::snapshot_to_file() method now takes an optional
+      filename argument.  When provided, the code will simply write a
+      snapshot to this file, rather than presenting the user with a file
+      selector.
+
+    o The MxGUI::snapshot_to_file() method will now save the alpha
+      channel of the window, assuming the file format supports that.
+      (Currently, only PNG and TIFF support alpha channels.)
+
+    o MxGUI OpenGL windows allocate alpha channels (when available).
+
+    o New vector/matrix modules: 
+
+	- <gfx/symmat4.h>   Symmetric 4x4 matrices; after <gfx/symmat3.h>
+	- <gfx/vecn.h>      Preliminary support for n-D vectors
+	- <gfx/matn.h>      Preliminary support for nxn matrices
+	- <gfx/symmatn.h>   Preliminary support for nxn symmetric matrices
+
+    o Project files for Apple's ProjectBuilder (OS X) are located in the
+      macos subdirectory.
+
+    o Added checks in the autoconf script for <ext/hash_map> and
+      <ext/hash_set>, which is where GCC3 chooses to place these
+      non-standard STL components.
+
+    o The scripting framework now supports a CmdEnv::ignore_command()
+      method that lets client code specify command names that should be
+      ignored.  This is also available from the input file itself by
+      using the 'ignore' command.
+
+    o The Baseball-derived classes now have read()/write() methods for
+      exchanging view information in a textual form.
+
+
 in Version 1.0.1
 ----------------
 

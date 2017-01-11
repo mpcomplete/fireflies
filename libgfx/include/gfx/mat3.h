@@ -8,11 +8,14 @@
 
   3x3 Matrix class
 
-  $Id: mat3.h,v 1.9 2001/11/19 16:07:42 garland Exp $
+  $Id: mat3.h 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include "vec3.h"
+
+namespace gfx
+{
 
 class Mat3
 {
@@ -147,6 +150,8 @@ inline Mat3 row_extend(const Vec3& v) { return Mat3(v, v, v); }
 extern Mat3 diag(const Vec3& v);
 
 extern bool eigen(const Mat3& m, Vec3& eig_vals, Vec3 eig_vecs[3]);
+
+} // namespace gfx
 
 // GFXMAT3_INCLUDED
 #endif

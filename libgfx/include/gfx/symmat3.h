@@ -8,11 +8,14 @@
 
   Symmetric 3x3 Matrix class
 
-  $Id: symmat3.h,v 1.1 2001/11/19 16:05:23 garland Exp $
+  $Id: symmat3.h 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include "mat3.h"
+
+namespace gfx
+{
 
 class SymMat3
 {
@@ -126,6 +129,8 @@ inline SymMat3 transpose(const SymMat3& m) { return m; }
 extern double invert(Mat3& m_inv, const SymMat3& m);
 
 extern bool eigen(const SymMat3& m, Vec3& eig_vals, Vec3 eig_vecs[3]);
+
+} // namespace gfx
 
 // GFXSYMMAT3_INCLUDED
 #endif

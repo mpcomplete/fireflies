@@ -15,12 +15,15 @@
   understood STL.  Now that STL support is common, that code has been
   removed.
 
-  $Id: array.h,v 1.15 2002/05/20 15:27:03 garland Exp $
+  $Id: array.h 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include "gfx.h"
 #include <vector>
+
+namespace gfx
+{
 
 template<class T>
 class array2 : public std::vector<T>
@@ -60,6 +63,8 @@ public:
     int height() const { return H; }
     int depth() const { return D; }
 };
+
+} // namespace gfx
 
 // GFXARRAY_INCLUDED
 #endif

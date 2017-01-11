@@ -2,7 +2,7 @@
 
   PNM image file format support
   
-  $Id: raster-pnm.cxx,v 1.3 2000/08/01 18:04:17 garland Exp $
+  $Id: raster-pnm.cxx 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
@@ -10,6 +10,10 @@
 #include <gfx/raster.h>
 
 #include <fstream>
+
+namespace gfx
+{
+
 using namespace std;
 
 bool will_write_raw_pnm = true;
@@ -166,3 +170,5 @@ ByteRaster *read_pnm_image(const char *filename)
 
     return img;
 }
+
+} // namespace gfx

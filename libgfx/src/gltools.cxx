@@ -2,7 +2,7 @@
 
   Handy functions for common OpenGL tasks
 
-  $Id: gltools.cxx,v 1.9 2002/04/02 16:57:53 garland Exp $
+  $Id: gltools.cxx 446 2005-06-18 13:58:15Z garland $
 
  ************************************************************************/
 
@@ -15,7 +15,11 @@
 
 #include <cassert>
 
-using namespace std;
+namespace gfx
+{
+
+using std::cerr;
+using std::endl;
 
 GLuint opengl_pick_nil = (~0);
 GLuint opengl_pick_zmax = (~0);
@@ -52,7 +56,7 @@ GLuint complete_opengl_pick(GLuint *buffer)
     {
         GLuint nnames   = *ptr++;
         GLuint cur_zmin = *ptr++;
-        GLuint cur_zmax = *ptr++;
+        /* GLuint cur_zmax = */ *ptr++;
 
         if( cur_zmin < zmin )
         {
@@ -131,6 +135,34 @@ void camera_lookat(const Vec3& min, const Vec3& max, double aspect)
     glMatrixMode(GL_PROJECTION);
     gluPerspective(fovy, aspect, znear, zfar);
 
+
+    glMatrixMode(GL_MODELVIEW);
+    gluLookAt(from[0], from[1], from[2],
+	      at[0], at[1], at[2],
+	      up[0], up[1], up[2]);
+}
+
+void ortho_camera_lookat(const Vec3& min, const Vec3& max, double aspect)
+{
+    Vec3 up(0, 1, 0);
+    double fovy = 60.0;
+
+    Vec3 at = (max + min)/2.0;         // look at the center of the bbox
+    double radius = norm(max - at);    // radius of a bounding sphere
+    double d = 3*radius / tan(fovy * M_PI/180.0);
+
+    Vec3 from = at;
+    from[2] += d;
+
+    Vec3 diag = max-min;
+    double width = MAX(diag[0], diag[1]);  width=MAX(width, diag[2]);
+    width *= 1.1;
+
+    double znear = d/20;
+    double zfar = 10*d;
+    glMatrixMode(GL_PROJECTION);
+    glOrtho(-aspect/2*width, aspect/2*width, -0.5*width, 0.5*width, znear, zfar);
+
     glMatrixMode(GL_MODELVIEW);
     gluLookAt(from[0], from[1], from[2],
 	      at[0], at[1], at[2],
@@ -154,5 +186,7 @@ int unproject_pixel(int *pixel, double *world, double z)
 			modelMatrix, projMatrix, viewport,
 			world, world+1, world+2);
 }
+
+} // namespace gfx
 
 #endif /* HAVE_OPENGL */

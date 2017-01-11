@@ -8,11 +8,14 @@
 
   2D Vector class
 
-  $Id: vec2.h,v 1.19 2002/09/20 16:02:25 garland Exp $
+  $Id: vec2.h 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include "gfx.h"
+
+namespace gfx
+{
 
 template<class T>
 class TVec2 {
@@ -148,6 +151,8 @@ template<class T> inline void unitize(TVec2<T>& v)
 
 typedef TVec2<double> Vec2;
 typedef TVec2<float>  Vec2f;
+
+} // namespace gfx
 
 // GFXVEC2_INCLUDED
 #endif

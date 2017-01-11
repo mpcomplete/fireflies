@@ -2,11 +2,14 @@
 
   Quaternion class
   
-  $Id: quat.cxx,v 1.3 2001/03/02 15:32:05 garland Exp $
+  $Id: quat.cxx 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include <gfx/quat.h>
+
+namespace gfx
+{
 
 // Based on code from the Appendix of
 // 	Quaternion Calculus for Computer Graphics, by Ken Shoemake
@@ -90,7 +93,6 @@ Quat slerp(const Quat& from, const Quat& to, double t)
     const double s_to = to.scalar();
 
     double cosine = v_from*v_to + s_from*s_to;
-    double sine = sqrt(1 - cosine*cosine);
 
     if( (1+cosine) < FEQ_EPS )
     {
@@ -103,7 +105,7 @@ Quat slerp(const Quat& from, const Quat& to, double t)
 	return Quat( A*v_from[0] + B*(-v_from[1]),
 		     A*v_from[1] + B*(v_from[0]),
 		     A*v_from[2] + B*(-s_from),
-		     A*v_from[3] + B*(v_from[2]) );
+		     A*s_from    + B*(v_from[2]) );
     }
 
     double A, B;
@@ -121,7 +123,7 @@ Quat slerp(const Quat& from, const Quat& to, double t)
 	// This is the normal case.  Perform SLERP.
 	//
 	double theta = acos(cosine);
-	double sine = sin(theta);
+	double sine = sqrt(1 - cosine*cosine);
 
 	A = sin( (1-t)*theta ) / sine;
 	B = sin( t*theta ) / sine;
@@ -130,3 +132,5 @@ Quat slerp(const Quat& from, const Quat& to, double t)
 
     return Quat( A*v_from + B*v_to,  A*s_from + B*s_to);
 }
+
+} // namespace gfx
