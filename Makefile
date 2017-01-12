@@ -24,7 +24,7 @@ installit.in \
 libgfx-1.0.1.tar.gz \
 win32/
 
-all:	libgfx/src/libgfx.a
+all:	libgfx/src/libgfx.a lodepng/lodepng.o
 	$(MAKE) -C src
 
 .PHONY: libgfx/src/libgfx.a
