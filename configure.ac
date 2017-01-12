@@ -36,7 +36,7 @@ CYGWIN*|cygwin*|MINGW*|mingw*)
     fi
 
     CFLAGS="${CFLAGS} -DWIN32"
-    GL_LIBS="-lopengl32 -lglu32"
+    GL_LIBS="-lopengl32 -lglu32 -lglew32"
     ;;
 *)
 # FIXME: I should use a more sophisticated path detection method.
@@ -62,7 +62,7 @@ CYGWIN*|cygwin*|MINGW*|mingw*)
 	    OPT_OBJS="$OPT_OBJS canvas_glx.o"])])
 
     AC_CHECK_LIB([GL], [glBegin], \
-	[GL_LIBS="-lGL -lGLU"], \
+	[GL_LIBS="-lGL -lGLU -lGLEW"], \
 	[AC_CHECK_LIB([MesaGL], [glBegin], \
 	    [GL_LIBS="-lMesaGL -lMesaGLU"], \
 	    [AC_MSG_ERROR([cannot find GL libraries])])])
