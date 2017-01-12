@@ -5,4 +5,3 @@
 /configure
 /gfx-config
 include/gfx/config.h
-include/gfx/config.h.in
