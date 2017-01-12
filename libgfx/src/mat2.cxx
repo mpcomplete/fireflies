@@ -2,12 +2,15 @@
 
   2x2 Matrix class
 
-  $Id: mat2.cxx,v 1.4 2001/02/08 21:28:53 garland Exp $
+  $Id: mat2.cxx 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include <gfx/gfx.h>
 #include <gfx/mat2.h>
+
+namespace gfx
+{
 
 Mat2 Mat2::I() { return Mat2(1,0,  0,1); }
 
@@ -82,3 +85,5 @@ bool eigen(const Mat2& M, Vec2& evals, Vec2 evecs[2])
 	eigenvectors(M, evals, evecs);
     return result;
 }
+
+} // namespace gfx

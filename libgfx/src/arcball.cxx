@@ -8,12 +8,16 @@
 
   for more details.
 
-  $Id: arcball.cxx,v 1.7 2002/03/12 17:52:14 garland Exp $
+  $Id: arcball.cxx 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include <gfx/arcball.h>
 #include <gfx/gl.h>
+#include <sstream>
+
+namespace gfx
+{
 
 // Converts a unit quaternion to two points on the unit sphere
 static void quat_to_sphere(const Quat& q, Vec3& from, Vec3& to)
@@ -167,3 +171,22 @@ void Arcball::set_transform(const Vec3 & c, const Vec3 &t, const Quat & q)
   q_down = q;
   q_drag = q;
 }
+
+void Arcball::write(std::ostream& out)
+{
+    out << "arcball ";
+    out << ball_ctr << " " << ball_radius << " ";
+    out << q_now << " " << q_down << " " << q_drag << std::endl;
+    Baseball::write(out);
+}
+
+void Arcball::read(std::istream& in)
+{
+    std::string name;
+    in >> name;
+    in >> ball_ctr >> ball_radius;
+    in >> q_now >> q_down >> q_drag;
+    Baseball::read(in);
+}
+
+} // namespace gfx

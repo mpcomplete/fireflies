@@ -2,12 +2,15 @@
 
   4x4 Matrix class
   
-  $Id: mat4.cxx,v 1.4 2000/12/04 06:18:37 garland Exp $
+  $Id: mat4.cxx 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include <gfx/gfx.h>
 #include <gfx/mat4.h>
+
+namespace gfx
+{
 
 Mat4 Mat4::I()
 {
@@ -199,3 +202,5 @@ double invert(Mat4& B, const Mat4& m)
 
     return det;
 }
+
+} // namespace gfx

@@ -8,11 +8,14 @@
 
   Virtual trackball rotation control.
   
-  $Id: trackball.h,v 1.7 2002/03/12 17:52:14 garland Exp $
+  $Id: trackball.h 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include "baseball.h"
+
+namespace gfx
+{
 
 extern void trackball(Quat& q, float p1x, float p1y, float p2x, float p2y);
 
@@ -29,6 +32,8 @@ public:
     virtual bool mouse_up(int *where, int which);
     virtual bool mouse_drag(int *where, int *last, int which);
 };
+
+} // namespace gfx
 
 // GFXTRACKBALL_INCLUDED
 #endif

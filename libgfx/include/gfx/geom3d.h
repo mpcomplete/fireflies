@@ -8,9 +8,14 @@
 
   Handy 3D geometrical primitives
 
-  $Id: geom3d.h,v 1.5 2002/05/20 15:25:46 garland Exp $
+  $Id: geom3d.h 432 2004-11-02 22:55:41Z garland $
 
  ************************************************************************/
+
+#include "vec3.h"
+
+namespace gfx
+{
 
 //
 // Computing properties of triangles
@@ -66,12 +71,9 @@ inline typename Vec::value_type
 //
 
 template<class Vec, class List>
-void compute_bbox(Vec& min, Vec& max, const List& items)
+void update_bbox(Vec& min, Vec& max, const List& items)
 {
     typedef typename List::const_iterator iterator;
-
-    if( items.size()==0 )  min = max = 0;
-    else                   min = max = items[0];
 
     for(iterator i=items.begin(); i!=items.end(); i++)
     {
@@ -82,6 +84,15 @@ void compute_bbox(Vec& min, Vec& max, const List& items)
 	    if( v[j] > max[j] )  max[j] = v[j];
 	}
     }
+}
+
+template<class Vec, class List>
+void compute_bbox(Vec& min, Vec& max, const List& items)
+{
+    if( items.size()==0 )  min = max = 0;
+    else                   min = max = items[0];
+
+    update_bbox(min, max, items);
 }
 
 template<class Vec>
@@ -105,6 +116,18 @@ Vec clamp_to_bbox(Vec p, const Vec& min, const Vec& max)
 
     return p;
 }
+
+//
+// Computing properties of tetrahedra
+//
+
+extern double tetrahedron_determinant(const Vec3& v0, const Vec3& v1,
+				      const Vec3& v2, const Vec3& v3);
+
+extern double tetrahedron_volume(const Vec3& v0, const Vec3& v1,
+				 const Vec3& v2, const Vec3& v3);
+
+} // namespace gfx
 
 // GFXGEOM3D_INCLUDED
 #endif

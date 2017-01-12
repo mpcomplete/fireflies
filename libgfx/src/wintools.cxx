@@ -2,11 +2,14 @@
 
   Support code for handling various tasks under Win32
 
-  $Id: wintools.cxx,v 1.1 2002/03/19 20:47:22 garland Exp $
+  $Id: wintools.cxx 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
-#include <gfx/wintools.h>
+#include <gfx/win/wintools.h>
+
+namespace gfx
+{
 
 HGLRC create_glcontext(HDC dc)
 {
@@ -81,3 +84,5 @@ int set_pixel_format(HDC dc)
 
     return pixel_format;
 }
+
+} // namespace gfx

@@ -5,13 +5,16 @@
   This code is based on the virtual trackball mechanism developed by
   Gavin Bell of Silicon Graphics.
 
-  $Id: trackball.cxx,v 1.7 2002/03/12 17:52:14 garland Exp $
+  $Id: trackball.cxx 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include <gfx/gfx.h>
 #include <gfx/gl.h>
 #include <gfx/trackball.h>
+
+namespace gfx
+{
 
 static
 float proj_to_sphere(float r, float x, float y)
@@ -146,3 +149,5 @@ bool Trackball::mouse_drag(int *where, int *last, int which)
 
     return true;
 }
+
+} // namespace gfx

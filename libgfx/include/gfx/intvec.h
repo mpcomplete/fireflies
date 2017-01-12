@@ -15,11 +15,14 @@
   Note that ANSI C defines the maximum values of integer types in
   <limits.h>.
 
-  $Id: intvec.h,v 1.7 2002/07/30 22:21:47 zelinka Exp $
+  $Id: intvec.h 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include "gfx.h"
+
+namespace gfx
+{
 
 template<class T, int T_MAX, int N>
 class IntVec
@@ -87,6 +90,8 @@ public:
 
     IntVec3<T,T_MAX>& operator=(const Vec3& v) { pack(v); return *this; }
 };
+
+} // namespace gfx
 
 // GFXINTVEC_INCLUDED
 #endif

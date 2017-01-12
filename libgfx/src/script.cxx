@@ -8,6 +8,13 @@ typedef istrstream istringstream;
 #  include <sstream>
 #endif
 
+#ifdef HAVE_GZSTREAM
+#  include <gzstream.h>
+#endif
+
+namespace gfx
+{
+
 using namespace std;
 
 
@@ -17,6 +24,11 @@ using namespace std;
 //
 
 string CmdLine::token_to_string(int i) const { return substr(tokens[i]); }
+
+string CmdLine::rest_to_string(int i) const
+{
+    return line.substr(tokens[i].first);
+}
 
 double CmdLine::token_to_double(int i) const
     { string str = substr(tokens[i]); return atof(str.c_str()); }
@@ -86,11 +98,6 @@ int CmdLine::collect_as_numbers(int *v, int size, int offset) const
 // CmdEnv methods -- Minimal interface supported by all environments
 //
 
-int CmdEnv::script_fallback(const CmdLine&, void *)
-{
-    return SCRIPT_ERR_UNDEF;
-}
-
 void CmdEnv::register_command(const std::string& name, CmdObject *fn)
 {
     script_commands[name] = fn;
@@ -108,9 +115,23 @@ CmdObject *CmdEnv::lookup_command(const std::string& name)
     return iter!=script_commands.end() ? iter->second : NULL;
 }
 
+static int ignored(const CmdLine& line) { return SCRIPT_OK; }
+
+void CmdEnv::ignore_command(const std::string& name)
+{
+    register_command(name, ignored);
+}
+
+void CmdEnv::register_vocabulary(const std::string& name, CmdEnv *env)
+{
+    register_method(name, env, &CmdEnv::script_eval);
+}
+
 CmdEnv::CmdEnv()
 {
     register_method("include", this, &CmdEnv::script_include);
+    register_method("ignore", this, &CmdEnv::script_ignore);
+    register_method("end", this, &CmdEnv::script_end);
 }
 
 CmdEnv::~CmdEnv()
@@ -133,6 +154,39 @@ int CmdEnv::script_include(const CmdLine& cmd)
     return do_file(cmd.token_to_string(0));
 }
 
+int CmdEnv::script_ignore(const CmdLine& cmd)
+{
+    for(int i=0; i<cmd.argcount(); ++i)
+    {
+	string name = cmd.token_to_string(i);
+	ignore_command(name);
+    }
+
+    return SCRIPT_OK;
+}
+
+int CmdEnv::script_end(const CmdLine& cmd)
+{
+    return SCRIPT_END;
+}
+
+int CmdEnv::script_eval(const CmdLine& cmd)
+{
+    return do_line(cmd.argline());
+}
+
+void CmdEnv::begin_scope(CmdEnv *sub) { scopes.push_back(sub); }
+
+void CmdEnv::end_scope()
+{
+    if( scopes.size() > 0 )
+    {
+	CmdEnv *sub = scopes.back();
+	scopes.pop_back();
+	delete sub;
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////
 //
 // Toplevel functions -- extract and execute scripting commands
@@ -141,6 +195,18 @@ int CmdEnv::script_include(const CmdLine& cmd)
 int CmdEnv::do_line(const string &line)
 {
     CmdEnv& env = *this;
+
+    // Pass this line off to the sub-scope (if any)
+    if( scopes.size() > 0 && scopes.back() )
+    {
+	int rc = scopes.back()->do_line(line);
+	if( rc==SCRIPT_END )
+	{
+	    end_scope();
+	    rc = SCRIPT_OK;
+	}
+	return rc;
+    }
 
     const char *ws = " \t\n\r";
     string::size_type start, end;
@@ -197,9 +263,26 @@ int CmdEnv::do_stream(istream &in)
 
 int CmdEnv::do_file(const std::string& filename)
 {
+#ifdef HAVE_GZSTREAM
+    if( !filename.compare(filename.size()-3, 3, ".gz") ||
+        !filename.compare(filename.size()-2, 2, ".z")  ||
+        !filename.compare(filename.size()-2, 2, ".Z")  )
+    {
+	igzstream in(filename.c_str());
+	if( in.good() )  return do_stream(in);
+	else             return SCRIPT_ERR_NOFILE;
+    }
+    else
+    {
+	ifstream in(filename.c_str());
+	if( in.good() )  return do_stream(in);
+	else             return SCRIPT_ERR_NOFILE;
+    }
+#else
     ifstream in(filename.c_str());
     if( in.good() )  return do_stream(in);
     else             return SCRIPT_ERR_NOFILE;
+#endif
 }
 
 int CmdEnv::do_string(const std::string& str)
@@ -208,3 +291,5 @@ int CmdEnv::do_string(const std::string& str)
     if( in.good() )  return CmdEnv::do_stream(in);
     else             return SCRIPT_ERR_NOFILE;
 }
+
+} // namespace gfx

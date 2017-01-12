@@ -1,0 +1,57 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libgfx", "libgfx\libgfx.vcproj", "{81A1BD6D-E2F6-4CCB-90C6-B4DCED78E38B}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tglimg", "tglimg\tglimg.vcproj", "{EC337A90-E000-4154-A535-43E385E3332E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{81A1BD6D-E2F6-4CCB-90C6-B4DCED78E38B} = {81A1BD6D-E2F6-4CCB-90C6-B4DCED78E38B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tgui", "tgui\tgui.vcproj", "{213DD15E-5BC0-401D-B213-9EDBBD632EE0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{81A1BD6D-E2F6-4CCB-90C6-B4DCED78E38B} = {81A1BD6D-E2F6-4CCB-90C6-B4DCED78E38B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tscript", "tscript\tscript.vcproj", "{16EBB0D5-45C6-4E81-AFD1-29F73C5CB877}"
+	ProjectSection(ProjectDependencies) = postProject
+		{81A1BD6D-E2F6-4CCB-90C6-B4DCED78E38B} = {81A1BD6D-E2F6-4CCB-90C6-B4DCED78E38B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tvec", "tvec\tvec.vcproj", "{8AC9018F-D751-490B-84E0-118E30F50058}"
+	ProjectSection(ProjectDependencies) = postProject
+		{81A1BD6D-E2F6-4CCB-90C6-B4DCED78E38B} = {81A1BD6D-E2F6-4CCB-90C6-B4DCED78E38B}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{81A1BD6D-E2F6-4CCB-90C6-B4DCED78E38B}.Debug.ActiveCfg = Debug|Win32
+		{81A1BD6D-E2F6-4CCB-90C6-B4DCED78E38B}.Debug.Build.0 = Debug|Win32
+		{81A1BD6D-E2F6-4CCB-90C6-B4DCED78E38B}.Release.ActiveCfg = Release|Win32
+		{81A1BD6D-E2F6-4CCB-90C6-B4DCED78E38B}.Release.Build.0 = Release|Win32
+		{EC337A90-E000-4154-A535-43E385E3332E}.Debug.ActiveCfg = Debug|Win32
+		{EC337A90-E000-4154-A535-43E385E3332E}.Debug.Build.0 = Debug|Win32
+		{EC337A90-E000-4154-A535-43E385E3332E}.Release.ActiveCfg = Release|Win32
+		{EC337A90-E000-4154-A535-43E385E3332E}.Release.Build.0 = Release|Win32
+		{213DD15E-5BC0-401D-B213-9EDBBD632EE0}.Debug.ActiveCfg = Debug|Win32
+		{213DD15E-5BC0-401D-B213-9EDBBD632EE0}.Debug.Build.0 = Debug|Win32
+		{213DD15E-5BC0-401D-B213-9EDBBD632EE0}.Release.ActiveCfg = Release|Win32
+		{213DD15E-5BC0-401D-B213-9EDBBD632EE0}.Release.Build.0 = Release|Win32
+		{16EBB0D5-45C6-4E81-AFD1-29F73C5CB877}.Debug.ActiveCfg = Debug|Win32
+		{16EBB0D5-45C6-4E81-AFD1-29F73C5CB877}.Debug.Build.0 = Debug|Win32
+		{16EBB0D5-45C6-4E81-AFD1-29F73C5CB877}.Release.ActiveCfg = Release|Win32
+		{16EBB0D5-45C6-4E81-AFD1-29F73C5CB877}.Release.Build.0 = Release|Win32
+		{8AC9018F-D751-490B-84E0-118E30F50058}.Debug.ActiveCfg = Debug|Win32
+		{8AC9018F-D751-490B-84E0-118E30F50058}.Debug.Build.0 = Debug|Win32
+		{8AC9018F-D751-490B-84E0-118E30F50058}.Release.ActiveCfg = Release|Win32
+		{8AC9018F-D751-490B-84E0-118E30F50058}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

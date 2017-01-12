@@ -8,11 +8,14 @@
 
   2x2 Matrix class
   
-  $Id: mat2.h,v 1.10 2001/11/19 16:07:42 garland Exp $
+  $Id: mat2.h 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include "vec2.h"
+
+namespace gfx
+{
 
 class Mat2
 {
@@ -148,6 +151,8 @@ extern double invert(Mat2 &m_inv, const Mat2 &m);
 extern bool eigenvalues(const Mat2&, Vec2& evals);
 extern bool eigenvectors(const Mat2&, const Vec2& evals, Vec2 evecs[2]);
 extern bool eigen(const Mat2&, Vec2& evals, Vec2 evecs[2]);
+
+} // namespace gfx
 
 // GFXMAT2_INCLUDED
 #endif

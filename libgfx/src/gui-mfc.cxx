@@ -2,11 +2,14 @@
 
   MxGUI-like emulation in MFC.
   
-  $Id: gui-mfc.cxx,v 1.1 2002/03/19 20:47:22 garland Exp $
+  $Id: gui-mfc.cxx 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
-#include <gfx/gui-mfc.h>
+#include <gfx/win/gui-mfc.h>
+
+namespace gfx
+{
 
 static inline MfcGUI *GuiGetApp() { return (MfcGUI *)AfxGetApp(); }
 
@@ -289,3 +292,6 @@ bool MfcGUI::mouse_drag(int *where, int *last, int which) { return false; }
 bool MfcGUI::key_press(int key) { return false; }
 
 void MfcGUI::update_animation() { }
+
+
+} // namespace gfx

@@ -8,9 +8,12 @@
 
   Handy 4D geometrical primitives
 
-  $Id: geom4d.h,v 1.4 2002/06/06 15:14:14 yuanzhou Exp $
+  $Id: geom4d.h 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
+
+namespace gfx
+{
 
 template<class Vec>
 inline Vec tet_raw_normal(const Vec& v1, const Vec& v2, const Vec& v3, const Vec& v4)
@@ -25,6 +28,8 @@ inline Vec tet_normal(const Vec& v1, const Vec& v2, const Vec& v3, const Vec& v4
 	Vec n = tet_raw_normal(v1, v2, v3, v4);
 	unitize(n);
     return n;
+}
+
 }
 
 // GFXGEOM4D_INCLUDED

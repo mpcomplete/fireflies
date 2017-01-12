@@ -4,7 +4,7 @@
 
   by Michael Garland, 2000.
   
-  $Id: t-script.cxx,v 1.7 2002/12/20 19:07:03 garland Exp $
+  $Id: t-script.cxx 426 2004-09-27 04:34:55Z garland $
 
  ************************************************************************/
 
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     env.register_command("vec3", proc_vec3);
 
     for(int i=1; i<argc; i++)
-	script_do_file(argv[i], env);
+	env.do_file(argv[i]);
 
     return 0;
 }

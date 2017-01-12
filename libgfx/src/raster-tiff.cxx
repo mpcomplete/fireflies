@@ -2,7 +2,7 @@
 
   TIFF image file format support.
   
-  $Id: raster-tiff.cxx,v 1.5 2001/10/02 15:58:26 garland Exp $
+  $Id: raster-tiff.cxx 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
@@ -12,6 +12,9 @@
 
 #ifdef HAVE_LIBTIFF
 #include <tiffio.h>
+
+namespace gfx
+{
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -142,9 +145,14 @@ ByteRaster *read_tiff_image(const char *filename)
     return img;
 }
 
+} // namespace gfx
+
 #else
 
+namespace gfx
+{
 bool write_tiff_image(const char *, const ByteRaster&) { return false; }
 ByteRaster *read_tiff_image(const char *) { return NULL; }
+}
 
 #endif

@@ -5,15 +5,17 @@
   The I/O code in this file was originally based on the example.c
   skeleton code distributed with the JPEG library (release 6b).
 
-  $Id: raster-jpeg.cxx,v 1.1 2000/04/27 21:35:33 garland Exp $
+  $Id: raster-jpeg.cxx 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include <gfx/gfx.h>
 #include <gfx/raster.h>
 
+namespace gfx {
 // Quality factors are expressed on a 0--100 scale
 int jpeg_output_quality = 100;
+}
 
 #ifdef HAVE_LIBJPEG
 
@@ -21,6 +23,9 @@ int jpeg_output_quality = 100;
 extern "C" {
 #include <jpeglib.h>
 }
+
+namespace gfx
+{
 
 bool write_jpeg_image(const char *filename, const ByteRaster& img)
 {
@@ -95,9 +100,14 @@ ByteRaster *read_jpeg_image(const char *filename)
     return img;
 }
 
+} // namespace gfx
+
 #else
 
+namespace gfx
+{
 bool write_jpeg_image(const char *, const ByteRaster&) { return false; }
 ByteRaster *read_jpeg_image(const char *) { return NULL; }
+}
 
 #endif

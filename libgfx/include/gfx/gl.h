@@ -10,7 +10,7 @@
   fact that the Win32 OpenGL headers require that <windows.h> be
   included before they are.
 
-  $Id: gl.h,v 1.3 2002/01/24 17:43:59 garland Exp $
+  $Id: gl.h 292 2002-01-24 17:43:59Z garland $
 
  ************************************************************************/
 

@@ -8,7 +8,7 @@
 
   Include the standard OpenGL Extension headers, if available.
 
-  $Id: glext.h,v 1.1 2001/10/15 16:57:23 garland Exp $
+  $Id: glext.h 273 2001-10-15 16:57:23Z garland $
 
  ************************************************************************/
 

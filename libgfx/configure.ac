@@ -1,7 +1,7 @@
 dnl Process this file with 'autoconf' to produce a 'configure' script
-dnl $Id: configure.in,v 1.15 2003/02/03 21:19:18 garland Exp $
+dnl $Id: configure.in 409 2004-07-06 19:22:39Z garland $
 
-AC_REVISION($Revision: 1.15 $)
+AC_REVISION($Revision: 1.19 $)
 AC_INIT(include/gfx/gfx.h)
 AC_CONFIG_HEADER(include/gfx/config.h)
 
@@ -14,13 +14,25 @@ dnl --
 
 AC_ARG_WITH(libtiff-lzw,
 	[  --with-libtiff-lzw      Use the libtiff LZW compression kit],
-	[AC_DEFINE([HAVE_LIBTIFF_LZW], [1], [Define the libtiff LZW is available])])
+	AC_DEFINE(HAVE_LIBTIFF_LZW))
 
 AC_ARG_WITH(local,
 	[  --with-local[=DIR]        Use libraries in DIR (default /usr/local)],
 	[if test $withval = "yes"; then withval="/usr/local"; fi
 	CPPFLAGS="-I${withval}/include"
 	LDFLAGS="-L${withval}/lib"])
+
+AC_ARG_ENABLE(gzstream,
+	[  --enable-gzstream       Allow for automatic (de)compression])
+
+if test "$enable_gzstream" = "yes"; then
+    AC_DEFINE(HAVE_GZSTREAM)
+fi
+
+AC_ARG_ENABLE(warnings,
+	    [  --disable-warnings      Disable GCC warning (default to on)],
+	    [],
+	    [enable_warnings="yes"])
 
 case $sys in
     CYGWIN*|cygwin*)
@@ -61,6 +73,12 @@ fi
 AC_SUBST(CC_DEPEND)
 AC_SUBST(CXX_DEPEND)
 
+dnl -- If we're using GCC, turn on warnings unless disabled
+if test $GCC = "yes" -a "$enable_warnings" = "yes"; then
+    warning="-Wall -Wno-sign-compare"
+    CPPFLAGS="$CPPFLAGS $warning"
+fi
+
 dnl ----------------------------------------------------------------------
 dnl --
 dnl -- Check for libraries
@@ -81,26 +99,38 @@ AC_SUBST(IMG_LIBS)
 dnl -- We pass IMG_LIBS as need libraries to these check because libtiff
 dnl -- can be compiled to use both libz and libjpeg.
 
-AC_CHECK_LIB(z, zlibVersion, AC_DEFINE([HAVE_LIBZ], [1], [Define if libz is available]) \
+AC_CHECK_LIB(z, zlibVersion, AC_DEFINE(HAVE_LIBZ) \
 			IMG_LIBS="$IMG_LIBS -lz", , $IMG_LIBS)
 
-AC_CHECK_LIB(jpeg, jpeg_start_compress, AC_DEFINE([HAVE_LIBJPEG], [1], [Define if the Independent JPEG Group's libjpeg is available]) \
+AC_CHECK_LIB(jpeg, jpeg_start_compress, AC_DEFINE(HAVE_LIBJPEG) \
                                 IMG_LIBS="$IMG_LIBS -ljpeg", , $IMG_LIBS)
 
-AC_CHECK_LIB(tiff, TIFFOpen, AC_DEFINE([HAVE_LIBTIFF], [1], [Define if Sam Leffler's libtiff is available]) \
+AC_CHECK_LIB(tiff, TIFFOpen, AC_DEFINE(HAVE_LIBTIFF) \
                                 IMG_LIBS="$IMG_LIBS -ltiff", , $IMG_LIBS)
 
-
-AC_CHECK_LIB(png, png_read_image, AC_DEFINE([HAVE_LIBPNG], [1], [Define if libpng is available]) \
+AC_CHECK_LIB(png, png_read_image, AC_DEFINE(HAVE_LIBPNG) \
                                 IMG_LIBS="$IMG_LIBS -lpng", , $IMG_LIBS)
 
+dnl -- Check for OpenGL headers and libraries
 
+AC_CHECK_HEADERS([GL/gl.h OpenGL/gl.h], [break])
+AC_CHECK_HEADERS([GL/glu.h OpenGL/glu.h], [break])
+
+dnl -- OpenGL Extension headers
+AC_CHECK_HEADERS(GL/glext.h GL/glxext.h GL/wglext.h OpenGL/glext.h,
+     [], [],
+     [#if HAVE_GL_GL_H
+      #include <GL/gl.h>
+      #elif HAVE_OPENGL_GL_H
+      #include <OpenGL/gl.h>
+      #endif
+      ])
 
 case $sys in
 
 Darwin*)
-	AC_DEFINE([HAVE_OPENGL], ["OpenGL"], [Define to the name of OpenGL implementation (e.g., "OpenGL" or "Mesa")])
-	AC_DEFINE([HAVE_POLYOFFSET], [1], [Define if glPolygonOffsetEXT is available])
+	AC_DEFINE(HAVE_OPENGL, "OpenGL")
+	AC_DEFINE(HAVE_POLYOFFSET)
 	GL_LIBS="-framework AGL -framework OpenGL"
 	X_CORE="-framework Carbon -framework ApplicationServices"
 	X_DCORE="$X_CORE"
@@ -115,11 +145,11 @@ Darwin*)
 
 CYGWIN*|cygwin*)
 	CPPFLAGS="${CPPFLAGS} -DWIN32"
-	AC_DEFINE([HAVE_OPENGL], ["OpenGL"], [Define to the name of OpenGL implementation (e.g., "OpenGL" or "Mesa")])
-	AC_DEFINE([HAVE_POLYOFFSET], [1], [Define if glPolygonOffsetEXT is available])
+	AC_DEFINE(HAVE_OPENGL, "OpenGL")
+	AC_DEFINE(HAVE_POLYOFFSET)
 	GL_LIBS="-lopengl32 -lglu32"
-	X_DCORE="-lkernel32 -luser32 -lgdi32 -lcomdlg32 -lwsock32"
-	X_CORE="-mwindows -lwsock32"
+	X_DCORE="-lkernel32 -luser32 -lgdi32 -lcomdlg32 -lole32 -luuid -lcomctl32 -lwsock32"
+	X_CORE="-mwindows -lole32 -luuid -lcomctl32 -lwsock32"
          
 	X_PRE_LIBS=""
 	X_EXTRA_LIBS=""
@@ -143,16 +173,16 @@ CYGWIN*|cygwin*)
     glneeds="$X_CORE $X_EXTRA_LIBS"
 
     AC_CHECK_LIB(GL, glBegin, \
-	AC_DEFINE([HAVE_OPENGL], ["OpenGL"], [Define to the name of OpenGL implementation (e.g., "OpenGL" or "Mesa")]) GL_LIBS="-lGL -lGLU", \
+	AC_DEFINE(HAVE_OPENGL, "OpenGL") GL_LIBS="-lGL -lGLU", \
 	AC_CHECK_LIB(MesaGL, glBegin, \
-	    [AC_DEFINE([HAVE_OPENGL], ["Mesa"], [Define to the name of OpenGL implementation (e.g., "OpenGL" or "Mesa")])
+	    [AC_DEFINE(HAVE_OPENGL, "Mesa")
 	     GL_LIBS="-lMesaGL -lMesaGLU"], ,$glneeds),$glneeds)
 
     LIBS="${GL_LIBS} $glneeds"
 
     dnl -- Check for OpenGL extensions
-    AC_CHECK_FUNC(glPolygonOffset, AC_DEFINE([HAVE_POLYOFFSET], [1], [Define if glPolygonOffsetEXT is available]))
-    AC_CHECK_FUNC(glPolygonOffsetEXT, AC_DEFINE([HAVE_POLYOFFSET_EXT], [1], [Define if glPolygonOffsetEXT is available]))
+    AC_CHECK_FUNC(glPolygonOffset, AC_DEFINE(HAVE_POLYOFFSET))
+    AC_CHECK_FUNC(glPolygonOffsetEXT, AC_DEFINE(HAVE_POLYOFFSET_EXT))
     ;;
 esac
 
@@ -172,7 +202,7 @@ LIBS="$FLTK_LIBS $X_CORE $LIBS"
 AC_TRY_LINK(
     [#include <FL/Fl.H>],
     [Fl::run();],
-    [AC_DEFINE([HAVE_FLTK], [1], [Define if the FLTK GUI toolkit is available])
+    [AC_DEFINE(HAVE_FLTK)
      AC_MSG_RESULT(yes)],
     [AC_MSG_RESULT(no)
      FLTK_LIBS=""])
@@ -185,7 +215,7 @@ AC_TRY_LINK(
     [#include <FL/Fl.H>
      #include <FL/Fl_Gl_Window.H>],
     [Fl_Gl_Window win(640,480);],
-    [AC_DEFINE([HAVE_FLTK_GL], [1], [Define if FLTK OpenGL support is available])
+    [AC_DEFINE(HAVE_FLTK_GL)
      AC_MSG_RESULT(in libfltk)],
     [FLTK_LIBS="-lfltk_gl $FLTK_LIBS"
      LIBS="$FLTK_LIBS $GL_LIBS $X_CORE $save_libs"
@@ -193,7 +223,7 @@ AC_TRY_LINK(
 	[#include <FL/Fl.H>
 	 #include <FL/Fl_Gl_Window.H>],
 	[Fl_Gl_Window win(640,480);],
-	[AC_DEFINE([HAVE_FLTK_GL], [1], [Define if FLTK OpenGL support is available])
+	[AC_DEFINE(HAVE_FLTK_GL)
 	 AC_MSG_RESULT(in libfltk_gl)],
 	[FLTK_LIBS="-lfltk"
 	 AC_MSG_RESULT(no)])])
@@ -216,18 +246,12 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS(limits.h)
 AC_CHECK_HEADERS(unistd.h)
 
-dnl -- OpenGL Extension headers
-AC_CHECK_HEADERS([X11/X.h GL/gl.h])
-AC_CHECK_HEADERS([GL/glext.h GL/glxext.h GL/wglext.h], [], [], [[
-	#ifdef HAVE_X11_X_H
-	# include <X11/X.h>
-	#endif
-	#ifdef HAVE_GL_GL_H
-	# include <GL/gl.h>
-	#endif]])
 
 dnl -- STL headers that aren't always available
 AC_CHECK_HEADERS(hash_map)
+AC_CHECK_HEADERS(hash_set)
+AC_CHECK_HEADERS(ext/hash_map)
+AC_CHECK_HEADERS(ext/hash_set)
 AC_CHECK_HEADERS(valarray)
 AC_CHECK_HEADERS(sstream)
 AC_CHECK_HEADERS(strstream)
@@ -239,7 +263,15 @@ dnl --
 
 AC_C_CONST
 AC_C_INLINE
-AX_CXX_BOOL
+
+AC_MSG_CHECKING(for type bool)
+AC_TRY_COMPILE([],
+	[bool x; x;],
+        [AC_MSG_RESULT(yes)
+	 AC_DEFINE(HAVE_BOOL)],
+        AC_MSG_RESULT(no))
+
+
 AC_FUNC_ALLOCA
 AC_CHECK_FUNCS(rint getrusage times random getopt getopt_long)
 

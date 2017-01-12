@@ -6,7 +6,7 @@
 
   by Michael Garland, 1999.
   
-  $Id: t-gui.cxx,v 1.4 2002/02/06 20:19:20 garland Exp $
+  $Id: t-gui.cxx 400 2004-02-16 16:31:35Z garland $
 
  ************************************************************************/
 
@@ -117,7 +117,7 @@ bool GUI::mouse_drag(int *where, int *last, int which)
 	return false;
 }
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     gui.opt_theta = 10.0f;
     gui.angle = 0.0f;

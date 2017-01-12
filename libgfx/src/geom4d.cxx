@@ -2,10 +2,13 @@
 
   Handy 4D geometrical primitives
 
-  $Id: geom4d.cxx,v 1.1 2002/05/19 18:14:46 yuanzhou Exp $
+  $Id: geom4d.cxx 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include <gfx/gfx.h>
 #include <gfx/geom4d.h>
 
+namespace gfx
+{
+}

@@ -8,12 +8,15 @@
 
   Raster image support.
     
-  $Id: raster.h,v 1.10 2002/08/22 19:56:08 garland Exp $
+  $Id: raster.h 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include "gfx.h"
 #include "vec2.h"
+
+namespace gfx
+{
 
 typedef TVec2<short> PixelAddress;
 
@@ -51,6 +54,16 @@ public:
     void reverse(int start=0, int end=-1);
     void hflip();
     void vflip();
+
+    bool is_valid_address(const PixelAddress& a) const
+    {
+        return is_valid_address(a[0], a[1]);
+    }
+
+    virtual bool is_valid_address(int x, int y) const
+    {
+        return ( (x >= 0) && (x < W) && (y >= 0) && (y < H) );
+    }
 };
 
 
@@ -151,6 +164,8 @@ extern ByteRaster *read_png_image(const char *filename);
 extern int jpeg_output_quality;
 extern bool write_jpeg_image(const char *filename, const ByteRaster&);
 extern ByteRaster *read_jpeg_image(const char *filename);
+
+} // namespace gfx
 
 // GFXRASTER_INCLUDED
 #endif

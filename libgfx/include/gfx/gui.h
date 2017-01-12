@@ -13,7 +13,7 @@
   supported: one where the application window consists primarily of an
   OpenGL drawing canvas.
 
-  $Id: gui.h,v 1.12 2002/01/31 19:05:39 garland Exp $
+  $Id: gui.h 443 2005-06-14 00:53:40Z garland $
 
  ************************************************************************/
 
@@ -24,6 +24,9 @@
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Gl_Window.H>
 #include <FL/Fl_Output.H>
+
+namespace gfx
+{
 
 class MxGUI;
 
@@ -64,6 +67,8 @@ public:
     static MxGUI *current;	// There should only be one.
 
     MxGUI();
+    virtual ~MxGUI() {}
+
     virtual void initialize(int argc, char **argv,
 			    Fl_Menu_Item *layout=NULL,
 			    int xw=640, int yw=480);
@@ -71,9 +76,7 @@ public:
 
     int status(const char *fmt, ...);
     void animate(bool will);
-    bool snapshot_to_file(int format);
-    virtual bool save_view_to_file();
-    virtual bool load_view_from_file();
+    bool snapshot_to_file(int format, const char *filenamep=NULL);
     void resize_canvas(int width, int height);
     void lock_size();
     void unlock_size();
@@ -81,8 +84,26 @@ public:
     void title(const char *l) { toplevel->label(l); }
 
     // Menu construction and standard callbacks
-    int add_toggle_menu(const char *name, int key, bool& val, int flags=0);
+    int add_menu(const std::string&, int key, Fl_Callback *cb, int flags=0);
+    int add_toggle_menu(const std::string&, int key, bool& val, int flags=0);
     static void cb_toggle(Fl_Menu_ *m, bool *flag);
+
+public:
+    //
+    // Callback functions that get executed in response to menu commands.
+    virtual void cb_new();
+    virtual void cb_exit();
+    virtual void cb_snapshot(int);
+    virtual void cb_animate(Fl_Menu_ *m);
+    virtual void cb_fps();
+    virtual void cb_vga_size(int width);  // uses 4:3  aspect ratio
+    virtual void cb_hdtv_size(int width); // uses 16:9 aspect ratio
+    virtual void cb_dv_size(int width);   // uses 3:2  aspect ratio
+
+    virtual void cb_save_view_to_file();
+    virtual void cb_load_view_from_file();
+    virtual bool save_view_to_file();
+    virtual bool load_view_from_file();
 
 public:
     //
@@ -113,12 +134,53 @@ public:
 
 ////////////////////////////////////////////////////////////////////////
 //
+// This template makes it easier to create FLTK-compliant callbacks.
+// In particular, its purpose is to construct static thunks for
+// calling member functions of MxGUI-derived classes.
+//
+
+template<class Gui>
+struct MxBinder
+{
+    typedef void (Gui::*GuiCommand)();
+    typedef void (Gui::*GuiCommand1)(int);
+    typedef void (Gui::*GuiCommand2)(Fl_Menu_ *);
+
+    template<GuiCommand cmd>
+    static void to(Fl_Widget *, void *data)
+    {
+	Gui *gui = static_cast<Gui*>(data);
+	(gui->*cmd)();
+	gui->canvas->redraw();
+    }
+
+    template<GuiCommand2 cmd>
+    static void to_menu(Fl_Widget *w, void *data)
+    {
+	Gui *gui = static_cast<Gui*>(data);
+	(gui->*cmd)(static_cast<Fl_Menu_ *>(w));
+	gui->canvas->redraw();
+    }
+
+    template<GuiCommand1 cmd, int i>
+    static void to_arg(Fl_Widget *, void *data)
+    {
+	Gui *gui = static_cast<Gui*>(data);
+	(gui->*cmd)(i);
+	gui->canvas->redraw();
+    }
+};
+
+////////////////////////////////////////////////////////////////////////
+//
 // These macros make static FLTK menu definitions look a little nicer.
 //
 
 #define MXGUI_BEGIN_MENU(name) {name, 0, 0, 0, FL_SUBMENU},
 #define MXGUI_END_MENU {0},
 #define MXGUI_FINISH_MENUBAR {0}
+
+} // namespace gfx
 
 // GFXGUI_INCLUDED
 #endif

@@ -8,11 +8,14 @@
 
   Quaternion class
   
-  $Id: quat.h,v 1.6 2001/11/09 22:47:43 garland Exp $
+  $Id: quat.h 440 2005-02-23 05:14:13Z garland $
 
  ************************************************************************/
 
 #include "mat4.h"
+
+namespace gfx
+{
 
 class Quat
 {
@@ -96,11 +99,11 @@ inline std::istream &operator>>(std::istream &in, Quat& q)
 //
 
 inline double norm(const Quat& q)
-	{ return q.scalar()*q.scalar() + norm2(q.vector()); }
+	{ return q.scalar()*q.scalar() + q.vector()*q.vector(); }
 
 inline Quat conjugate(const Quat& q) { return Quat(-q.vector(), q.scalar()); }
 inline Quat inverse(const Quat& q) { return conjugate(q)/norm(q); }
-inline void unitize(Quat& q)  { q /= norm(q); }
+inline Quat& unitize(Quat& q)  { q /= sqrt(norm(q)); return q; }
 
 extern Quat exp(const Quat& q);
 extern Quat log(const Quat& q);
@@ -108,6 +111,8 @@ extern Quat axis_to_quat(const Vec3& a, double phi);
 extern Mat4 quat_to_matrix(const Quat& q);
 extern Mat4 unit_quat_to_matrix(const Quat& q);
 extern Quat slerp(const Quat& from, const Quat& to, double t);
+
+} // namespace gfx
 
 // GFXQUAT_INCLUDED
 #endif

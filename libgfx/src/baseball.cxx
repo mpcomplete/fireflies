@@ -2,13 +2,17 @@
 
   Common code for ball-based rotation controllers.
 
-  $Id: baseball.cxx,v 1.1 2002/03/12 17:52:14 garland Exp $
+  $Id: baseball.cxx 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include <gfx/gfx.h>
 #include <gfx/gl.h>
 #include <gfx/baseball.h>
+#include <sstream>
+
+namespace gfx
+{
 
 Baseball::Baseball()
 {
@@ -38,3 +42,18 @@ void Baseball::unapply_transform()
     glPopMatrix();
 }
 
+void Baseball::write(std::ostream& out)
+{
+    out << "baseball ";
+    out << curquat << " " << trans << " " << ctr << " " << radius << std::endl;
+}
+
+void Baseball::read(std::istream& in)
+{
+    std::string name;
+
+    in >> name;
+    in >> curquat >> trans >> ctr >> radius;
+}
+
+} // namespace gfx

@@ -2,15 +2,19 @@
 
   Raster image support.
   
-  $Id: raster.cxx,v 1.8 2002/01/27 04:01:35 garland Exp $
+  $Id: raster.cxx 427 2004-09-27 04:45:31Z garland $
 
  ************************************************************************/
 
 #include <gfx/gfx.h>
 #include <gfx/raster.h>
 
+#include <string>
 #include <cstring>
 #include <cctype>
+
+namespace gfx
+{
 
 ByteRaster::ByteRaster(const ByteRaster &img)
     : Raster<unsigned char>(img.width(), img.height(), img.channels())
@@ -45,8 +49,8 @@ FloatRaster::FloatRaster(const FloatRaster &img)
 
 
 
-static const char *img_names[] = {"PPM", "PNG", "TIFF", "JPEG"};
-static const char *img_ext[] = {"ppm", "png", "tif", "jpg"};
+static char *img_names[] = {"PPM", "PNG", "TIFF", "JPEG"};
+static char *img_ext[] = {"ppm", "png", "tif", "jpg"};
 
 const char *image_type_name(int type)
 	{ return type>=IMG_LIMIT ? NULL : img_names[type]; }
@@ -105,3 +109,5 @@ ByteRaster *read_image(const char *filename, int type)
     default:       return NULL;
     }
 }
+
+} // namespace gfx

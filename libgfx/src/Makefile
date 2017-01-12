@@ -1,10 +1,13 @@
 include ../gfx-config
 
-VEC_SRCS = mat2.cxx mat3.cxx mat4.cxx quat.cxx symmat3.cxx
+CXXFLAGS += -DGFX_NAMESPACE
+
+VEC_SRCS = mat2.cxx mat3.cxx mat4.cxx quat.cxx \
+	   symmat2.cxx symmat3.cxx symmat4.cxx
 GEO_SRCS = geom3d.cxx
 IMG_SRCS = raster.cxx raster-pnm.cxx raster-tiff.cxx raster-jpeg.cxx \
 		raster-png.cxx
-MISC_SRCS = time.cxx script.cxx
+MISC_SRCS = time.cxx script.cxx color.cxx
 GUI_SRCS = gui.cxx gltools.cxx baseball.cxx trackball.cxx arcball.cxx
 
 SRCS = $(VEC_SRCS) $(GEO_SRCS) $(IMG_SRCS) $(MISC_SRCS) $(GUI_SRCS)
