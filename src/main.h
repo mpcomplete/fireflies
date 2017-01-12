@@ -13,7 +13,7 @@
 
 #include "../config.h"
 
-#include <GL/gl.h>
+#include <GL/glew.h>
 
 using namespace std;
 
