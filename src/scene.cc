@@ -159,7 +159,7 @@ void Scene::resize(int width, int height)
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     glEnable(GL_BLEND);
-	glDisable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
 }
 
 void Scene::apply_camera(const Vec3& offset)
