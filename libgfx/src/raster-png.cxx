@@ -42,7 +42,7 @@ ByteRaster *read_png_image(const char *file_name)
    // Because we didn't set up any error handlers, we need to be
    // prepared to handle longjmps out of the library on error
    // conditions.
-   if( setjmp(png_ptr->jmpbuf) )
+   if( setjmp(png_jmpbuf(png_ptr)) )
    {
       png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
       fclose(fp);
@@ -132,7 +132,7 @@ bool write_png_image(const char *file_name, const ByteRaster& img)
       return false;
    }
 
-   if( setjmp(png_ptr->jmpbuf) )
+   if( setjmp(png_jmpbuf(png_ptr)) )
    {
       fclose(fp);
       png_destroy_write_struct(&png_ptr,  (png_infopp)NULL);
