@@ -9,6 +9,7 @@
 
  ************************************************************************/
 
+#include <cstring>
 #include <vector>
 #include <gfx/gfx.h>
 #include <gfx/raster.h>
