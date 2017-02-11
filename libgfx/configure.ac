@@ -14,7 +14,7 @@ dnl --
 
 AC_ARG_WITH(libtiff-lzw,
 	[  --with-libtiff-lzw      Use the libtiff LZW compression kit],
-	AC_DEFINE(HAVE_LIBTIFF_LZW))
+	AC_DEFINE([HAVE_LIBTIFF_LZW], [], [Define to use the LZW compression kit.]))
 
 AC_ARG_WITH(local,
 	[  --with-local[=DIR]        Use libraries in DIR (default /usr/local)],
@@ -26,7 +26,7 @@ AC_ARG_ENABLE(gzstream,
 	[  --enable-gzstream       Allow for automatic (de)compression])
 
 if test "$enable_gzstream" = "yes"; then
-    AC_DEFINE(HAVE_GZSTREAM)
+    AC_DEFINE([HAVE_GZSTREAM], [], [Define to use automatic (de)compression])
 fi
 
 AC_ARG_ENABLE(warnings,
@@ -99,16 +99,16 @@ AC_SUBST(IMG_LIBS)
 dnl -- We pass IMG_LIBS as need libraries to these check because libtiff
 dnl -- can be compiled to use both libz and libjpeg.
 
-AC_CHECK_LIB(z, zlibVersion, AC_DEFINE(HAVE_LIBZ) \
+AC_CHECK_LIB(z, zlibVersion, AC_DEFINE([HAVE_LIBZ], [], [Define if you have the zlib library.]) \
 			IMG_LIBS="$IMG_LIBS -lz", , $IMG_LIBS)
 
-AC_CHECK_LIB(jpeg, jpeg_start_compress, AC_DEFINE(HAVE_LIBJPEG) \
+AC_CHECK_LIB(jpeg, jpeg_start_compress, AC_DEFINE([HAVE_LIBJPEG], [], [Define if you have the libjpeg library.]) \
                                 IMG_LIBS="$IMG_LIBS -ljpeg", , $IMG_LIBS)
 
-AC_CHECK_LIB(tiff, TIFFOpen, AC_DEFINE(HAVE_LIBTIFF) \
+AC_CHECK_LIB(tiff, TIFFOpen, AC_DEFINE([HAVE_LIBTIFF], [], [Define if you have the libtiff library.]) \
                                 IMG_LIBS="$IMG_LIBS -ltiff", , $IMG_LIBS)
 
-AC_CHECK_LIB(png, png_read_image, AC_DEFINE(HAVE_LIBPNG) \
+AC_CHECK_LIB(png, png_read_image, AC_DEFINE([HAVE_LIBPNG], [], [Define if you have the libpng library.]) \
                                 IMG_LIBS="$IMG_LIBS -lpng", , $IMG_LIBS)
 
 dnl -- Check for OpenGL headers and libraries
@@ -129,8 +129,8 @@ AC_CHECK_HEADERS(GL/glext.h GL/glxext.h GL/wglext.h OpenGL/glext.h,
 case $sys in
 
 Darwin*)
-	AC_DEFINE(HAVE_OPENGL, "OpenGL")
-	AC_DEFINE(HAVE_POLYOFFSET)
+	AC_DEFINE([HAVE_OPENGL], ["OpenGL"], [Define if you have support for OpenGL.])
+	AC_DEFINE([HAVE_POLYOFFSET], [], [Define if you have the `glPolygonOffset' function.])
 	GL_LIBS="-framework AGL -framework OpenGL"
 	X_CORE="-framework Carbon -framework ApplicationServices"
 	X_DCORE="$X_CORE"
@@ -145,8 +145,8 @@ Darwin*)
 
 CYGWIN*|cygwin*)
 	CPPFLAGS="${CPPFLAGS} -DWIN32"
-	AC_DEFINE(HAVE_OPENGL, "OpenGL")
-	AC_DEFINE(HAVE_POLYOFFSET)
+	AC_DEFINE([HAVE_OPENGL], ["OpenGL"], [Define if you have support for OpenGL.])
+	AC_DEFINE([HAVE_POLYOFFSET], [], [Define if you have the `glPolygonOffset' function.])
 	GL_LIBS="-lopengl32 -lglu32"
 	X_DCORE="-lkernel32 -luser32 -lgdi32 -lcomdlg32 -lole32 -luuid -lcomctl32 -lwsock32"
 	X_CORE="-mwindows -lole32 -luuid -lcomctl32 -lwsock32"
@@ -173,16 +173,16 @@ CYGWIN*|cygwin*)
     glneeds="$X_CORE $X_EXTRA_LIBS"
 
     AC_CHECK_LIB(GL, glBegin, \
-	AC_DEFINE(HAVE_OPENGL, "OpenGL") GL_LIBS="-lGL -lGLU", \
+	AC_DEFINE([HAVE_OPENGL], ["OpenGL"], [Define if you have support for OpenGL.]) GL_LIBS="-lGL -lGLU", \
 	AC_CHECK_LIB(MesaGL, glBegin, \
-	    [AC_DEFINE(HAVE_OPENGL, "Mesa")
+	    [AC_DEFINE([HAVE_OPENGL], ["Mesa"], [Define if you have support for OpenGL.])
 	     GL_LIBS="-lMesaGL -lMesaGLU"], ,$glneeds),$glneeds)
 
     LIBS="${GL_LIBS} $glneeds"
 
     dnl -- Check for OpenGL extensions
-    AC_CHECK_FUNC(glPolygonOffset, AC_DEFINE(HAVE_POLYOFFSET))
-    AC_CHECK_FUNC(glPolygonOffsetEXT, AC_DEFINE(HAVE_POLYOFFSET_EXT))
+    AC_CHECK_FUNC(glPolygonOffset, AC_DEFINE([HAVE_POLYOFFSET], [], [Define if you have the `glPolygonOffset' function.]))
+    AC_CHECK_FUNC(glPolygonOffsetEXT, AC_DEFINE([HAVE_POLYOFFSET_EXT], [], [Define if you have the `glPolygonOffsetEXT' function.]))
     ;;
 esac
 
@@ -202,7 +202,7 @@ LIBS="$FLTK_LIBS $X_CORE $LIBS"
 AC_TRY_LINK(
     [#include <FL/Fl.H>],
     [Fl::run();],
-    [AC_DEFINE(HAVE_FLTK)
+    [AC_DEFINE([HAVE_FLTK], [], [Define if you have the FLTK library.])
      AC_MSG_RESULT(yes)],
     [AC_MSG_RESULT(no)
      FLTK_LIBS=""])
@@ -215,7 +215,7 @@ AC_TRY_LINK(
     [#include <FL/Fl.H>
      #include <FL/Fl_Gl_Window.H>],
     [Fl_Gl_Window win(640,480);],
-    [AC_DEFINE(HAVE_FLTK_GL)
+    [AC_DEFINE([HAVE_FLTK_GL], [], [Define if you have FLTK with GL support.])
      AC_MSG_RESULT(in libfltk)],
     [FLTK_LIBS="-lfltk_gl $FLTK_LIBS"
      LIBS="$FLTK_LIBS $GL_LIBS $X_CORE $save_libs"
@@ -223,7 +223,7 @@ AC_TRY_LINK(
 	[#include <FL/Fl.H>
 	 #include <FL/Fl_Gl_Window.H>],
 	[Fl_Gl_Window win(640,480);],
-	[AC_DEFINE(HAVE_FLTK_GL)
+	[AC_DEFINE([HAVE_FLTK_GL], [], [Define if you have FLTK with GL support.])
 	 AC_MSG_RESULT(in libfltk_gl)],
 	[FLTK_LIBS="-lfltk"
 	 AC_MSG_RESULT(no)])])
@@ -268,7 +268,7 @@ AC_MSG_CHECKING(for type bool)
 AC_TRY_COMPILE([],
 	[bool x; x;],
         [AC_MSG_RESULT(yes)
-	 AC_DEFINE(HAVE_BOOL)],
+	 AC_DEFINE([HAVE_BOOL], [], [Define if your compiler supports the bool data type.])],
         AC_MSG_RESULT(no))
 
 
