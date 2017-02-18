@@ -1,8 +1,7 @@
 #ifndef _MAIN_H
 #define _MAIN_H
 
-
-#include <gfx/config.h> // libgfx is retarded
+#include <gfx/config.h>  // libgfx is retarded
 
 // Suppress re-definition warnings
 #undef PACKAGE_BUGREPORT
@@ -17,4 +16,4 @@
 
 using namespace std;
 
-#endif // _MAIN_H
+#endif  // _MAIN_H
