@@ -1,7 +1,5 @@
 #include "canvas_glx.h"
 
-#include "lodepng.h"
-
 #include <iostream>
 #include <sys/time.h>
 #include <unistd.h>
@@ -11,13 +9,6 @@
 
 #include "vroot.h"
 
-static GLubyte* capture_pixels = NULL;
-static const GLuint CAPTURE_WIDTH = 3840;
-static const GLuint CAPTURE_HEIGHT = 2160;
-static const GLenum CAPTURE_FORMAT = GL_RGBA;
-static const GLuint CAPTURE_FORMAT_NBYTES = 4;
-
-static void save_image();
 static Window create_glx_window(Display* display);
 static Window init_root_window(Display* display, Window window_id);
 
@@ -25,7 +16,6 @@ CanvasGLX::CanvasGLX(Scene* s, bool fs, int m, Window wid)
     : CanvasBase(s, fs, m), window_id(wid) {
   window = 0;
   display = 0;
-  framebuffer = 0;
 }
 
 int CanvasGLX::create_window() {
@@ -42,7 +32,6 @@ int CanvasGLX::create_window() {
     return -1;
   }
 
-  create_texture();
   return 0;
 }
 
@@ -61,73 +50,6 @@ void CanvasGLX::draw() {
   glXSwapBuffers(display, window);
 }
 
-void CanvasGLX::create_texture() {
-  // The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth
-  // buffer.
-  glGenFramebuffers(1, &framebuffer);
-  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-
-  // The texture we're going to render to
-  GLuint renderedTexture;
-  glGenTextures(1, &renderedTexture);
-
-  // "Bind" the newly created texture : all future texture functions will modify
-  // this texture
-  glBindTexture(GL_TEXTURE_2D, renderedTexture);
-
-  // Give an empty image to OpenGL ( the last "0" )
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CAPTURE_WIDTH, CAPTURE_HEIGHT, 0,
-               GL_RGBA, GL_UNSIGNED_BYTE, 0);
-
-  // Poor filtering. Needed !
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-  // The depth buffer
-  GLuint depthrenderbuffer;
-  glGenRenderbuffers(1, &depthrenderbuffer);
-  glBindRenderbuffer(GL_RENDERBUFFER, depthrenderbuffer);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, CAPTURE_WIDTH,
-                        CAPTURE_HEIGHT);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                            GL_RENDERBUFFER, depthrenderbuffer);
-
-  // Set "renderedTexture" as our colour attachement #0
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                         renderedTexture, 0);
-
-  // Set the list of draw buffers.
-  GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-  glDrawBuffers(1, DrawBuffers);  // "1" is the size of DrawBuffers
-
-  // Always check that our framebuffer is ok
-  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    return;
-
-  capture_pixels =
-      (GLubyte*)malloc(CAPTURE_FORMAT_NBYTES * CAPTURE_WIDTH * CAPTURE_HEIGHT);
-
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void CanvasGLX::draw_to_texture() {
-  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-  glViewport(0, 0, CAPTURE_WIDTH, CAPTURE_HEIGHT);
-  scene->resize(CAPTURE_WIDTH, CAPTURE_HEIGHT);
-
-  CanvasBase::draw();
-
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-  glReadBuffer(GL_FRONT);
-  glReadPixels(0, 0, CAPTURE_WIDTH, CAPTURE_HEIGHT, CAPTURE_FORMAT,
-               GL_UNSIGNED_BYTE, capture_pixels);
-
-  save_image();
-
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  resize();
-}
-
 int CanvasGLX::handle_events() {
   XEvent event;
   while (XPending(display)) {
@@ -138,8 +60,10 @@ int CanvasGLX::handle_events() {
                                         event.xkey.state & ShiftMask ? 1 : 0);
         if (event.xkey.keycode == 9)  // ESC
           return 1;
-        if (isalpha(sym))
-          draw_to_texture();
+        if (sym == 's')
+          take_screenshot();
+        if (sym == 'p')
+          animate = !animate;
         break;
       }
       case ConfigureNotify:
@@ -161,18 +85,6 @@ void CanvasGLX::delay(int ms) {
   tv.tv_sec = ms / 1000;
   tv.tv_usec = (ms % 1000) * 1000;
   select(0, 0, 0, 0, &tv);
-}
-
-static void save_image() {
-  static unsigned int nscreenshots = 0;
-  char filename[256];
-  snprintf(filename, sizeof(filename), "screenshot%d.png", nscreenshots++);
-
-  cout << "Capturing " << filename << "..." << flush;
-  std::vector<unsigned char> image_buf;
-  lodepng::encode(image_buf, capture_pixels, CAPTURE_WIDTH, CAPTURE_HEIGHT);
-  lodepng::save_file(image_buf, filename);
-  cout << "done" << endl;
 }
 
 static Window create_glx_window(Display* display) {
@@ -255,8 +167,7 @@ static Window create_glx_window(Display* display) {
 
   printf("Creating window\n");
   Window win = XCreateWindow(display, RootWindow(display, vi->screen), 0, 0,
-                             CAPTURE_WIDTH / 4, CAPTURE_HEIGHT / 4, 0,
-                             vi->depth, InputOutput, vi->visual,
+                             640, 360, 0, vi->depth, InputOutput, vi->visual,
                              CWBorderPixel | CWColormap | CWEventMask, &swa);
   if (!win) {
     printf("Failed to create window.\n");

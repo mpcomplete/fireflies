@@ -11,7 +11,6 @@ class CanvasGLX : public CanvasBase {
  protected:
   Window window;
   Display* display;
-  GLuint framebuffer;
 
   // create the window (either SDL or GLX)
   virtual int create_window();
@@ -33,12 +32,6 @@ class CanvasGLX : public CanvasBase {
   virtual int get_ms();
   // delay for specified number of milliseconds
   virtual void delay(int ms);
-
-  // Creates a hi-res framebuffer with texture backing, used for screenshotting.
-  void create_texture();
-
-  // Draw the current frame to the hi-res texture.
-  void draw_to_texture();
 };
 
 #endif  // canvas_glx.h
