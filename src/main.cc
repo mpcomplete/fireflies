@@ -8,6 +8,9 @@
 #ifdef HAVE_GLX
 #include "canvas_glx.h"
 #endif
+#ifdef HAVE_GLUT
+#include "canvas_glut.h"
+#endif
 
 #include <iostream>
 #include <stdlib.h>
@@ -21,15 +24,7 @@
 CanvasBase* canvas;
 Scene scene;
 
-static enum {
-  CANVAS_SDL,
-  CANVAS_GLX
-} canvas_type =
-#ifdef HAVE_SDL
-    CANVAS_SDL;
-#else
-    CANVAS_GLX;
-#endif
+static enum { CANVAS_SDL, CANVAS_GLX, CANVAS_GLUT } canvas_type = CANVAS_GLUT;
 int window_id = 0;
 int mspf = 1000 / 30;
 bool full_screen = false;
@@ -382,6 +377,16 @@ int main(int argc, char** argv) {
 #else
       cerr << argv[0]
            << ": cannot make SDL window (you must have SDL support enabled)"
+           << endl;
+      return 1;
+#endif
+      break;
+    case CANVAS_GLUT:
+#ifdef HAVE_GLUT
+      canvas = new CanvasGLUT(&scene, full_screen, mspf, argc, argv);
+#else
+      cerr << argv[0]
+           << ": cannot make GLUT window (you must have GLUT support enabled)"
            << endl;
       return 1;
 #endif

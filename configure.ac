@@ -70,6 +70,11 @@ CYGWIN*|cygwin*|MINGW*|mingw*)
     ;;
 esac
 
+AC_CHECK_LIB([glut], [glutSwapBuffers],\
+        [AC_DEFINE([HAVE_GLUT], [1], [Define to compile with GLUT support.])
+        OPT_OBJS="$OPT_OBJS canvas_glut.o"
+        GL_LIBS="$GL_LIBS -lglut"])
+
 if test -n "$SDL_CONF"; then
     AC_DEFINE([HAVE_SDL], [1], [Define to compile with SDL support.])
     SDL_LIBS="\`sdl-config --libs\`"

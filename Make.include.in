@@ -6,7 +6,7 @@ GL_LIBS = @GL_LIBS@
 OPT_LIBS = @OPT_LIBS@
 
 CPPFLAGS = -I../libgfx/include/ -I../lodepng @CPPFLAGS@
-CXXFLAGS = -Wall $(SDL_CFLAGS) @CXXFLAGS@
+CXXFLAGS = -Wall -std=c++11 $(SDL_CFLAGS) @CXXFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = ../libgfx/src/libgfx.a $(GL_LIBS) $(SDL_LIBS) $(OPT_LIBS) @LIBS@
 
