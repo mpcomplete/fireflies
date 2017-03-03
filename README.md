@@ -41,8 +41,8 @@ Matrix mode (4) - Matrix-style pause and rotate.
 Swarmsplit mode (5) - a random swarm is split in 2.
 Swarmmerge mode (6) - 2 random swarms are merged.
 
-## SDL standalone program:
-If you have SDL, and you compiled fireflies with SDL support as a
+## GLUT standalone program:
+If you have GLUT, and you compiled fireflies with GLUT support as a
 standalone program (as opposed to a screensaver), you can enjoy a few neat
 features (mostly there so I could test things, but what the hell, they're
 fun for all).

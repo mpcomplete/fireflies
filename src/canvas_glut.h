@@ -3,12 +3,11 @@
 
 #include "canvas_base.h"
 
-// A Canvas for drawing to a GL window via SDL
+// A Canvas for drawing to a GL window via GLUT
 class CanvasGLUT : public CanvasBase {
  protected:
   int mouse_button;
 
-  // create the window (either SDL or GLX)
   virtual int create_window();
 
  public:

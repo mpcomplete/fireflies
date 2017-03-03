@@ -6,13 +6,11 @@
 #include <GL/glx.h>
 
 // A Canvas for drawing to a GL window via GLX
-// (currently only works on root window)
 class CanvasGLX : public CanvasBase {
  protected:
   Window window;
   Display* display;
 
-  // create the window (either SDL or GLX)
   virtual int create_window();
 
  public:

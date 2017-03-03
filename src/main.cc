@@ -2,9 +2,6 @@
 #include "scene.h"
 
 #include "canvas_base.h"
-#ifdef HAVE_SDL
-#include "canvas_sdl.h"
-#endif
 #ifdef HAVE_GLX
 #include "canvas_glx.h"
 #endif
@@ -24,7 +21,7 @@
 CanvasBase* canvas;
 Scene scene;
 
-static enum { CANVAS_SDL, CANVAS_GLX, CANVAS_GLUT } canvas_type = CANVAS_GLUT;
+static enum { CANVAS_GLX, CANVAS_GLUT } canvas_type = CANVAS_GLUT;
 int window_id = 0;
 int mspf = 1000 / 30;
 bool full_screen = false;
@@ -366,17 +363,6 @@ int main(int argc, char** argv) {
 #else
       cerr << argv[0]
            << ": cannot make GLX window (you must have GLX support enabled)"
-           << endl;
-      return 1;
-#endif
-      break;
-    case CANVAS_SDL:
-#ifdef HAVE_SDL
-      canvas =
-          new CanvasSDL(&scene, full_screen, mspf, "Fireflies", "fireflies");
-#else
-      cerr << argv[0]
-           << ": cannot make SDL window (you must have SDL support enabled)"
            << endl;
       return 1;
 #endif

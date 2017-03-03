@@ -1,14 +1,12 @@
 CXX = @CXX@
 
-SDL_LIBS = @SDL_LIBS@
-SDL_CFLAGS = @SDL_CFLAGS@
 GL_LIBS = @GL_LIBS@
 OPT_LIBS = @OPT_LIBS@
 
 CPPFLAGS = -I../libgfx/include/ -I../lodepng @CPPFLAGS@
-CXXFLAGS = -Wall -std=c++11 $(SDL_CFLAGS) @CXXFLAGS@
+CXXFLAGS = -Wall -std=c++11 @CXXFLAGS@
 LDFLAGS = @LDFLAGS@
-LIBS = ../libgfx/src/libgfx.a $(GL_LIBS) $(SDL_LIBS) $(OPT_LIBS) @LIBS@
+LIBS = ../libgfx/src/libgfx.a $(GL_LIBS) $(OPT_LIBS) @LIBS@
 
 OBJECTS = arrow.o bait.o firefly.o scene.o tail.o utils.o modes.o ../lodepng/lodepng.o @OPT_OBJS@
 PROGRAM = @PROGRAM@

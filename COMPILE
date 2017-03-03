@@ -23,7 +23,7 @@ To use with xscreensaver, you must add the fireflies entry to your
 where PATH would usually look like ~/.xscreensaver
 
 TO INSTALL (windows):
-If you want the standalone program (for which you need SDL, see below),
+If you want the standalone program,
 run "./configure --disable-screensaver".  Copy the 'fireflies.exe' program
 to wherever you want to put it.
 If you want the screensaver, configure and compile as usual (screensaver is
@@ -42,10 +42,5 @@ Requirements:
     openGL and GLU (available from www.opengl.org)
 
 Optional:
-    SDL (available from www.libsdl.org)
-	- SDL will allow you to run fireflies as a standalone program and
-	  let you do cool things like pause and move the camera, and
-	  trigger major modes by pressing number keys [0-6]  If you don't
-	  have it, fireflies will only be able to draw to the root window
-          (ie, as a screensaver), and will not respond to input.
+    GLUT
     Linux only: glX for xscreensaver support

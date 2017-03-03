@@ -14,9 +14,6 @@ AC_PROG_INSTALL
 AC_ARG_ENABLE(screensaver, AC_HELP_STRING([--enable-screensaver],
     [Compile as a Windows screensaver (default=yes)]))
 
-# Checks for SDL (optional)
-AC_CHECK_PROG([SDL_CONF], [sdl-config], [yes])
-
 case $sys in
 CYGWIN*|cygwin*|MINGW*|mingw*)
     if test "$enable_screensaver" = "no"; then
@@ -24,17 +21,11 @@ CYGWIN*|cygwin*|MINGW*|mingw*)
 	OPT_OBJS="main.o canvas_base.o"
 	PROGRAM="fireflies.exe"
 	BINDIR="./"
-	if test -z "$SDL_CONF"; then
-	    AC_MSG_ERROR([need SDL to compile as non-screensaver])
-	fi
-    else
-	SDL_CONF="";
 	OPT_LIBS="-lscrnsave -lmingw32 -lgdi32 -mwindows"
 	OPT_OBJS="winsaver.o resource.o"
 	PROGRAM="fireflies.scr"
 	BINDIR='C:\Windows\'
     fi
-
     CFLAGS="${CFLAGS} -DWIN32"
     GL_LIBS="-lopengl32 -lglu32 -lglew32"
     ;;
@@ -75,13 +66,6 @@ AC_CHECK_LIB([glut], [glutSwapBuffers],\
         OPT_OBJS="$OPT_OBJS canvas_glut.o"
         GL_LIBS="$GL_LIBS -lglut"])
 
-if test -n "$SDL_CONF"; then
-    AC_DEFINE([HAVE_SDL], [1], [Define to compile with SDL support.])
-    SDL_LIBS="\`sdl-config --libs\`"
-    SDL_CFLAGS="\`sdl-config --cflags\`"
-    OPT_OBJS="$OPT_OBJS canvas_sdl.o"
-fi
-
 AC_ARG_WITH(bindir, AC_HELP_STRING([--with-bindir],
     [Where to put the binary (default=/usr/lib/xscreensaver)]),
     BINDIR=$withval)
@@ -95,9 +79,6 @@ AC_SUBST(RCFILE)
 AC_SUBST(OPT_LIBS)
 AC_SUBST(OPT_OBJS)
 AC_SUBST(PROGRAM)
-
-AC_SUBST(SDL_LIBS)
-AC_SUBST(SDL_CFLAGS)
 
 AC_SUBST(GL_LIBS)
 
