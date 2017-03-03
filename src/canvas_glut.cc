@@ -36,13 +36,7 @@ int CanvasGLUT::create_window() {
     glutCanvas->resize();
   });
   glutKeyboardFunc([](unsigned char key, int x, int y) {
-    switch(key) {
-    case 27:
-      exit(0);
-    case 's':
-      glutCanvas->take_screenshot();
-      break;
-    }
+    glutCanvas->handle_keypress(key);
   });
 //   glutMouseFunc(mouse);
   // glutMotionFunc([](int x, int y) {
@@ -95,4 +89,48 @@ int CanvasGLUT::get_ms() {
   struct timespec clk;
   clock_gettime(CLOCK_REALTIME, &clk);
   return clk.tv_nsec / 1000 / 1000 + clk.tv_sec * 1000;
+}
+
+void CanvasGLUT::handle_keypress(unsigned char key) {
+  switch (key) {
+    case 'q':
+    case 27:  // ESC
+      exit(0);
+      break;
+    case 's':
+      glutCanvas->take_screenshot();
+      break;
+    case 'p':  // pause or unpause
+      animate = !animate;
+      break;
+    case 't':  // show the time
+      cout << "Elapsed time: " << scene->curtime << "s" << endl;
+      break;
+    case '+':
+      scene->fast_forward *= 2;
+      cout << "fast forward: " << scene->fast_forward << "x" << endl;
+      break;
+    case '_':
+      if (scene->fast_forward > 1)
+        scene->fast_forward /= 2;
+      cout << "fast forward: " << scene->fast_forward << "x" << endl;
+      break;
+    case '=':
+      scene->fast_forward += 1;
+      cout << "fast forward: " << scene->fast_forward << "x" << endl;
+      break;
+    case '-':
+      if (scene->fast_forward > 1)
+        scene->fast_forward -= 1;
+      cout << "fast forward: " << scene->fast_forward << "x" << endl;
+      break;
+    default: {
+      int c = key - '0';
+      if (c >= 0 && c < NUM_SMODES) {
+        scene_start_mode(c);
+        cout << "started scene mode " << c << endl;
+      }
+      break;
+    }
+  }
 }

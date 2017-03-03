@@ -28,6 +28,7 @@ class CanvasGLUT : public CanvasBase {
   virtual int handle_events();
   // get current millisecond (arbitrary reference: used for change in millis)
   virtual int get_ms();
+  void handle_keypress(unsigned char key);
 };
 
 #endif  // canvas_glut.h
