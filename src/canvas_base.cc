@@ -52,6 +52,7 @@ int CanvasBase::init() {
 
   create_screenshot_texture();
   resize();
+  last_tick = get_ms();
 
   return 0;
 }

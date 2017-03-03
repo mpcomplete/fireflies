@@ -45,7 +45,10 @@ int CanvasGLUT::create_window() {
     }
   });
 //   glutMouseFunc(mouse);
-//   glutMotionFunc(motion);
+  // glutMotionFunc([](int x, int y) {
+  //   glutCanvas->scene->camera.pos += Vec3f(double(x)/100.0, double(y)/100.0, 0.0);
+  //   glutPostRedisplay();
+  // });
 
   GLenum err = glewInit();
   if (err != GLEW_OK) {
