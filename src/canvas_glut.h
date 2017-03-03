@@ -6,6 +6,8 @@
 // A Canvas for drawing to a GL window via SDL
 class CanvasGLUT : public CanvasBase {
  protected:
+  int mouse_button;
+
   // create the window (either SDL or GLX)
   virtual int create_window();
 
@@ -29,6 +31,8 @@ class CanvasGLUT : public CanvasBase {
   // get current millisecond (arbitrary reference: used for change in millis)
   virtual int get_ms();
   void handle_keypress(unsigned char key);
+  void handle_mouse_button(int button, int state);
+  void handle_mouse_drag(int dx, int dy);
 };
 
 #endif  // canvas_glut.h
