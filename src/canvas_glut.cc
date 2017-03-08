@@ -13,12 +13,14 @@
 
 using namespace std;
 
-CanvasGLUT* glutCanvas;
+static CanvasGLUT* glutCanvas;
+static int curBait = 0;
 
 CanvasGLUT::CanvasGLUT(Scene* s, bool fs, int m, int argc, char *argv[])
     : CanvasBase(s, fs, m) {
   assert(glutCanvas == nullptr);
   glutCanvas = this;
+  mouse_button = -1;
   glutInit(&argc, argv);
 }
 
@@ -76,6 +78,7 @@ int CanvasGLUT::loop() {
 void CanvasGLUT::idle() {
   int now = get_ms();
   int ms = now - last_tick;
+  float t = ms / 1000.0;
 
   // Animate the scene
   if (ms >= mspf) {
@@ -85,6 +88,19 @@ void CanvasGLUT::idle() {
       glutPostRedisplay();
     }
   }
+
+  if (mouse_button != -1 && curBait < scene->baits.size()) {
+    Bait* b = scene->baits[curBait];
+
+    b->elapse(t);
+    for (auto f: scene->flies) {
+      if (f->bait == b)
+        f->elapse(t);
+    }
+
+    glutPostRedisplay();
+  }
+
 }
 
 int CanvasGLUT::handle_events() {
@@ -132,9 +148,9 @@ void CanvasGLUT::handle_keypress(unsigned char key) {
       break;
     default: {
       int c = key - '0';
-      if (c >= 0 && c < NUM_SMODES) {
-        scene_start_mode(c);
-        cout << "started scene mode " << c << endl;
+      if (c >= 0 && c < scene->baits.size()) {
+        curBait = c;
+        cout << "selected bait " << c << endl;
       }
       break;
     }
@@ -142,6 +158,7 @@ void CanvasGLUT::handle_keypress(unsigned char key) {
 }
 
 void CanvasGLUT::handle_mouse_button(int button, int state) {
+  last_tick = get_ms();
   if (state == GLUT_DOWN)
     mouse_button = button;
   else if (state == GLUT_UP)
@@ -149,29 +166,13 @@ void CanvasGLUT::handle_mouse_button(int button, int state) {
 }
 
 void CanvasGLUT::handle_mouse_drag(int dx, int dy) {
-  Mat4 inv_camera = rotation_matrix_deg(-scene->camera.rot_angle,
-                                        Vec3(scene->camera.rot_axis));
-  Vec3 horiz = inv_camera * Vec3(1, 0, 0);
-  Vec3 vert = inv_camera * Vec3(0, 1, 0);
+  // Animate the scene
 
   if (mouse_button == GLUT_LEFT_BUTTON) {  // move camera
-    scene->camera.pos += 0.5 * Vec3f(dx, -dy, 0.);
-    glutPostRedisplay();
-  } else if (mouse_button == GLUT_MIDDLE_BUTTON) {  // rotate
-    Quat q = axis_to_quat(scene->camera.rot_axis,
-                          DEG_TO_RAD(scene->camera.rot_angle));
-    Quat qx = axis_to_quat(vert, dx * 0.05);
-    Quat qy = axis_to_quat(horiz, dy * 0.05);
-
-    q = q * qy;
-    q = q * qx;
-    unitize(q);
-
-    scene->camera.rot_axis = q.vector();
-    scene->camera.rot_angle = RAD_TO_DEG(2.0 * acos(q.scalar()));
-    glutPostRedisplay();
-  } else if (mouse_button == GLUT_RIGHT_BUTTON) {  // zoom in/out
-    scene->camera.pos += 0.5 * Vec3f(0., 0., dy);
-    glutPostRedisplay();
+    if (curBait < scene->baits.size()) {
+      Bait* b = scene->baits[curBait];
+      b->pos += 0.5 * Vec3f(dx, -dy, 0.);
+      glutPostRedisplay();
+    }
   }
 }

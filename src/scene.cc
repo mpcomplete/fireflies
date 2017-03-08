@@ -230,11 +230,11 @@ void Scene::elapse_once(double t) {
   clamp_vec(wind, wind_speed);
 
   // elapse, my children
-  for (GLuint i = 0; i < baits.size(); i++)
-    baits[i]->elapse(t);
+  // for (GLuint i = 0; i < baits.size(); i++)
+  //   baits[i]->elapse(t);
 
-  for (GLuint i = 0; i < flies.size(); i++)
-    flies[i]->elapse(t);
+  // for (GLuint i = 0; i < flies.size(); i++)
+  //   flies[i]->elapse(t);
 
   vector<Tail*>::iterator it = dead_tails.begin();
   while (it != dead_tails.end()) {

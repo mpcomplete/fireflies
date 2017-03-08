@@ -49,12 +49,12 @@ void Bait::elapse(double t) {
   while (stop_timer.is_ready(age))
     bait_stop_mode(this, stop_timer.pop());
 
-  calc_accel();
-  velocity += accel * t;
-  clamp_vec(velocity, bspeed);
-  pos += velocity * t;
+  // calc_accel();
+  // velocity += accel * t;
+  // clamp_vec(velocity, bspeed);
+  // pos += velocity * t;
 
-  point(velocity);
+  // point(velocity);
   set_color();
 }
 
