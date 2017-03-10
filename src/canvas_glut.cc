@@ -14,7 +14,7 @@
 using namespace std;
 
 static CanvasGLUT* glutCanvas;
-static int curBait = 0;
+static size_t curBait = 0;
 
 CanvasGLUT::CanvasGLUT(Scene* s, bool fs, int m, int argc, char *argv[])
     : CanvasBase(s, fs, m) {
@@ -147,10 +147,18 @@ void CanvasGLUT::handle_keypress(unsigned char key) {
       cout << "fast forward: " << scene->fast_forward << "x" << endl;
       break;
     default: {
-      int c = key - '0';
+      size_t c = key - '0';
       if (c >= 0 && c < scene->baits.size()) {
-        curBait = c;
-        cout << "selected bait " << c << endl;
+        if (curBait == c) {
+          Bait* b = scene->baits[curBait];
+          for (int i = 0; i < 50; i++) {
+            scene->flies.push_back(new Firefly(b, b->pos, world[2]));
+          }
+          cout << "added flies to bait " << c << endl;
+        } else {
+          curBait = c;
+          cout << "selected bait " << c << endl;
+        }
       }
       break;
     }

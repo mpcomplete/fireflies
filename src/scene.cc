@@ -94,6 +94,7 @@ void Scene::create() {
 }
 
 void Scene::add_flies(unsigned n) {
+  return;
   if (flies.size() >= maxflies)
     return;
   if (flies.size() + n >= maxflies)

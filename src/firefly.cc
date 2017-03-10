@@ -40,7 +40,7 @@ void Firefly::elapse(double t) {
 }
 
 void Firefly::calc_accel() {
-  if (age > 2.0 && rand_int(0, 60) == 0) {
+  if (age > 2.0 && rand_int(0, 60) == 0 && false) {
     GLuint i, closest_i = 0;
     double dist, closest_dist = 1e10;
     for (i = 0; i < scene.baits.size(); i++) {
