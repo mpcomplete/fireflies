@@ -147,7 +147,9 @@ void CanvasGLUT::handle_keypress(unsigned char key) {
       cout << "fast forward: " << scene->fast_forward << "x" << endl;
       break;
     default: {
-      size_t c = key - '0';
+      size_t c = ((key - '0') + 9) % 10;
+      if (c == scene->baits.size())
+        scene->baits.push_back(new Bait());
       if (c >= 0 && c < scene->baits.size()) {
         if (curBait == c) {
           Bait* b = scene->baits[curBait];
