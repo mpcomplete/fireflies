@@ -72,13 +72,6 @@ void Scene::create() {
   nbaits = (minbaits + maxbaits) / 2;
   nflies = (minflies + maxflies) / 2;
 
-  baits.reserve(nbaits);
-  for (i = 0; i < nbaits; i++) {
-    baits.push_back(new Bait());
-  }
-
-  add_flies(nflies);
-
   for (i = 0; i < 3; i++) {
     switch (rand_int(0, 1)) {
       case 0:
@@ -94,7 +87,6 @@ void Scene::create() {
 }
 
 void Scene::add_flies(unsigned n) {
-  return;
   if (flies.size() >= maxflies)
     return;
   if (flies.size() + n >= maxflies)
@@ -140,6 +132,10 @@ void Scene::resize(int width, int height) {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(80., aspect, 5, 2000);
+
+  projectionMatrix = perspective_matrix(80., aspect, 5, 2000);
+  viewMatrix = translation_matrix(-camera.pos);
+  invert(viewProjectionInverse, projectionMatrix * viewMatrix);
 
   world[2] = 50.;
   if (width > height) {
@@ -213,8 +209,6 @@ void Scene::elapse_once(double t) {
   }
 
   curtime += t;
-  if (curtime >= mode_when)
-    scene_start_mode(mode_next);
 
   // the wind, she's a changin!
   if (curtime >= wind_when) {
@@ -245,4 +239,11 @@ void Scene::elapse_once(double t) {
     } else
       it++;
   }
+}
+
+Vec3 Scene::getWorldPos(int winX, int winY, int winWidth, int winHeight) {
+  double x = 2.0 * winX / winWidth - 1;
+  double y = -2.0 * winY / winHeight + 1;
+  Vec3 pos(x, y, 0.92);
+  return viewProjectionInverse * pos;
 }

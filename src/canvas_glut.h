@@ -31,7 +31,7 @@ class CanvasGLUT : public CanvasBase {
   virtual int get_ms();
   void handle_keypress(unsigned char key);
   void handle_mouse_button(int button, int state);
-  void handle_mouse_drag(int dx, int dy);
+  void handle_mouse_drag(int x, int y, int dx, int dy);
 };
 
 #endif  // canvas_glut.h

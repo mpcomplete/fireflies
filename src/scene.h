@@ -27,6 +27,9 @@ class Scene {
   double matrix;      // -1 if not active, else a timer for how long
                       // the "matrix" mode has been active
   Vec3f matrix_axis;  // the axis to rotate around matrix-style
+  Mat4 projectionMatrix;
+  Mat4 viewMatrix;
+  Mat4 viewProjectionInverse;
 
   // options
   RandVar smodes;  // enabled modes for scene
@@ -72,6 +75,7 @@ class Scene {
   void elapse(double t);
   // animation: let t seconds elapse once
   void elapse_once(double t);
+  Vec3 getWorldPos(int winX, int winY, int winWidth, int winHeight);
 };
 
 extern Vec3f world;

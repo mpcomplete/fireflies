@@ -47,7 +47,7 @@ int CanvasGLUT::create_window() {
     glutCanvas->handle_mouse_button(button, state);
   });
   glutMotionFunc([](int x, int y) {
-    glutCanvas->handle_mouse_drag(x - last_x, y - last_y);
+    glutCanvas->handle_mouse_drag(x, y, x - last_x, y - last_y);
     last_x = x;
     last_y = y;
   });
@@ -114,6 +114,10 @@ int CanvasGLUT::get_ms() {
 }
 
 void CanvasGLUT::handle_keypress(unsigned char key) {
+  Bait* b = NULL;
+  if (curBait < scene->baits.size())
+    b = scene->baits[curBait];
+
   switch (key) {
     case 'q':
     case 27:  // ESC
@@ -124,6 +128,12 @@ void CanvasGLUT::handle_keypress(unsigned char key) {
       break;
     case 'p':  // pause or unpause
       animate = !animate;
+      break;
+    case 'c':
+      if (b) {
+        b->hsv[0] += 40.0f;
+        b->set_color();
+      }
       break;
     case 't':  // show the time
       cout << "Elapsed time: " << scene->curtime << "s" << endl;
@@ -175,13 +185,13 @@ void CanvasGLUT::handle_mouse_button(int button, int state) {
     mouse_button = -1;
 }
 
-void CanvasGLUT::handle_mouse_drag(int dx, int dy) {
-  // Animate the scene
+void CanvasGLUT::handle_mouse_drag(int x, int y, int dx, int dy) {
+  Vec3 pt = scene->getWorldPos(x, y, width, height);
 
-  if (mouse_button == GLUT_LEFT_BUTTON) {  // move camera
+  if (mouse_button == GLUT_LEFT_BUTTON) {
     if (curBait < scene->baits.size()) {
       Bait* b = scene->baits[curBait];
-      b->pos += 0.5 * Vec3f(dx, -dy, 0.);
+      b->pos = pt;
       glutPostRedisplay();
     }
   }
