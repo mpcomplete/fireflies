@@ -13,6 +13,7 @@ class Bait : public Arrow {
   int mode_next;      // the next mode to activate
   double mode_when;   // next time to activate a mode (ref timer)
   Timer stop_timer;   // timer for stopping events
+  double repel;
 
   // options
   double bspeed;    // my speed

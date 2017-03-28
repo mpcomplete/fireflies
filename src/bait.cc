@@ -23,6 +23,8 @@ Bait::Bait() : Arrow() {
       accel[i] = baccel;
   }
 
+  repel = -1.0;
+
   set_color();
 
 #ifdef DEBUG
@@ -41,13 +43,17 @@ void Bait::draw() {
 }
 
 void Bait::elapse(double t) {
-  hsv[0] += hue_rate * t;
+  // hsv[0] += hue_rate * t;
   age += t;
 
-  if (age >= mode_when)
-    bait_start_mode(this, mode_next);
-  while (stop_timer.is_ready(age))
-    bait_stop_mode(this, stop_timer.pop());
+  if (repel > 0.0) {
+    repel -= t;
+  }
+
+  // if (age >= mode_when)
+  //   bait_start_mode(this, mode_next);
+  // while (stop_timer.is_ready(age))
+  //   bait_stop_mode(this, stop_timer.pop());
 
   // calc_accel();
   // velocity += accel * t;

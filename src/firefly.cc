@@ -17,9 +17,9 @@ Firefly::~Firefly() {
 }
 
 void Firefly::draw() {
-  glPushMatrix();
-  Arrow::draw();
-  glPopMatrix();
+  // glPushMatrix();
+  // Arrow::draw();
+  // glPopMatrix();
 
   tail->draw();
 }
@@ -40,28 +40,8 @@ void Firefly::elapse(double t) {
 }
 
 void Firefly::calc_accel() {
-  if (age > 2.0 && rand_int(0, 60) == 0 && false) {
-    GLuint i, closest_i = 0;
-    double dist, closest_dist = 1e10;
-    for (i = 0; i < scene.baits.size(); i++) {
-      if ((dist = norm(scene.baits[i]->pos - pos)) < closest_dist) {
-        closest_dist = dist;
-        closest_i = i;
-      }
-    }
-    dist = norm(bait->pos - pos);
-    if (closest_dist < dist - 1.0) {
-      bait = scene.baits[closest_i];
-      age = 0.;
-    }
-  } else if (age > 5.0) {
-    if (norm(bait->pos - pos) >= 200 &&
-        !(bait->bspeed == 0 || bait->attractor)) {
-      bait->mode_next = BMODE_STOP;
-    }
-  }
-
-  accel = bait->faccel * unit_vec(bait->pos - pos);
+  double bait_accel = bait->repel > 0.0 ? -bait->faccel : bait->faccel;
+  accel = bait_accel * unit_vec(bait->pos - pos);
 }
 
 void Firefly::set_color() {

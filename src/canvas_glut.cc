@@ -25,8 +25,8 @@ CanvasGLUT::CanvasGLUT(Scene* s, bool fs, int m, int argc, char *argv[])
 }
 
 int CanvasGLUT::create_window() {
-  glutInitWindowSize(1280, 720);
-  width = 1280; height = 720;
+  width = 720*2; height = 480*2;
+  glutInitWindowSize(width, height);
   glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
   glutCreateWindow("Fireflies");
 
@@ -83,22 +83,20 @@ void CanvasGLUT::idle() {
   // Animate the scene
   if (ms >= mspf) {
     last_tick = now;
-    if (animate) {
-      scene->elapse(ms / 1000.0);
+
+    t *= 2.0;
+  
+    if (mouse_button != -1 && curBait < scene->baits.size()) {
+      Bait* b = scene->baits[curBait];
+
+      b->elapse(t);
+      for (auto f: scene->flies) {
+        if (f->bait == b)
+          f->elapse(t);
+      }
+
       glutPostRedisplay();
     }
-  }
-
-  if (mouse_button != -1 && curBait < scene->baits.size()) {
-    Bait* b = scene->baits[curBait];
-
-    b->elapse(t);
-    for (auto f: scene->flies) {
-      if (f->bait == b)
-        f->elapse(t);
-    }
-
-    glutPostRedisplay();
   }
 
 }
@@ -126,35 +124,17 @@ void CanvasGLUT::handle_keypress(unsigned char key) {
     case 's':
       glutCanvas->take_screenshot();
       break;
-    case 'p':  // pause or unpause
-      animate = !animate;
-      break;
     case 'c':
+    case 'C':
       if (b) {
-        b->hsv[0] += 40.0f;
+        b->hsv[0] += key == 'c' ? 20.0f : 50.0f;
         b->set_color();
       }
       break;
-    case 't':  // show the time
-      cout << "Elapsed time: " << scene->curtime << "s" << endl;
-      break;
-    case '+':
-      scene->fast_forward *= 2;
-      cout << "fast forward: " << scene->fast_forward << "x" << endl;
-      break;
-    case '_':
-      if (scene->fast_forward > 1)
-        scene->fast_forward /= 2;
-      cout << "fast forward: " << scene->fast_forward << "x" << endl;
-      break;
-    case '=':
-      scene->fast_forward += 1;
-      cout << "fast forward: " << scene->fast_forward << "x" << endl;
-      break;
-    case '-':
-      if (scene->fast_forward > 1)
-        scene->fast_forward -= 1;
-      cout << "fast forward: " << scene->fast_forward << "x" << endl;
+    case 'r':
+      if (b) {
+        b->repel = 0.2;
+      }
       break;
     default: {
       size_t c = ((key - '0') + 9) % 10;
@@ -163,9 +143,8 @@ void CanvasGLUT::handle_keypress(unsigned char key) {
       if (c >= 0 && c < scene->baits.size()) {
         if (curBait == c) {
           Bait* b = scene->baits[curBait];
-          for (int i = 0; i < 50; i++) {
+          for (int i = 0; i < 50; i++)
             scene->flies.push_back(new Firefly(b, b->pos, world[2]));
-          }
           cout << "added flies to bait " << c << endl;
         } else {
           curBait = c;
