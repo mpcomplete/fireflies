@@ -165,9 +165,13 @@ static Window create_glx_window(Display* display) {
   swa.border_pixel = 0;
   swa.event_mask = StructureNotifyMask;
 
+  Window root = RootWindow(display, vi->screen);
+  XWindowAttributes rootAttributes;
+  XGetWindowAttributes(display, root, &rootAttributes);
   printf("Creating window\n");
-  Window win = XCreateWindow(display, RootWindow(display, vi->screen), 0, 0,
-                             640, 360, 0, vi->depth, InputOutput, vi->visual,
+  Window win = XCreateWindow(display, root,
+                             0, 0, rootAttributes.width, rootAttributes.height,
+                             0, vi->depth, InputOutput, vi->visual,
                              CWBorderPixel | CWColormap | CWEventMask, &swa);
   if (!win) {
     printf("Failed to create window.\n");
