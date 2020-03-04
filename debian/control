@@ -4,8 +4,8 @@ Priority: extra
 Maintainer: Sebastian Pipping <sebastian@pipping.org>
 # autoconf-archive for AX_CXX_BOOL autoconf macro
 Build-Depends: debhelper (>= 8.0.0),
- autoconf-archive,
- libx11-dev, libsdl1.2-dev, libglu1-mesa-dev, mesa-common-dev
+ autoconf-archive, freeglut3-dev, libglew-dev,
+ libx11-dev, libglu1-mesa-dev, mesa-common-dev
 Standards-Version: 3.9.3
 Homepage: https://github.com/mpcomplete/fireflies
 Vcs-Git: https://github.com/mpcomplete/fireflies
