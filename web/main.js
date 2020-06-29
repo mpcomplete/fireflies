@@ -430,12 +430,17 @@ const camera = regl({
   }
 })
 
+// let canvas = document.getElementsByTagName("canvas")[0];
+// canvas.addEventListener('mousedown', e => {
+//   frame++;
+// });
+
 let frame = 1;
-let sec = 0;
-setInterval(function() {
-  sec += 1;
-  console.log(frame / sec);
-}, 1000);
+// let sec = 0;
+// setInterval(function() {
+//   sec += 1;
+//   console.log(frame / sec);
+// }, 1000);
 regl.frame(function () {
   camera(() => {
     regl.clear({
@@ -460,10 +465,5 @@ regl.frame(function () {
     }
   });
 
-  frame++;
-});
-
-let canvas = document.getElementsByTagName("canvas")[0];
-canvas.addEventListener('mousedown', e => {
   frame++;
 });
