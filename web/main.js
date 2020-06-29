@@ -1,9 +1,9 @@
 const regl = require("regl")({extensions: ['WEBGL_draw_buffers', 'OES_texture_float', 'ANGLE_instanced_arrays']});
-const Vec3 = require("vec3");
 const mat4 = require("gl-mat4");
+const pointers = require("./pointers.js");
 
 const NUM_LEADERS = 3; // Leaders wander aimlessly.
-const NUM_FLIES = 100; // Flies chase leaders.
+const NUM_FLIES = 200; // Flies chase leaders.
 const NUM_CRITTERS = NUM_FLIES + NUM_LEADERS;
 const TAIL_LENGTH = 200;
 
@@ -51,7 +51,7 @@ var fliesFBO = createDoubleFBO();
 fliesFBO.src.color[0].subimage({ // position
   width: NUM_CRITTERS,
   height: 1,
-  data: Array.from({length: NUM_CRITTERS*4}, () => rand(-3, 3))
+  data: Array.from({length: NUM_CRITTERS*4}, () => rand(-10, 10))
 });
 fliesFBO.src.color[1].subimage({ // velocity
   width: NUM_CRITTERS,
@@ -82,17 +82,20 @@ const updatePositions = regl({
   uniform float numCritters;
   varying vec2 uv;
   varying vec2 uvPrev;
+  varying vec4 mousePos;
 
   vec3 chaseLeader(vec3 pos, vec3 vel, vec2 leaderUV) {
     vec3 leaderPos = texture2D(positionTex, leaderUV).xyz;
     float factor = 0.9;
-    vec3 accel = factor*normalize(leaderPos - pos);
+    vec3 dir = leaderPos - pos;
+    float dist = length(dir);
+    vec3 accel = factor*dir*(pow(dist/10., .7)/dist);
     vel += accel*dt;
     return vel;
   }
 
   vec3 matchVelocity(vec3 pos, vec3 vel, vec2 leaderUV) {
-    float factor = 0.005; // Adjust by this % of average velocity
+    float factor = 0.05; // Adjust by this % of average velocity
 
     vec3 avgVel = vec3(0,0,0);
     float numNeighbors = 0.;
@@ -153,22 +156,23 @@ const updatePositions = regl({
 
       vel = chaseLeader(pos, vel, leaderUV);
       vel = matchVelocity(pos, vel, leaderUV);
-      // pos = texture2D(positionTex, leaderUV).xyz;
       vel = clamp(vel, -maxVelocity, maxVelocity);
 
       if (scalars.z > followTime) {
         float leaderIdx = rand()*numLeaders/numCritters;
         float hue = texture2D(scalarTex, vec2(leaderIdx, uvPrev.y)).y; // new leader's hue
-        float age = rand()*3.;
+        float age = rand()*7.;
         scalars.xyz = vec3(leaderIdx, hue, age);
       }
+    } else if (mousePos.w > 0. && uv.x < 1./numCritters) {
+      pos = mousePos.xyz;
     } else {
       const float maxVelocity = 1.2;
       vel = flyAimlessly(pos, vel);
       vel = maxVelocity*normalize(vel);
     }
     const float hueRate = .005;
-    scalars.y += hueRate * dt;
+    scalars.y = mod(scalars.y + hueRate * dt, 1.0);
     scalars.z += dt;
 
     pos += vel*dt;
@@ -182,11 +186,18 @@ const updatePositions = regl({
   attribute vec2 position;
   varying vec2 uv;
   varying vec2 uvPrev;
+  varying vec4 mousePos;
+  uniform mat4 projection, view;
   uniform float prevHistoryIdx;
+  uniform vec3 mouseDown;
   void main () {
     uv = position * 0.5 + 0.5;
     uvPrev = vec2(uv.x, prevHistoryIdx);
     gl_Position = vec4(position, 0., 1.);
+    if (mouseDown.z >= 0.)
+      mousePos = vec4((projection * view * vec4(mouseDown.xy, 20., 1.)).xyz, 1.0);
+    else
+      mousePos = vec4(0.);
   }`,
 
   attributes: {
@@ -198,6 +209,7 @@ const updatePositions = regl({
     scalarTex: () => fliesFBO.src.color[2],
     prevHistoryIdx: regl.prop("prevHistoryIdx"), // read from
     historyIdx: regl.prop("historyIdx"), // write to
+    mouseDown: regl.prop("mouseDown"),
     numLeaders: NUM_LEADERS,
     numCritters: NUM_CRITTERS,
     dt: 1./24,
@@ -430,28 +442,29 @@ const camera = regl({
   }
 })
 
-// let canvas = document.getElementsByTagName("canvas")[0];
-// canvas.addEventListener('mousedown', e => {
-//   frame++;
-// });
-
 let frame = 1;
 // let sec = 0;
-// setInterval(function() {
-//   sec += 1;
-//   console.log(frame / sec);
-// }, 1000);
+// setInterval(function() { console.log(frame / ++sec); }, 1000);
 regl.frame(function () {
   camera(() => {
     regl.clear({
       color: [0, 0, 0, 1]
     })
 
+    let mouseDown = [-1,-1, -1];
+    for (let pointer of pointers.pointers) {
+      if (pointer.isDown) {
+        mouseDown = [pointer.pos[0] - .5, pointer.pos[1] - .5, 0];
+        mouseDown[0] *= 20;
+        mouseDown[1] *= 7;
+        break;
+      }
+    }
     let dy = 0.5 / TAIL_LENGTH;
     let prevHistoryIdx = dy+((frame-1) % TAIL_LENGTH) / TAIL_LENGTH;
     let historyIdx = dy+(frame % TAIL_LENGTH) / TAIL_LENGTH;
     // console.log(prevHistoryIdx, historyIdx);
-    updatePositions({historyIdx: historyIdx, prevHistoryIdx: prevHistoryIdx});
+    updatePositions({historyIdx: historyIdx, prevHistoryIdx: prevHistoryIdx, mouseDown: mouseDown});
     fliesFBO.swap();
     // testDraw({quantity: fliesFBO.src.color[0]});
 
