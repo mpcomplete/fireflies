@@ -1,0 +1,23 @@
+{
+  "name": "fireflies",
+  "version": "1.0.0",
+  "description": "Fireflies flocking visualizer",
+  "main": "main.ts",
+  "dependencies": {
+    "gl-mat4": "^1.1.4",
+    "vec3": "^0.1.5",
+    "hsv2rgb": "^1.1.0",
+    "indexhtmlify": "^2.0.0",
+    "regl": "^1.6.1"
+  },
+  "scripts": {
+    "test": "node test",
+    "watch": "budo main.js -d --live",
+    "build": "browserify --debug main.js | indexhtmlify > index.html"
+  },
+  "author": "Matt Perry",
+  "license": "MIT",
+  "devDependencies": {
+    "browserify": "^16.5.1"
+  }
+}
