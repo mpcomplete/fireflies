@@ -70,7 +70,9 @@ fliesFBO.src.color[2].subimage({ // leaderIndex
 });
 
 const updatePositions = regl({
-  frag: `
+  frag: 
+  '#define NUM_CRITTERS ' + NUM_CRITTERS.toFixed(1) + '\n' +
+  '#define NUM_LEADERS ' + NUM_LEADERS.toFixed(1) + '\n' + `
 #extension GL_EXT_draw_buffers : require
   precision mediump float;
   uniform sampler2D positionTex;
@@ -78,8 +80,6 @@ const updatePositions = regl({
   uniform sampler2D scalarTex;
   uniform float historyIdx;
   uniform float dt;
-  uniform float numLeaders;
-  uniform float numCritters;
   varying vec2 uv;
   varying vec2 uvPrev;
   varying vec4 mousePos;
@@ -89,8 +89,25 @@ const updatePositions = regl({
     float factor = 0.9;
     vec3 dir = leaderPos - pos;
     float dist = length(dir);
-    vec3 accel = factor*dir*(pow(dist/10., .7)/dist);
+    vec3 accel = dir*(factor*pow(dist/10., .7)/dist);
     vel += accel*dt;
+    return vel;
+  }
+
+  vec3 avoidOthers(vec3 pos, vec3 vel, vec2 leaderUV) {
+    float minDistance = 5.;
+    float factor = .5;
+    vec3 moveV = vec3(0,0,0);
+    for (float u = .5/NUM_CRITTERS; u < 1.0; u += 1./NUM_CRITTERS) {
+      if (u != uvPrev.x) {
+        vec3 otherPos = texture2D(positionTex, vec2(uvPrev)).xyz;
+        if (distance(pos, otherPos) < minDistance)
+          moveV += pos - otherPos;
+      }
+      float otherLeaderIdx = texture2D(scalarTex, vec2(u, uvPrev.y)).x;
+    }
+
+    vel += factor*moveV;
     return vel;
   }
 
@@ -99,13 +116,11 @@ const updatePositions = regl({
 
     vec3 avgVel = vec3(0,0,0);
     float numNeighbors = 0.;
-    // for (vec2 fuv = vec2(0., 0.); fuv.x < 1.0; fuv.x += 1./100.) {
-    //   vec3 otherVel = texture2D(velocityTex, fuv).xyz;
-    for (float u = 0.; u < 1.0; u += 1./100.) {
-      vec3 otherVel = texture2D(velocityTex, vec2(uvPrev)).xyz;
+    float mid = .5/NUM_CRITTERS;
+    for (float u = .5/NUM_CRITTERS; u < 1.0; u += 1./NUM_CRITTERS) {
       float otherLeaderIdx = texture2D(scalarTex, vec2(u, uvPrev.y)).x;
       if (otherLeaderIdx == leaderUV.x) {
-        avgVel += otherVel;
+        avgVel += texture2D(velocityTex, vec2(uvPrev)).xyz;
         numNeighbors += 1.;
       }
     }
@@ -118,16 +133,16 @@ const updatePositions = regl({
   }
 
   vec3 flyAimlessly(vec3 pos, vec3 vel) {
-    float bounds = 8.;
+    vec3 bounds = vec3(10., 6., 6.);
     // const accel = fly.pos.scaled(-factor);
     // fly.vel.add(accel.scaled(dt));
     // Reverse direction when out of bounds
-    if (pos.x < -bounds) vel.x = abs(vel.x);
-    if (pos.y < -bounds) vel.y = abs(vel.y);
-    if (pos.z < -bounds) vel.z = abs(vel.z);
-    if (pos.x >  bounds) vel.x = -abs(vel.x);
-    if (pos.y >  bounds) vel.y = -abs(vel.y);
-    if (pos.z >  bounds) vel.z = -abs(vel.z);
+    if (pos.x < -bounds.x) vel.x = abs(vel.x);
+    if (pos.y < -bounds.y) vel.y = abs(vel.y);
+    if (pos.z < -bounds.z) vel.z = abs(vel.z);
+    if (pos.x >  bounds.x) vel.x = -abs(vel.x);
+    if (pos.y >  bounds.y) vel.y = -abs(vel.y);
+    if (pos.z >  bounds.z) vel.z = -abs(vel.z);
     return vel;
   }
 
@@ -151,20 +166,21 @@ const updatePositions = regl({
     vec3 vel = texture2D(velocityTex, uvPrev).xyz;
 
     if (scalars.x >= 0.) {
-      const float maxVelocity = 1.5;
+      const float maxVelocity = 1.7;
       const float followTime = 20.;
 
       vel = chaseLeader(pos, vel, leaderUV);
+      vel = avoidOthers(pos, vel, leaderUV);
       vel = matchVelocity(pos, vel, leaderUV);
-      vel = clamp(vel, -maxVelocity, maxVelocity);
+      vel = maxVelocity*normalize(vel);
 
       if (scalars.z > followTime) {
-        float leaderIdx = rand()*numLeaders/numCritters;
+        float leaderIdx = rand()*NUM_LEADERS/NUM_CRITTERS;
         float hue = texture2D(scalarTex, vec2(leaderIdx, uvPrev.y)).y; // new leader's hue
         float age = rand()*7.;
         scalars.xyz = vec3(leaderIdx, hue, age);
       }
-    } else if (mousePos.w > 0. && uv.x < 1./numCritters) {
+    } else if (mousePos.w > 0. && uv.x < 1./NUM_CRITTERS) {
       pos = mousePos.xyz;
     } else {
       const float maxVelocity = 1.2;
@@ -189,12 +205,12 @@ const updatePositions = regl({
   varying vec4 mousePos;
   uniform mat4 projection, view;
   uniform float prevHistoryIdx;
-  uniform vec3 mouseDown;
+  uniform vec4 mouseDown;
   void main () {
     uv = position * 0.5 + 0.5;
     uvPrev = vec2(uv.x, prevHistoryIdx);
     gl_Position = vec4(position, 0., 1.);
-    if (mouseDown.z >= 0.)
+    if (mouseDown.w >= 0.)
       mousePos = vec4((projection * view * vec4(mouseDown.xy, 20., 1.)).xyz, 1.0);
     else
       mousePos = vec4(0.);
@@ -210,8 +226,6 @@ const updatePositions = regl({
     prevHistoryIdx: regl.prop("prevHistoryIdx"), // read from
     historyIdx: regl.prop("historyIdx"), // write to
     mouseDown: regl.prop("mouseDown"),
-    numLeaders: NUM_LEADERS,
-    numCritters: NUM_CRITTERS,
     dt: 1./24,
   },
   count: 6,
@@ -451,10 +465,10 @@ regl.frame(function () {
       color: [0, 0, 0, 1]
     })
 
-    let mouseDown = [-1,-1, -1];
+    let mouseDown = [-1,-1, -1, -1];
     for (let pointer of pointers.pointers) {
       if (pointer.isDown) {
-        mouseDown = [pointer.pos[0] - .5, pointer.pos[1] - .5, 0];
+        mouseDown = [pointer.pos[0] - .5, pointer.pos[1] - .5, 0, 1];
         mouseDown[0] *= 20;
         mouseDown[1] *= 7;
         break;
