@@ -512,7 +512,7 @@ regl.frame(function () {
     fliesFBO.swap();
     // testDraw({quantity: fliesFBO.src.color[0]});
 
-    const drawLeaders = true;
+    const drawLeaders = false;
     for (let i = 0; i < NUM_CRITTERS; i++) {
       if (i < NUM_LEADERS && !drawLeaders)
         continue;
