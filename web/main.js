@@ -247,7 +247,7 @@ const updatePositions = regl({
         scalars.y = hue + .1*(2.*speed/maxSpeed - 1.);
       }
     } else {  // a leader
-      const float maxVelocity = 1.2;
+      const float maxVelocity = 1.7;
       vel = flyAimlessly(pos, vel);
       vel = maxVelocity*normalize(vel);
 
