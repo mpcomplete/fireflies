@@ -45,28 +45,36 @@ function createDoubleFBO() {
 // const extend = (a, b) => Object.assign(b, a);
 const rand = (min, max) => Math.random() * (max - min) + min;
 const randInt = (min, max) => Math.floor(rand(min, max+1));
+const jitterVec = (v, d) => v.map((x) => x + rand(-d, d))
 
 // Initialize flies with random position and velocity.
+let leaderPos = Array.from({length: NUM_LEADERS}, () => jitterVec([0,0,0,0], 10));
+let leaderHues = Array.from({length: NUM_LEADERS}, () => randInt(0, 12)/12);
+let fliesToLeader = Array.from({length: NUM_CRITTERS}, (_, i) => i < NUM_LEADERS ? -1 : randInt(0, NUM_LEADERS-1));
+
+// Spawn 3 groups of flies per leader.
+let groupPos = Array.from({length: NUM_LEADERS*3}, () => jitterVec([0,0,0,0], 10));
+let fliesToGroup = Array.from({length: NUM_CRITTERS}, () => randInt(0, groupPos.length-1));
+
 var fliesFBO = createDoubleFBO();
 fliesFBO.src.color[0].subimage({ // position
   width: NUM_CRITTERS,
   height: 1,
-  data: Array.from({length: NUM_CRITTERS*4}, () => rand(-10, 10))
+  data: Array.from({length: NUM_CRITTERS}, (_, i) => i < NUM_LEADERS ?
+    leaderPos[i] :
+    jitterVec(groupPos[fliesToGroup[i]], 1))
 });
 fliesFBO.src.color[1].subimage({ // velocity
   width: NUM_CRITTERS,
   height: 1,
-  data: Array.from({length: NUM_CRITTERS*4}, () => rand(-1, 1))
+  data: Array.from({length: NUM_CRITTERS*4}, (_, i) => i < NUM_LEADERS*4 ? rand(-1, 1) : 0)
 });
-let leaderHues = [0, .25, .5, .75];
-// let leaderHues = Array.from({length: NUM_LEADERS}, () => rand(0, 1));
-let fliesToLeaders = Array.from({length: NUM_CRITTERS}, (_, i) => i < NUM_LEADERS ? -1 : randInt(0, NUM_LEADERS-1));
 fliesFBO.src.color[2].subimage({ // leaderIndex
   width: NUM_CRITTERS,
   height: 1,
   data: Array.from({length: NUM_CRITTERS}, (_, i) => i < NUM_LEADERS ?
     [-1,leaderHues[i],0,0] :
-    [fliesToLeaders[i]/NUM_CRITTERS,leaderHues[fliesToLeaders[i]],rand(0, 5),0])
+    [fliesToLeader[i]/NUM_CRITTERS,leaderHues[fliesToLeader[i]],rand(0, 5),0])
 });
 
 const updatePositions = regl({
@@ -88,7 +96,7 @@ const updatePositions = regl({
     vec3 leaderPos = texture2D(positionTex, leaderUV).xyz;
     float factor = 0.9;
     vec3 dir = leaderPos - pos;
-    float dist = length(dir);
+    float dist = 1.0;//max(0.1, length(dir));
     vec3 accel = dir*(factor*pow(dist/10., .7)/dist);
     vel += accel*dt;
     return vel;
@@ -290,6 +298,7 @@ const drawFly = regl({
 
   attributes: {
     position: [[0,0,S*3], [0,0,-S*1], [S,0,0], [0,-S,0], [-S,0,0], [0,S,0]],
+    // colorz: [1, 0, 0, 0, 0, 0, 0, 0]
   },
   elements: [
     [0,2,3], [0,3,4], [0,4,5], [0,5,2], // front
@@ -308,7 +317,7 @@ const drawFly = regl({
   },
 });
 
-const T = .1;
+const T = .15;
 const TH = .15;
 const drawTails = regl({
   frag: `
@@ -444,7 +453,7 @@ const testDraw = regl({
 const camera = regl({
   uniforms: {
     view: mat4.lookAt([],
-                      [0, 0, 20], // why is this reversed?
+                      [0, 0, 20],
                       [0, 0, 0],
                       [0, 1, 0]),
     projection: ({viewportWidth, viewportHeight}) =>
