@@ -77,7 +77,7 @@ fliesFBO.src.color[2].subimage({ // leaderIndex
   height: 1,
   data: Array.from({length: NUM_CRITTERS}, (_, i) => i < NUM_LEADERS ?
     [-1,leaderHues[i],0,0] :
-    [fliesToLeader[i]/NUM_CRITTERS,leaderHues[fliesToLeader[i]],rand(0, 5),0])
+    [fliesToLeader[i],leaderHues[fliesToLeader[i]],rand(0, 5),0])
 });
 
 // Common functions some shaders share.
@@ -117,12 +117,15 @@ const updatePositions = regl({
   '#define NUM_LEADERS ' + NUM_LEADERS + '\n' + `
 
   precision mediump float;
+  precision highp int;
   uniform sampler2D positionTex;
   uniform sampler2D velocityTex;
   uniform sampler2D scalarTex;
   uniform int historyIdx;
+  uniform int prevHistoryIdx;
   uniform float dt;
-  flat in ivec2 ij;
+  in vec2 ijf;
+  in vec2 ijCurf;
   in vec4 mousePos;
 
   layout(location = 0) out vec4 fragData0;
@@ -144,8 +147,8 @@ const updatePositions = regl({
     float factor = 0.02;
     vec3 moveV = vec3(0,0,0);
     for (int i = 0; i < NUM_CRITTERS; i++) {
-      if (i != ij.x) {
-        vec3 otherPos = texelFetch(positionTex, ivec2(i, ij.y), 0).xyz;
+      if (i != int(ijf.x)) {
+        vec3 otherPos = texelFetch(positionTex, ivec2(i, int(ijf.y)), 0).xyz;
         if (distance(pos, otherPos) < minDistance)
           moveV += pos - otherPos;
       }
@@ -161,9 +164,9 @@ const updatePositions = regl({
     vec3 avgVel = vec3(0,0,0);
     float numNeighbors = 0.;
     for (int i = 0; i < NUM_CRITTERS; i++) {
-      int otherLeaderIdx = int(texelFetch(scalarTex, ivec2(i, ij.y), 0).x);
+      int otherLeaderIdx = int(texelFetch(scalarTex, ivec2(i, int(ijf.y)), 0).x);
       if (otherLeaderIdx == leaderIJ.x) {
-        avgVel += texelFetch(velocityTex, ivec2(i, ij.y), 0).xyz;
+        avgVel += texelFetch(velocityTex, ivec2(i, int(ijf.y)), 0).xyz;
         numNeighbors += 1.;
       }
     }
@@ -191,19 +194,22 @@ const updatePositions = regl({
 
   // https://thebookofshaders.com/10/
   float rand() {
-    return fract(sin(dot(vec2(float(ij.x), float(ij.y)),vec2(12.9898,78.233)))*43758.5453123);
+    return fract(sin(dot(ijf,vec2(12.9898,78.233)))*43758.5453123);
   }
 
   void main () {
-    if (ij.y != historyIdx) {
+    int numHistory = textureSize(positionTex, 0).y;
+    ivec2 ij = ivec2(floor(ijf));
+    ivec2 ijCur = ivec2(floor(ijCurf));
+
+    if (ijCur.y != historyIdx) {
       // Not the current history index: this is a tail.
-      fragData0 = texelFetch(positionTex, ij, 0);
-      fragData1 = texelFetch(velocityTex, ij, 0);
-      fragData2 = texelFetch(scalarTex, ij, 0);
+      fragData0 = texelFetch(positionTex, ijCur, 0);
+      fragData1 = texelFetch(velocityTex, ijCur, 0);
+      fragData2 = texelFetch(scalarTex, ijCur, 0);
 
       // Apply wind.
-      int numHistory = textureSize(positionTex, 0).x;
-      float age = mod(1.0 + float(ij.y - historyIdx)/float(numHistory), 1.0);
+      float age = mod(1.0 + float(ijCur.y - historyIdx)/float(numHistory), 1.0);
       vec3 wind = .3*normalize(vec3(2,1,1));
       fragData0.xyz += wind * age * age * dt;
       return;
@@ -256,15 +262,16 @@ const updatePositions = regl({
   vert: `#version 300 es
   precision mediump float;
   in vec2 position;
-  flat out ivec2 ij;
+  out vec2 ijf;
+  out vec2 ijCurf;
   out vec4 mousePos;
   uniform sampler2D positionTex;
   uniform mat4 projection, view;
   uniform int prevHistoryIdx;
   uniform vec4 mouseDown;
   void main () {
-    int flyIdx = int(float(textureSize(positionTex, 0).x) * (position.x * .5 + .5));
-    ij = ivec2(flyIdx, prevHistoryIdx);
+    ijCurf = vec2(textureSize(positionTex, 0)) * (position * .5 + .5);
+    ijf = vec2(ijCurf.x, float(prevHistoryIdx));
     gl_Position = vec4(position, 0., 1.);
     if (mouseDown.w >= 0.)
       mousePos = vec4((projection * view * vec4(mouseDown.xy, 20., 1.)).xyz, 1.0);
