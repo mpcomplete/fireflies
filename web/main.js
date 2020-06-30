@@ -1,4 +1,4 @@
-const webgl2 = require("./webgl2.js");
+const webgl2 = require("./regl-webgl2-compat.js");
 const regl = webgl2.overrideContextType(() => require("regl")({extensions: ['WEBGL_draw_buffers', 'OES_texture_float', 'ANGLE_instanced_arrays']}));
 const mat4 = require("gl-mat4");
 const pointers = require("./pointers.js");
