@@ -363,8 +363,8 @@ const drawFly = regl({
   },
 });
 
-const T = .15;
-const TH = .15;
+const TW = .15;
+const TL = .15;
 const drawTails = regl({
   frag: `#version 300 es
   precision mediump float;
@@ -395,13 +395,14 @@ const drawTails = regl({
     vec4 velocity = texelFetch(velocityTex, ij, 0);
     vec4 scalars = texelFetch(scalarTex, ij, 0);
     vec4 color = hsv2rgb(vec4(scalars.y, .8, .8, 1.));
-    vec4 pos = pointAt(velocity.xyz) * vec4(position.xyz, 1) + vec4(offset.xyz, 0);
+    float scale = length(velocity)/2.;
+    vec4 pos = pointAt(velocity.xyz) * vec4(position.xyz * vec3(1,1,scale), 1) + vec4(offset.xyz, 0);
     gl_Position = projection * view * pos;
     vColor = vec4(color.rgb, alpha * pow(1.-age, 0.7));
   }`,
 
   attributes: {
-    position: [[-T,0,0], [-T,0,TH], [0,0,0], [0,0,TH], [T,0,0], [T,0,TH]],
+    position: [[-TW,0,0], [-TW,0,TL], [0,0,0], [0,0,TL], [TW,0,0], [TW,0,TL]],
     alpha: [0, 0, 1, 1, 0, 0,],
     instanceHistoryIdx: {
       buffer: Array.from({length: TAIL_LENGTH}, (_, i) => i),
