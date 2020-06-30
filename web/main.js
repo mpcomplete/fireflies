@@ -450,6 +450,8 @@ const camera = regl({
   }
 })
 
+const uvFromIdx = (i,j) => [(i+.5)/NUM_CRITTERS, ((j+.5) / TAIL_LENGTH) % 1.0];
+
 let frame = 1;
 // let sec = 0;
 // setInterval(function() { console.log(frame / ++sec); }, 1000);
@@ -468,21 +470,19 @@ regl.frame(function () {
         break;
       }
     }
-    let dy = 0.5 / TAIL_LENGTH;
-    let prevHistoryIdx = dy+((frame-1) % TAIL_LENGTH) / TAIL_LENGTH;
-    let historyIdx = dy+(frame % TAIL_LENGTH) / TAIL_LENGTH;
     // console.log(prevHistoryIdx, historyIdx);
-    updatePositions({historyIdx: historyIdx, prevHistoryIdx: prevHistoryIdx, mouseDown: mouseDown});
+    updatePositions({historyIdx: uvFromIdx(0, frame)[1], prevHistoryIdx: uvFromIdx(0, frame-1)[1], mouseDown: mouseDown});
     fliesFBO.swap();
     // testDraw({quantity: fliesFBO.src.color[0]});
 
     for (let i = 0; i < NUM_FLIES; i++) {
-      let u = (i+.5+NUM_LEADERS)/NUM_CRITTERS;
-      drawFly({uv: [u, historyIdx]});
-      drawTails({flyIdx: u, currentHistoryIdx: historyIdx});
+      let uv = uvFromIdx(i+NUM_LEADERS, frame);
+      drawFly({uv: uv});
+      drawTails({flyIdx: uv[0], currentHistoryIdx: uv[1]});
     }
     for (let i = 0; i < NUM_LEADERS; i++) {
-      drawFly({uv: [i/NUM_CRITTERS, historyIdx]});
+      let uv = uvFromIdx(i, frame);
+      drawFly({uv: uv});
     }
   });
 
