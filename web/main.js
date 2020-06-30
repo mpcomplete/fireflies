@@ -6,7 +6,7 @@ const pointers = require("./pointers.js");
 const NUM_LEADERS = 3; // Leaders wander aimlessly.
 const NUM_FLIES = 253; // Flies chase leaders.
 const NUM_CRITTERS = NUM_FLIES + NUM_LEADERS;
-const TAIL_LENGTH = 256;
+const TAIL_LENGTH = 180;
 
 // Textures hold a single property for every critter.
 // Each critter has a single row in a given property's texture, with the column representing
@@ -193,9 +193,11 @@ const updatePositions = regl({
   }
 
   // https://thebookofshaders.com/10/
+  float noise(vec2 st) {
+    return fract(sin(dot(st,vec2(12.9898,78.233)))*43758.5453123);
+  }
   float rand(float offset) {
-    vec2 pos = texelFetch(positionTex, ivec2(ijf), 0).xy;
-    return fract(sin(dot(pos.xy + offset,vec2(12.9898,78.233)))*43758.5453123);
+    return noise(texelFetch(positionTex, ivec2(ijf), 0).xy + vec2(offset, 0));
   }
 
   void main () {
@@ -226,7 +228,7 @@ const updatePositions = regl({
       pos = mousePos.xyz;
     } else if (scalars.x >= 0.) {  // a firefly
       bool isAffectedByMouse = mousePos.w > 0. && leaderIJ.x == 0;
-      float maxSpeed = isAffectedByMouse ? 10.0 : 2.7;
+      float maxSpeed = (isAffectedByMouse ? 10.0 : 2.7) * (.75 + .5*noise(vec2(ij.x, 0)));
       const float followTime = 20.;
 
       vel = chaseLeader(pos, vel, leaderIJ);
@@ -264,7 +266,7 @@ const updatePositions = regl({
         scalars.z = rand(0.)*wanderTime/2.;
       }
 
-      float hueRate = .005 + .02*rand(0.);
+      float hueRate = .005 + .02*noise(vec2(ij.x, 0.));
       scalars.y = mod(scalars.y + hueRate * dt, 1.0);
     }
     scalars.z += dt; // age
