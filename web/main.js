@@ -1,11 +1,47 @@
-const regl = require("regl")({extensions: ['WEBGL_draw_buffers', 'OES_texture_float', 'ANGLE_instanced_arrays']});
+const webgl2 = require("./webgl2.js");
+
+function wrapGLContext(gl) {
+  var x = gl.getExtension('EXT_color_buffer_float');
+  var extensions = {};
+  const origGetExt = gl.getExtension
+  gl.getExtension = function(n) {
+    return extensions[n.toLowerCase()];
+  }
+  var origTexImage = gl.texImage2D;
+  gl.texImage2D = function(target, miplevel, iformat, a,b,c,format,type,f) {
+    var ifmt = webgl2.getInternalFormat(gl, iformat, type);
+    origTexImage.apply(gl, [target, miplevel, ifmt, a, b, c, format,type, f]);
+  }
+
+  webgl2.gl2(gl, extensions);
+
+  return gl;
+}
+
+function overrideContextType (forcedContextType, callback) {
+  // Monkey-patch context creation to override the context type
+  const origGetContext = HTMLCanvasElement.prototype.getContext
+  HTMLCanvasElement.prototype.getContext = function (ignoredContextType, contextAttributes) {
+    return wrapGLContext(origGetContext.bind(this)(forcedContextType, contextAttributes));
+  };
+  // Execute the callback with overridden context type
+  var rv = callback();
+
+  // Restore the original method
+  HTMLCanvasElement.prototype.getContext = origGetContext;
+  return rv;
+}
+
+const regl = overrideContextType('webgl2', () => require("regl")({extensions: ['WEBGL_draw_buffers', 'OES_texture_float', 'ANGLE_instanced_arrays']}));
+
+// const regl = require("regl")({gl: gl});
 const mat4 = require("gl-mat4");
 const pointers = require("./pointers.js");
 
 const NUM_LEADERS = 3; // Leaders wander aimlessly.
-const NUM_FLIES = 200; // Flies chase leaders.
+const NUM_FLIES = 253; // Flies chase leaders.
 const NUM_CRITTERS = NUM_FLIES + NUM_LEADERS;
-const TAIL_LENGTH = 200;
+const TAIL_LENGTH = 256;
 
 // Textures hold a single property for every critter.
 // Each critter has a single row in a given property's texture, with the column representing
@@ -13,7 +49,7 @@ const TAIL_LENGTH = 200;
 // ex. positionTexture[X, Y] = critter X's position at history Y.
 // History is done as a circular queue, with the current history index incrementing each frame from 0 to TAIL_LENGTH.
 var TEX_PROPS = {
-  type: 'float',
+  type: 'float32',
   format: 'rgba',
   wrap: 'clamp',
   width: NUM_CRITTERS,
@@ -27,7 +63,9 @@ function createFBO() {
       regl.texture(TEX_PROPS), // velocity
       regl.texture(TEX_PROPS), // scalars: leaderIndex, hue(leaderOnly), age, 0
     ],
-    depthStencil: false
+    depthStencil: false,
+    depth: false,
+    stencil: false,
   });
 }
 
@@ -78,7 +116,7 @@ fliesFBO.src.color[2].subimage({ // leaderIndex
 });
 
 // Common functions some shaders share.
-const shaderCommon = `
+const shaderCommon = `#version 300 es
 mat4 rotation(float angle, vec3 axis) {
   vec3 a = normalize(axis);
   float s = sin(angle);
@@ -108,21 +146,27 @@ vec4 hsv2rgb(vec4 c) {
 
 const updatePositions = regl({
   frag: 
+  '#version 300 es\n' +
+  // '#extension GL_EXT_draw_buffers : require\n' +
   '#define NUM_CRITTERS ' + NUM_CRITTERS.toFixed(1) + '\n' +
   '#define NUM_LEADERS ' + NUM_LEADERS.toFixed(1) + '\n' + `
-#extension GL_EXT_draw_buffers : require
+
   precision mediump float;
   uniform sampler2D positionTex;
   uniform sampler2D velocityTex;
   uniform sampler2D scalarTex;
   uniform float historyIdx;
   uniform float dt;
-  varying vec2 uv;
-  varying vec2 uvPrev;
-  varying vec4 mousePos;
+  in vec2 uv;
+  in vec2 uvPrev;
+  in vec4 mousePos;
+
+  layout(location = 0) out vec4 fragData0;
+  layout(location = 1) out vec4 fragData1;
+  layout(location = 2) out vec4 fragData2;
 
   vec3 chaseLeader(vec3 pos, vec3 vel, vec2 leaderUV) {
-    vec3 leaderPos = texture2D(positionTex, leaderUV).xyz;
+    vec3 leaderPos = texture(positionTex, leaderUV).xyz;
     float factor = 0.9;
     vec3 dir = leaderPos - pos;
     float dist = 1.0;//max(0.1, length(dir));
@@ -137,7 +181,7 @@ const updatePositions = regl({
     vec3 moveV = vec3(0,0,0);
     for (float u = .5/NUM_CRITTERS; u < 1.0; u += 1./NUM_CRITTERS) {
       if (u != uvPrev.x) {
-        vec3 otherPos = texture2D(positionTex, vec2(u, uvPrev.y)).xyz;
+        vec3 otherPos = texture(positionTex, vec2(u, uvPrev.y)).xyz;
         if (distance(pos, otherPos) < minDistance)
           moveV += pos - otherPos;
       }
@@ -153,9 +197,9 @@ const updatePositions = regl({
     vec3 avgVel = vec3(0,0,0);
     float numNeighbors = 0.;
     for (float u = .5/NUM_CRITTERS; u < 1.0; u += 1./NUM_CRITTERS) {
-      float otherLeaderIdx = texture2D(scalarTex, vec2(u, uvPrev.y)).x;
+      float otherLeaderIdx = texture(scalarTex, vec2(u, uvPrev.y)).x;
       if (otherLeaderIdx == leaderUV.x) {
-        avgVel += texture2D(velocityTex, vec2(u, uvPrev.y)).xyz;
+        avgVel += texture(velocityTex, vec2(u, uvPrev.y)).xyz;
         numNeighbors += 1.;
       }
     }
@@ -189,21 +233,21 @@ const updatePositions = regl({
   void main () {
     if (abs(uv.y - historyIdx) >= 0.0001) {
       // Not the current history index: this is a tail.
-      gl_FragData[0] = texture2D(positionTex, uv);
-      gl_FragData[1] = texture2D(velocityTex, uv);
-      gl_FragData[2] = texture2D(scalarTex, uv);
+      fragData0 = texture(positionTex, uv);
+      fragData1 = texture(velocityTex, uv);
+      fragData2 = texture(scalarTex, uv);
 
       // Apply wind.
       float age = mod(1.0 + historyIdx - uv.y, 1.0);
       vec3 wind = .3*normalize(vec3(2,1,1));
-      gl_FragData[0].xyz += wind * age * age * dt;
+      fragData0.xyz += wind * age * age * dt;
       return;
     }
 
-    vec4 scalars = texture2D(scalarTex, uvPrev);
+    vec4 scalars = texture(scalarTex, uvPrev);
     vec2 leaderUV = vec2(scalars.x, uvPrev.y);
-    vec3 pos = texture2D(positionTex, uvPrev).xyz;
-    vec3 vel = texture2D(velocityTex, uvPrev).xyz;
+    vec3 pos = texture(positionTex, uvPrev).xyz;
+    vec3 vel = texture(velocityTex, uvPrev).xyz;
 
     if (mousePos.w > 0. && uv.x < 1./NUM_CRITTERS) {
       // Mouse controls the first leader.
@@ -221,11 +265,11 @@ const updatePositions = regl({
 
       if (scalars.z > followTime) {
         float leaderIdx = rand()*NUM_LEADERS/NUM_CRITTERS;
-        float hue = texture2D(scalarTex, vec2(leaderIdx, uvPrev.y)).y; // new leader's hue
+        float hue = texture(scalarTex, vec2(leaderIdx, uvPrev.y)).y; // new leader's hue
         float age = rand()*followTime/2.;
         scalars.xyz = vec3(leaderIdx, hue, age);
       } else {
-        float hue = texture2D(scalarTex, leaderUV).y;
+        float hue = texture(scalarTex, leaderUV).y;
         scalars.y = hue + .1*(2.*speed/maxSpeed - 1.);
       }
     } else {
@@ -239,17 +283,17 @@ const updatePositions = regl({
     scalars.z += dt; // age
 
     pos += vel*dt;
-    gl_FragData[0].xyz = pos;
-    gl_FragData[1].xyz = vel;
-    gl_FragData[2] = scalars;
+    fragData0.xyz = pos;
+    fragData1.xyz = vel;
+    fragData2 = scalars;
   }
   `,
-  vert: `
+  vert: `#version 300 es
   precision mediump float;
-  attribute vec2 position;
-  varying vec2 uv;
-  varying vec2 uvPrev;
-  varying vec4 mousePos;
+  in vec2 position;
+  out vec2 uv;
+  out vec2 uvPrev;
+  out vec4 mousePos;
   uniform mat4 projection, view;
   uniform float prevHistoryIdx;
   uniform vec4 mouseDown;
@@ -281,28 +325,29 @@ const updatePositions = regl({
 
 const S = 0.1;
 const drawFly = regl({
-  frag: `
+  frag: `#version 300 es
   precision mediump float;
-  varying vec4 vColor;
+  in vec4 vColor;
+  out vec4 fragColor;
   void main() {
-    gl_FragColor = vColor;
+    fragColor = vColor;
   }`,
 
   vert: shaderCommon + `
   precision mediump float;
-  attribute vec3 position;
+  in vec3 position;
   uniform vec3 offset;
   uniform mat4 projection, view;
-  varying vec4 vColor;
+  out vec4 vColor;
   uniform sampler2D positionTex;
   uniform sampler2D velocityTex;
   uniform sampler2D scalarTex;
   uniform vec2 uv;
 
   void main() {
-    vec4 offset = texture2D(positionTex, uv);
-    vec4 velocity = texture2D(velocityTex, uv);
-    vec4 scalars = texture2D(scalarTex, uv);
+    vec4 offset = texture(positionTex, uv);
+    vec4 velocity = texture(velocityTex, uv);
+    vec4 scalars = texture(scalarTex, uv);
     vec4 color = hsv2rgb(vec4(scalars.y, .8, .8, 1.));
     gl_Position = projection * view * (pointAt(velocity.xyz) * vec4(position.xyz, 1) + vec4(offset.xyz, 0));
     vColor = color;
@@ -332,18 +377,19 @@ const drawFly = regl({
 const T = .15;
 const TH = .15;
 const drawTails = regl({
-  frag: `
+  frag: `#version 300 es
   precision mediump float;
-  varying vec4 vColor;
+  in vec4 vColor;
+  out vec4 fragColor;
   void main() {
-    gl_FragColor = vColor;
+    fragColor = vColor;
   }`,
 
   vert: shaderCommon + `
   precision mediump float;
-  attribute vec3 position;
-  attribute float alpha;
-  attribute float historyIdx;
+  in vec3 position;
+  in float alpha;
+  in float historyIdx;
   uniform mat4 projection, view;
 
   uniform sampler2D positionTex;
@@ -351,14 +397,14 @@ const drawTails = regl({
   uniform sampler2D scalarTex;
   uniform float flyIdx;
   uniform float currentHistoryIdx;
-  varying vec4 vColor;
+  out vec4 vColor;
 
   void main() {
     float age = mod(1.0 + currentHistoryIdx - historyIdx, 1.0);
     vec2 uv = vec2(flyIdx, historyIdx);
-    vec4 offset = texture2D(positionTex, uv);
-    vec4 velocity = texture2D(velocityTex, uv);
-    vec4 scalars = texture2D(scalarTex, uv);
+    vec4 offset = texture(positionTex, uv);
+    vec4 velocity = texture(velocityTex, uv);
+    vec4 scalars = texture(scalarTex, uv);
     vec4 color = hsv2rgb(vec4(scalars.y, .8, .8, 1.));
     vec4 pos = pointAt(velocity.xyz) * vec4(position.xyz, 1) + vec4(offset.xyz, 0);
     gl_Position = projection * view * pos;
@@ -409,18 +455,19 @@ const drawTails = regl({
 });
 
 const testDraw = regl({
-  frag: `
+  frag: `#version 300 es
   precision mediump float;
   uniform sampler2D quantity;
-  varying vec2 uv;
+  in vec2 uv;
+  out vec4 fragColor;
 
   void main() {
-    gl_FragColor = vec4(texture2D(quantity, uv).rgb, 1.);
+    fragColor = vec4(texture(quantity, uv).rgb, 1.);
   }`,
-  vert: `
+  vert: `#version 300 es
   precision mediump float;
-  attribute vec2 position;
-  varying vec2 uv;
+  in vec2 position;
+  out vec2 uv;
   void main () {
     uv = position * 0.5 + 0.5;
     gl_Position = vec4(position, 0., 1.);
