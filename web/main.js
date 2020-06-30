@@ -118,15 +118,14 @@ const updatePositions = regl({
 
   precision mediump float;
   precision highp int;
+  in vec2 ijf;
+  in vec4 mousePos;
+
   uniform sampler2D positionTex;
   uniform sampler2D velocityTex;
   uniform sampler2D scalarTex;
-  uniform int historyIdx;
-  uniform int prevHistoryIdx;
+  uniform int historyIdx, prevHistoryIdx;
   uniform float dt;
-  in vec2 ijf;
-  in vec2 ijCurf;
-  in vec4 mousePos;
 
   layout(location = 0) out vec4 fragData0;
   layout(location = 1) out vec4 fragData1;
@@ -134,21 +133,22 @@ const updatePositions = regl({
 
   vec3 chaseLeader(vec3 pos, vec3 vel, ivec2 leaderIJ) {
     vec3 leaderPos = texelFetch(positionTex, leaderIJ, 0).xyz;
-    float factor = 0.9;
+    float factor = 1.1;
     vec3 dir = leaderPos - pos;
-    float dist = 1.0;//max(0.1, length(dir));
-    vec3 accel = dir*(factor*pow(dist/10., .7)/dist);
+    float dist = 1.0;
+    // float dist = max(2.0, length(dir));
+    vec3 accel = dir*(factor*pow(dist/3., .7)/dist);
     vel += accel*dt;
     return vel;
   }
 
   vec3 avoidOthers(vec3 pos, vec3 vel, ivec2 leaderIJ) {
-    float minDistance = 0.2;
+    float minDistance = 0.3;
     float factor = 0.02;
     vec3 moveV = vec3(0,0,0);
     for (int i = 0; i < NUM_CRITTERS; i++) {
       if (i != int(ijf.x)) {
-        vec3 otherPos = texelFetch(positionTex, ivec2(i, int(ijf.y)), 0).xyz;
+        vec3 otherPos = texelFetch(positionTex, ivec2(i, prevHistoryIdx), 0).xyz;
         if (distance(pos, otherPos) < minDistance)
           moveV += pos - otherPos;
       }
@@ -164,9 +164,9 @@ const updatePositions = regl({
     vec3 avgVel = vec3(0,0,0);
     float numNeighbors = 0.;
     for (int i = 0; i < NUM_CRITTERS; i++) {
-      int otherLeaderIdx = int(texelFetch(scalarTex, ivec2(i, int(ijf.y)), 0).x);
+      int otherLeaderIdx = int(texelFetch(scalarTex, ivec2(i, prevHistoryIdx), 0).x);
       if (otherLeaderIdx == leaderIJ.x) {
-        avgVel += texelFetch(velocityTex, ivec2(i, int(ijf.y)), 0).xyz;
+        avgVel += texelFetch(velocityTex, ivec2(i, prevHistoryIdx), 0).xyz;
         numNeighbors += 1.;
       }
     }
@@ -199,51 +199,54 @@ const updatePositions = regl({
 
   void main () {
     int numHistory = textureSize(positionTex, 0).y;
-    ivec2 ij = ivec2(floor(ijf));
-    ivec2 ijCur = ivec2(floor(ijCurf));
+    ivec2 ij = ivec2(ijf);
+    ivec2 ijPrev = ivec2(ij.x, prevHistoryIdx);
 
-    if (ijCur.y != historyIdx) {
-      // Not the current history index: this is a tail.
-      fragData0 = texelFetch(positionTex, ijCur, 0);
-      fragData1 = texelFetch(velocityTex, ijCur, 0);
-      fragData2 = texelFetch(scalarTex, ijCur, 0);
+    if (ij.y != historyIdx) {
+      // Not the current history index: this is a tail. Keep most data intact.
+      fragData0 = texelFetch(positionTex, ij, 0);
+      fragData1 = texelFetch(velocityTex, ij, 0);
+      fragData2 = texelFetch(scalarTex, ij, 0);
 
       // Apply wind.
-      float age = mod(1.0 + float(ijCur.y - historyIdx)/float(numHistory), 1.0);
+      float age = mod(1.0 + float(ij.y - historyIdx)/float(numHistory), 1.0);
       vec3 wind = .3*normalize(vec3(2,1,1));
       fragData0.xyz += wind * age * age * dt;
       return;
     }
 
-    vec4 scalars = texelFetch(scalarTex, ij, 0);
-    ivec2 leaderIJ = ivec2(int(scalars.x), ij.y);
-    vec3 pos = texelFetch(positionTex, ij, 0).xyz;
-    vec3 vel = texelFetch(velocityTex, ij, 0).xyz;
+    vec3 pos = texelFetch(positionTex, ijPrev, 0).xyz;
+    vec3 vel = texelFetch(velocityTex, ijPrev, 0).xyz;
+    vec4 scalars = texelFetch(scalarTex, ijPrev, 0);
+    ivec2 leaderIJ = ivec2(int(scalars.x), ijPrev.y);
 
     if (mousePos.w > 0. && ij.x == 0) {
       // Mouse controls the first leader.
       pos = mousePos.xyz;
-    } else if (scalars.x >= 0.) {
-      const float maxSpeed = 1.7;
+    } else if (scalars.x >= 0.) {  // a firefly
+      const float maxSpeed = 2.7;
       const float followTime = 20.;
 
       vel = chaseLeader(pos, vel, leaderIJ);
-      vel = avoidOthers(pos, vel, leaderIJ);
-      vel = matchVelocity(pos, vel, leaderIJ);
+      // Turns out it looks cooler without these factors.
+      // Hypothesis: chasing the same leader already causes flies to match each other's velocity;
+      // and avoiding others prevents the cool-looking effect of crossing paths.
+      // vel = avoidOthers(pos, vel, leaderIJ);
+      // vel = matchVelocity(pos, vel, leaderIJ);
       float speed = length(vel);
       if (speed > maxSpeed)
         vel = vel*(maxSpeed/speed);
 
       if (scalars.z > followTime) {
         int leaderIdx = int(rand()*float(NUM_LEADERS));
-        float hue = texelFetch(scalarTex, ivec2(leaderIdx, ij.y), 0).y; // new leader's hue
+        float hue = texelFetch(scalarTex, ivec2(leaderIdx, ijPrev.y), 0).y; // new leader's hue
         float age = rand()*followTime/2.;
         scalars.xyz = vec3(float(leaderIdx), hue, age);
       } else {
         float hue = texelFetch(scalarTex, leaderIJ, 0).y;
         scalars.y = hue + .1*(2.*speed/maxSpeed - 1.);
       }
-    } else {
+    } else {  // a leader
       const float maxVelocity = 1.2;
       vel = flyAimlessly(pos, vel);
       vel = maxVelocity*normalize(vel);
@@ -263,15 +266,13 @@ const updatePositions = regl({
   precision mediump float;
   in vec2 position;
   out vec2 ijf;
-  out vec2 ijCurf;
   out vec4 mousePos;
   uniform sampler2D positionTex;
   uniform mat4 projection, view;
-  uniform int prevHistoryIdx;
+  uniform int historyIdx, prevHistoryIdx;
   uniform vec4 mouseDown;
   void main () {
-    ijCurf = vec2(textureSize(positionTex, 0)) * (position * .5 + .5);
-    ijf = vec2(ijCurf.x, float(prevHistoryIdx));
+    ijf = vec2(textureSize(positionTex, 0)) * (position * .5 + .5);
     gl_Position = vec4(position, 0., 1.);
     if (mouseDown.w >= 0.)
       mousePos = vec4((projection * view * vec4(mouseDown.xy, 20., 1.)).xyz, 1.0);
@@ -308,15 +309,17 @@ const drawFly = regl({
   vert: shaderCommon + `
   precision mediump float;
   in vec3 position;
+  out vec4 vColor;
+
   uniform vec3 offset;
   uniform mat4 projection, view;
-  out vec4 vColor;
   uniform sampler2D positionTex;
   uniform sampler2D velocityTex;
   uniform sampler2D scalarTex;
-  uniform ivec2 ij;
+  uniform int flyIdx, historyIdx;
 
   void main() {
+    ivec2 ij = ivec2(flyIdx, historyIdx);
     vec4 offset = texelFetch(positionTex, ij, 0);
     vec4 velocity = texelFetch(velocityTex, ij, 0);
     vec4 scalars = texelFetch(scalarTex, ij, 0);
@@ -338,7 +341,8 @@ const drawFly = regl({
     positionTex: () => fliesFBO.src.color[0],
     velocityTex: () => fliesFBO.src.color[1],
     scalarTex: () => fliesFBO.src.color[2],
-    ij: regl.prop('ij'),
+    flyIdx: regl.prop('flyIdx'),
+    historyIdx: regl.prop('historyIdx'),
   },
 
   depth: {
@@ -361,20 +365,19 @@ const drawTails = regl({
   precision mediump float;
   in vec3 position;
   in float alpha;
-  in float historyIdx;
-  uniform mat4 projection, view;
+  in float instanceHistoryIdx;
+  out vec4 vColor;
 
+  uniform mat4 projection, view;
   uniform sampler2D positionTex;
   uniform sampler2D velocityTex;
   uniform sampler2D scalarTex;
-  uniform int flyIdx;
-  uniform int currentHistoryIdx;
-  out vec4 vColor;
+  uniform int flyIdx, historyIdx;
 
   void main() {
     int numHistory = textureSize(positionTex, 0).y;
-    float age = mod(1.0 + float(currentHistoryIdx - int(historyIdx))/float(numHistory), 1.0);
-    ivec2 ij = ivec2(flyIdx, historyIdx);
+    float age = mod(1.0 + float(historyIdx - int(instanceHistoryIdx))/float(numHistory), 1.0);
+    ivec2 ij = ivec2(flyIdx, instanceHistoryIdx);
     vec4 offset = texelFetch(positionTex, ij, 0);
     vec4 velocity = texelFetch(velocityTex, ij, 0);
     vec4 scalars = texelFetch(scalarTex, ij, 0);
@@ -386,9 +389,8 @@ const drawTails = regl({
 
   attributes: {
     position: [[-T,0,0], [-T,0,TH], [0,0,0], [0,0,TH], [T,0,0], [T,0,TH]],
-    // alpha: [0,0,0, 0,0,0, 1,1,1, 1,1,1, 0,0,0, 0,0,0],
     alpha: [0, 0, 1, 1, 0, 0,],
-    historyIdx: {
+    instanceHistoryIdx: {
       buffer: Array.from({length: TAIL_LENGTH}, (_, i) => i),
       divisor: 1,
     }
@@ -402,7 +404,7 @@ const drawTails = regl({
     velocityTex: () => fliesFBO.src.color[1],
     scalarTex: () => fliesFBO.src.color[2],
     flyIdx: regl.prop('flyIdx'),
-    currentHistoryIdx: regl.prop('currentHistoryIdx'),
+    historyIdx: regl.prop('historyIdx'),
   },
 
   depth: {
@@ -470,8 +472,6 @@ const camera = regl({
   }
 })
 
-const uvFromIdx = (i,j) => [(i+.5)/NUM_CRITTERS, ((j+.5) / TAIL_LENGTH) % 1.0];
-
 let frame = 1;
 // let sec = 0;
 // setInterval(function() { console.log(frame / ++sec); }, 1000);
@@ -491,19 +491,19 @@ regl.frame(function () {
       }
     }
 
-    let prevHistoryIdx = (TAIL_LENGTH + frame-1) % TAIL_LENGTH;
+    let prevHistoryIdx = (frame-1) % TAIL_LENGTH;
     let historyIdx = frame % TAIL_LENGTH;
     // console.log(prevHistoryIdx, historyIdx);
     updatePositions({historyIdx: historyIdx, prevHistoryIdx: prevHistoryIdx, mouseDown: mouseDown});
     fliesFBO.swap();
     // testDraw({quantity: fliesFBO.src.color[0]});
 
-    for (let i = 0; i < NUM_FLIES; i++) {
-      drawFly({ij: [i+NUM_LEADERS, historyIdx]});
-      drawTails({flyIdx: i+NUM_LEADERS, currentHistoryIdx: historyIdx});
-    }
-    for (let i = 0; i < NUM_LEADERS; i++) {
-      drawFly({ij: [i, historyIdx]});
+    const drawLeaders = false;
+    for (let i = 0; i < NUM_CRITTERS; i++) {
+      if (i < NUM_LEADERS && !drawLeaders)
+        continue;
+      drawFly({flyIdx: i, historyIdx: historyIdx});
+      drawTails({flyIdx: i, historyIdx: historyIdx});
     }
   });
 
