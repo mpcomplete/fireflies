@@ -77,6 +77,35 @@ fliesFBO.src.color[2].subimage({ // leaderIndex
     [fliesToLeader[i]/NUM_CRITTERS,leaderHues[fliesToLeader[i]],rand(0, 5),0])
 });
 
+// Common functions some shaders share.
+const shaderCommon = `
+mat4 rotation(float angle, vec3 axis) {
+  vec3 a = normalize(axis);
+  float s = sin(angle);
+  float c = cos(angle);
+  float oc = 1.0 - c;
+
+  return mat4(oc * a.x * a.x + c,        oc * a.x * a.y - a.z * s,  oc * a.z * a.x + a.y * s, 0.0,
+              oc * a.x * a.y + a.z * s,  oc * a.y * a.y + c,        oc * a.y * a.z - a.x * s, 0.0,
+              oc * a.z * a.x - a.y * s,  oc * a.y * a.z + a.x * s,  oc * a.z * a.z + c,       0.0,
+              0.0,                       0.0,                       0.0,                      1.0);
+}
+
+mat4 pointAt(vec3 dir) {
+  vec3 front = vec3(0, 0, -1); // why is this reversed?
+  vec3 ndir = normalize(dir);
+  vec3 axis = cross(front, ndir);
+  float angle = acos(dot(front, ndir));
+  return rotation(angle, axis);
+}
+
+// http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl
+vec4 hsv2rgb(vec4 c) {
+  vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+  return vec4(c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y), c.a);
+}`;
+
 const updatePositions = regl({
   frag: 
   '#define NUM_CRITTERS ' + NUM_CRITTERS.toFixed(1) + '\n' +
@@ -259,7 +288,7 @@ const drawFly = regl({
     gl_FragColor = vColor;
   }`,
 
-  vert: `
+  vert: shaderCommon + `
   precision mediump float;
   attribute vec3 position;
   uniform vec3 offset;
@@ -269,33 +298,6 @@ const drawFly = regl({
   uniform sampler2D velocityTex;
   uniform sampler2D scalarTex;
   uniform vec2 uv;
-
-  mat4 rotation(float angle, vec3 axis) {
-      vec3 a = normalize(axis);
-      float s = sin(angle);
-      float c = cos(angle);
-      float oc = 1.0 - c;
-
-      return mat4(oc * a.x * a.x + c,        oc * a.x * a.y - a.z * s,  oc * a.z * a.x + a.y * s, 0.0,
-                  oc * a.x * a.y + a.z * s,  oc * a.y * a.y + c,        oc * a.y * a.z - a.x * s, 0.0,
-                  oc * a.z * a.x - a.y * s,  oc * a.y * a.z + a.x * s,  oc * a.z * a.z + c,       0.0,
-                  0.0,                       0.0,                       0.0,                      1.0);
-  }
-
-  mat4 pointAt(vec3 dir) {
-    vec3 front = vec3(0, 0, -1); // why is this reversed?
-    vec3 ndir = normalize(dir);
-    vec3 axis = cross(front, ndir);
-    float angle = acos(dot(front, ndir));
-    return rotation(angle, axis);
-  }
-
-  // http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl
-  vec4 hsv2rgb(vec4 c) {
-    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-    return vec4(c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y), c.a);
-  }
 
   void main() {
     vec4 offset = texture2D(positionTex, uv);
@@ -337,7 +339,7 @@ const drawTails = regl({
     gl_FragColor = vColor;
   }`,
 
-  vert: `
+  vert: shaderCommon + `
   precision mediump float;
   attribute vec3 position;
   attribute float alpha;
@@ -350,33 +352,6 @@ const drawTails = regl({
   uniform float flyIdx;
   uniform float currentHistoryIdx;
   varying vec4 vColor;
-
-  mat4 rotation(float angle, vec3 axis) {
-    vec3 a = normalize(axis);
-    float s = sin(angle);
-    float c = cos(angle);
-    float oc = 1.0 - c;
-
-    return mat4(oc * a.x * a.x + c,        oc * a.x * a.y - a.z * s,  oc * a.z * a.x + a.y * s, 0.0,
-                oc * a.x * a.y + a.z * s,  oc * a.y * a.y + c,        oc * a.y * a.z - a.x * s, 0.0,
-                oc * a.z * a.x - a.y * s,  oc * a.y * a.z + a.x * s,  oc * a.z * a.z + c,       0.0,
-                0.0,                       0.0,                       0.0,                      1.0);
-  }
-
-  mat4 pointAt(vec3 dir) {
-    vec3 front = vec3(0, 0, -1); // why is this reversed?
-    vec3 ndir = normalize(dir);
-    vec3 axis = cross(front, ndir);
-    float angle = acos(dot(front, ndir));
-    return rotation(angle, axis);
-  }
-
-  // http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl
-  vec4 hsv2rgb(vec4 c) {
-    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-    return vec4(c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y), c.a);
-  }
 
   void main() {
     float age = mod(1.0 + currentHistoryIdx - historyIdx, 1.0);
