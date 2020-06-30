@@ -50,11 +50,11 @@ const jitterVec = (v, d) => v.map((x) => x + rand(-d, d))
 // Initialize flies with random position and velocity.
 let leaderPos = Array.from({length: NUM_LEADERS}, () => jitterVec([0,0,0,0], 10));
 let leaderHues = Array.from({length: NUM_LEADERS}, () => randInt(0, 12)/12);
-let fliesToLeader = Array.from({length: NUM_CRITTERS}, (_, i) => i < NUM_LEADERS ? -1 : randInt(0, NUM_LEADERS-1));
 
 // Spawn 3 groups of flies per leader.
-let groupPos = Array.from({length: NUM_LEADERS*3}, () => jitterVec([0,0,0,0], 10));
+let groupPos = Array.from({length: NUM_LEADERS*3}, () => jitterVec([0,0,0,0], 20));
 let fliesToGroup = Array.from({length: NUM_CRITTERS}, () => randInt(0, groupPos.length-1));
+let fliesToLeader = Array.from({length: NUM_CRITTERS}, (_, i) => i < NUM_LEADERS ? -1 : Math.floor(fliesToGroup[i]/3));
 
 var fliesFBO = createDoubleFBO();
 fliesFBO.src.color[0].subimage({ // position
@@ -62,7 +62,7 @@ fliesFBO.src.color[0].subimage({ // position
   height: 1,
   data: Array.from({length: NUM_CRITTERS}, (_, i) => i < NUM_LEADERS ?
     leaderPos[i] :
-    jitterVec(groupPos[fliesToGroup[i]], 1))
+    jitterVec(groupPos[fliesToGroup[i]], 2))
 });
 fliesFBO.src.color[1].subimage({ // velocity
   width: NUM_CRITTERS,
@@ -103,16 +103,15 @@ const updatePositions = regl({
   }
 
   vec3 avoidOthers(vec3 pos, vec3 vel, vec2 leaderUV) {
-    float minDistance = 5.;
-    float factor = .5;
+    float minDistance = 0.2;
+    float factor = 0.02;
     vec3 moveV = vec3(0,0,0);
     for (float u = .5/NUM_CRITTERS; u < 1.0; u += 1./NUM_CRITTERS) {
       if (u != uvPrev.x) {
-        vec3 otherPos = texture2D(positionTex, vec2(uvPrev)).xyz;
+        vec3 otherPos = texture2D(positionTex, vec2(u, uvPrev.y)).xyz;
         if (distance(pos, otherPos) < minDistance)
           moveV += pos - otherPos;
       }
-      float otherLeaderIdx = texture2D(scalarTex, vec2(u, uvPrev.y)).x;
     }
 
     vel += factor*moveV;
@@ -120,15 +119,14 @@ const updatePositions = regl({
   }
 
   vec3 matchVelocity(vec3 pos, vec3 vel, vec2 leaderUV) {
-    float factor = 0.05; // Adjust by this % of average velocity
+    float factor = 0.01; // Adjust by this % of average velocity
 
     vec3 avgVel = vec3(0,0,0);
     float numNeighbors = 0.;
-    float mid = .5/NUM_CRITTERS;
     for (float u = .5/NUM_CRITTERS; u < 1.0; u += 1./NUM_CRITTERS) {
       float otherLeaderIdx = texture2D(scalarTex, vec2(u, uvPrev.y)).x;
       if (otherLeaderIdx == leaderUV.x) {
-        avgVel += texture2D(velocityTex, vec2(uvPrev)).xyz;
+        avgVel += texture2D(velocityTex, vec2(u, uvPrev.y)).xyz;
         numNeighbors += 1.;
       }
     }
@@ -178,31 +176,38 @@ const updatePositions = regl({
     vec3 pos = texture2D(positionTex, uvPrev).xyz;
     vec3 vel = texture2D(velocityTex, uvPrev).xyz;
 
-    if (scalars.x >= 0.) {
-      const float maxVelocity = 1.7;
+    if (mousePos.w > 0. && uv.x < 1./NUM_CRITTERS) {
+      // Mouse controls the first leader.
+      pos = mousePos.xyz;
+    } else if (scalars.x >= 0.) {
+      const float maxSpeed = 1.7;
       const float followTime = 20.;
 
       vel = chaseLeader(pos, vel, leaderUV);
       vel = avoidOthers(pos, vel, leaderUV);
       vel = matchVelocity(pos, vel, leaderUV);
-      vel = maxVelocity*normalize(vel);
+      float speed = length(vel);
+      if (speed > maxSpeed)
+        vel = vel*(maxSpeed/speed);
 
       if (scalars.z > followTime) {
         float leaderIdx = rand()*NUM_LEADERS/NUM_CRITTERS;
         float hue = texture2D(scalarTex, vec2(leaderIdx, uvPrev.y)).y; // new leader's hue
-        float age = rand()*7.;
+        float age = rand()*followTime/2.;
         scalars.xyz = vec3(leaderIdx, hue, age);
+      } else {
+        float hue = texture2D(scalarTex, leaderUV).y;
+        scalars.y = hue + .1*(2.*speed/maxSpeed - 1.);
       }
-    } else if (mousePos.w > 0. && uv.x < 1./NUM_CRITTERS) {
-      pos = mousePos.xyz;
     } else {
       const float maxVelocity = 1.2;
       vel = flyAimlessly(pos, vel);
       vel = maxVelocity*normalize(vel);
+
+      float hueRate = .005 + .02*rand();
+      scalars.y = mod(scalars.y + hueRate * dt, 1.0);
     }
-    const float hueRate = .005;
-    scalars.y = mod(scalars.y + hueRate * dt, 1.0);
-    scalars.z += dt;
+    scalars.z += dt; // age
 
     pos += vel*dt;
     gl_FragData[0].xyz = pos;
