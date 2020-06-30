@@ -133,12 +133,12 @@ const updatePositions = regl({
 
   vec3 chaseLeader(vec3 pos, vec3 vel, ivec2 leaderIJ) {
     vec3 leaderPos = texelFetch(positionTex, leaderIJ, 0).xyz;
-    float factor = 1.1;
     vec3 dir = leaderPos - pos;
-    float dist = 1.0;
-    // float dist = max(2.0, length(dir));
-    vec3 accel = dir*(factor*pow(dist/3., .7)/dist);
-    vel += accel*dt;
+    float idealDist = 0.2;
+    float dist = max(0.01, length(dir));
+    float factor = (mousePos.w > 0. && leaderIJ.x == 0) ? 3. : 0.2;
+    float acc = max(0.1, pow(dist - idealDist, factor));
+    vel += acc*dt*dir;
     return vel;
   }
 
@@ -193,8 +193,9 @@ const updatePositions = regl({
   }
 
   // https://thebookofshaders.com/10/
-  float rand() {
-    return fract(sin(dot(ijf,vec2(12.9898,78.233)))*43758.5453123);
+  float rand(float offset) {
+    vec2 pos = texelFetch(positionTex, ivec2(ijf), 0).xy;
+    return fract(sin(dot(pos.xy + offset,vec2(12.9898,78.233)))*43758.5453123);
   }
 
   void main () {
@@ -224,7 +225,8 @@ const updatePositions = regl({
       // Mouse controls the first leader.
       pos = mousePos.xyz;
     } else if (scalars.x >= 0.) {  // a firefly
-      const float maxSpeed = 2.7;
+      bool isAffectedByMouse = mousePos.w > 0. && leaderIJ.x == 0;
+      float maxSpeed = isAffectedByMouse ? 10.0 : 2.7;
       const float followTime = 20.;
 
       vel = chaseLeader(pos, vel, leaderIJ);
@@ -238,20 +240,31 @@ const updatePositions = regl({
         vel = vel*(maxSpeed/speed);
 
       if (scalars.z > followTime) {
-        int leaderIdx = int(rand()*float(NUM_LEADERS));
+        // Switch leaders.
+        int leaderIdx = int(rand(0.)*float(NUM_LEADERS));
         float hue = texelFetch(scalarTex, ivec2(leaderIdx, ijPrev.y), 0).y; // new leader's hue
-        float age = rand()*followTime/2.;
+        float age = rand(0.)*followTime/2.;
         scalars.xyz = vec3(float(leaderIdx), hue, age);
       } else {
         float hue = texelFetch(scalarTex, leaderIJ, 0).y;
-        scalars.y = hue + .1*(2.*speed/maxSpeed - 1.);
+        float factor = isAffectedByMouse ? .1 : .1*(2.*speed/maxSpeed - 1.);
+        scalars.y = hue + factor;
       }
     } else {  // a leader
-      const float maxVelocity = 1.7;
+      const float wanderTime = 10.0;
+      const float maxSpeed = 2.1;
       vel = flyAimlessly(pos, vel);
-      vel = maxVelocity*normalize(vel);
+      vel = maxSpeed*normalize(vel);
 
-      float hueRate = .005 + .02*rand();
+      if (scalars.z > wanderTime) {
+        // Switch directions.
+        vec3 randVec = vec3(rand(0.), rand(.1), rand(.2)) * 2. - 1.;
+        if (length(randVec) > 0.001)
+          vel = maxSpeed*normalize(randVec);
+        scalars.z = rand(0.)*wanderTime/2.;
+      }
+
+      float hueRate = .005 + .02*rand(0.);
       scalars.y = mod(scalars.y + hueRate * dt, 1.0);
     }
     scalars.z += dt; // age
@@ -498,7 +511,7 @@ regl.frame(function () {
     fliesFBO.swap();
     // testDraw({quantity: fliesFBO.src.color[0]});
 
-    const drawLeaders = false;
+    const drawLeaders = true;
     for (let i = 0; i < NUM_CRITTERS; i++) {
       if (i < NUM_LEADERS && !drawLeaders)
         continue;
