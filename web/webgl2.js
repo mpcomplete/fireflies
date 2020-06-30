@@ -1,3 +1,5 @@
+// Compatability layer to make regl work with webgl2.
+// See https://github.com/regl-project/regl/issues/561
 var GL_DEPTH_COMPONENT = 0x1902
 var GL_DEPTH_STENCIL = 0x84F9
 var HALF_FLOAT_OES = 0x8D61
@@ -24,10 +26,26 @@ var gl2Extensions = {
   'EXT_shader_texture_lod': {}
 }
 
+var extensions = {};
 module.exports = {
+  overrideContextType: function (callback) {
+    const webgl2 = this;
+    // Monkey-patch context creation to override the context type.
+    const origGetContext = HTMLCanvasElement.prototype.getContext
+    HTMLCanvasElement.prototype.getContext = function (ignoredContextType, contextAttributes) {
+      return webgl2.wrapGLContext(origGetContext.bind(this)("webgl2", contextAttributes), extensions);
+    };
+    // Execute the callback with overridden context type.
+    var rv = callback();
+
+    // Restore the original method.
+    HTMLCanvasElement.prototype.getContext = origGetContext;
+    return rv;
+  },
+
   // webgl1 extensions natively supported by webgl2
   // this is called when initializing regl context
-  gl2: function (gl, extensions) {
+  wrapGLContext: function (gl, extensions) {
     gl[this.versionProperty] = 2
     for (var p in gl2Extensions) {
       extensions[p.toLowerCase()] = gl2Extensions[p]
@@ -35,6 +53,24 @@ module.exports = {
 
     // to support float and half-float textures
     gl.getExtension('EXT_color_buffer_float');
+
+    // Now override getExtension to return ours.
+    gl.getExtension = function(n) {
+      return extensions[n.toLowerCase()];
+    }
+
+    // And texImage2D to convert the internalFormat to webgl2.
+    const webgl2 = this;
+    var origTexImage = gl.texImage2D;
+    gl.texImage2D = function(target, miplevel, iformat, a, typeFor6, c, d, typeFor9, f) {
+      if (arguments.length == 6) {
+        var ifmt = webgl2.getInternalFormat(gl, iformat, typeFor6);
+        origTexImage.apply(gl, [target, miplevel, ifmt, a, typeFor6, c]);
+      } else { // arguments.length == 9
+        var ifmt = webgl2.getInternalFormat(gl, iformat, typeFor9);
+        origTexImage.apply(gl, [target, miplevel, ifmt, a, typeFor6, c, d, typeFor9, f]);
+      }
+    }
 
     // mocks of draw buffers's functions
     extensions['webgl_draw_buffers'] = {
@@ -73,6 +109,8 @@ module.exports = {
         return gl.vertexAttribDivisor.apply(gl, arguments)
       }
     }
+
+    return gl;
   },
 
   versionProperty: '___regl_gl_version___',

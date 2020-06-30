@@ -1,40 +1,5 @@
 const webgl2 = require("./webgl2.js");
-
-function wrapGLContext(gl) {
-  var x = gl.getExtension('EXT_color_buffer_float');
-  var extensions = {};
-  const origGetExt = gl.getExtension
-  gl.getExtension = function(n) {
-    return extensions[n.toLowerCase()];
-  }
-  var origTexImage = gl.texImage2D;
-  gl.texImage2D = function(target, miplevel, iformat, a,b,c,format,type,f) {
-    var ifmt = webgl2.getInternalFormat(gl, iformat, type);
-    origTexImage.apply(gl, [target, miplevel, ifmt, a, b, c, format,type, f]);
-  }
-
-  webgl2.gl2(gl, extensions);
-
-  return gl;
-}
-
-function overrideContextType (forcedContextType, callback) {
-  // Monkey-patch context creation to override the context type
-  const origGetContext = HTMLCanvasElement.prototype.getContext
-  HTMLCanvasElement.prototype.getContext = function (ignoredContextType, contextAttributes) {
-    return wrapGLContext(origGetContext.bind(this)(forcedContextType, contextAttributes));
-  };
-  // Execute the callback with overridden context type
-  var rv = callback();
-
-  // Restore the original method
-  HTMLCanvasElement.prototype.getContext = origGetContext;
-  return rv;
-}
-
-const regl = overrideContextType('webgl2', () => require("regl")({extensions: ['WEBGL_draw_buffers', 'OES_texture_float', 'ANGLE_instanced_arrays']}));
-
-// const regl = require("regl")({gl: gl});
+const regl = webgl2.overrideContextType(() => require("regl")({extensions: ['WEBGL_draw_buffers', 'OES_texture_float', 'ANGLE_instanced_arrays']}));
 const mat4 = require("gl-mat4");
 const pointers = require("./pointers.js");
 
