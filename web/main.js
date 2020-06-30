@@ -161,10 +161,15 @@ const updatePositions = regl({
 
   void main () {
     if (abs(uv.y - historyIdx) >= 0.0001) {
-      // Only write to the current row in history.
+      // Not the current history index: this is a tail.
       gl_FragData[0] = texture2D(positionTex, uv);
       gl_FragData[1] = texture2D(velocityTex, uv);
       gl_FragData[2] = texture2D(scalarTex, uv);
+
+      // Apply wind.
+      float age = mod(1.0 + historyIdx - uv.y, 1.0);
+      vec3 wind = .3*normalize(vec3(2,1,1));
+      gl_FragData[0].xyz += wind * age * age * dt;
       return;
     }
 
