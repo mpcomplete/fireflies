@@ -80,6 +80,8 @@ fliesFBO.src.color[2].subimage({ // leaderIndex
     [fliesToLeader[i],leaderHues[fliesToLeader[i]],rand(0, 5),0])
 });
 
+let startTime = new Date().getTime();
+
 // Common functions some shaders share.
 const shaderCommon = `#version 300 es
 mat4 rotation(float angle, vec3 axis) {
@@ -126,15 +128,32 @@ const updatePositions = regl({
   uniform sampler2D scalarTex;
   uniform int historyIdx, prevHistoryIdx;
   uniform float dt;
+  uniform float time;
 
   layout(location = 0) out vec4 fragData0;
   layout(location = 1) out vec4 fragData1;
   layout(location = 2) out vec4 fragData2;
 
+  // https://thebookofshaders.com/10/
+  float noise(vec2 st) {
+    return fract(sin(dot(st,vec2(12.9898,78.233)))*43758.5453123);
+  }
+  // float flynoise() {
+  //   return noise(vec2(ijf.x, 0.));
+  // }
+  float rand(float offset) {
+    return noise(texelFetch(positionTex, ivec2(ijf), 0).xy + vec2(offset, 0));
+  }
+
+  // Evil globals for the lazy programmer.
+  ivec2 ij;
+  ivec2 ijPrev;
+  float flynoise;  // constant noise for a given fly.
+
   vec3 chaseLeader(vec3 pos, vec3 vel, ivec2 leaderIJ) {
     vec3 leaderPos = texelFetch(positionTex, leaderIJ, 0).xyz;
     vec3 dir = leaderPos - pos;
-    float idealDist = 0.2;
+    const float idealDist = 0.2;
     float dist = max(0.01, length(dir));
     float factor = (mousePos.w > 0. && leaderIJ.x == 0) ? 3. : 0.2;
     float acc = max(0.1, pow(dist - idealDist, factor));
@@ -142,9 +161,30 @@ const updatePositions = regl({
     return vel;
   }
 
+  vec3 flyTowardsCenter(vec3 pos, vec3 vel, ivec2 leaderIJ) {
+    float factor = min(0., .05*sin(time*3.));
+    vec3 center = vec3(0,0,0);
+    float numNeighbors = 0.;
+    for (int i = 0; i < NUM_CRITTERS; i++) {
+      int otherLeaderIdx = int(texelFetch(scalarTex, ivec2(i, prevHistoryIdx), 0).x);
+      if (otherLeaderIdx == leaderIJ.x) {
+        center += texelFetch(positionTex, ivec2(i, prevHistoryIdx), 0).xyz;
+        numNeighbors += 1.;
+      }
+    }
+
+    if (numNeighbors > 0.) {
+      center = center / numNeighbors;
+      vel += factor*(center - pos);
+    }
+
+    return vel;
+  }
+
   vec3 avoidOthers(vec3 pos, vec3 vel, ivec2 leaderIJ) {
-    float minDistance = 0.3;
-    float factor = 0.02;
+    const float minDistance = .5;
+    // Make it periodic to allow occasional clumping because it looks cool.
+    float factor = max(0., .05*sin(time));
     vec3 moveV = vec3(0,0,0);
     for (int i = 0; i < NUM_CRITTERS; i++) {
       if (i != int(ijf.x)) {
@@ -159,8 +199,7 @@ const updatePositions = regl({
   }
 
   vec3 matchVelocity(vec3 pos, vec3 vel, ivec2 leaderIJ) {
-    float factor = 0.01; // Adjust by this % of average velocity
-
+    const float factor = 0.01;
     vec3 avgVel = vec3(0,0,0);
     float numNeighbors = 0.;
     for (int i = 0; i < NUM_CRITTERS; i++) {
@@ -192,18 +231,11 @@ const updatePositions = regl({
     return vel;
   }
 
-  // https://thebookofshaders.com/10/
-  float noise(vec2 st) {
-    return fract(sin(dot(st,vec2(12.9898,78.233)))*43758.5453123);
-  }
-  float rand(float offset) {
-    return noise(texelFetch(positionTex, ivec2(ijf), 0).xy + vec2(offset, 0));
-  }
-
   void main () {
     int numHistory = textureSize(positionTex, 0).y;
-    ivec2 ij = ivec2(ijf);
-    ivec2 ijPrev = ivec2(ij.x, prevHistoryIdx);
+    ij = ivec2(ijf);
+    ijPrev = ivec2(ij.x, prevHistoryIdx);
+    flynoise = noise(vec2(ijf.x, 0));
 
     if (ij.y != historyIdx) {
       // Not the current history index: this is a tail. Keep most data intact.
@@ -228,14 +260,15 @@ const updatePositions = regl({
       pos = mousePos.xyz;
     } else if (scalars.x >= 0.) {  // a firefly
       bool isAffectedByMouse = mousePos.w > 0. && leaderIJ.x == 0;
-      float maxSpeed = (isAffectedByMouse ? 10.0 : 2.7) * (.75 + .5*noise(vec2(ij.x, 0)));
+      float maxSpeed = (isAffectedByMouse ? 10.0 : 2.7) * (.75 + .5*flynoise);
       const float followTime = 20.;
 
       vel = chaseLeader(pos, vel, leaderIJ);
-      // Turns out it looks cooler without these factors.
-      // Hypothesis: chasing the same leader already causes flies to match each other's velocity;
+      // Turns out it often looks cooler without these other factors.
+      // Hypothesis: chasing the same leader already causes flies to match velocities and fly towards the center,
       // and avoiding others prevents the cool-looking effect of crossing paths.
-      // vel = avoidOthers(pos, vel, leaderIJ);
+      // vel = flyTowardsCenter(pos, vel, leaderIJ);
+      vel = avoidOthers(pos, vel, leaderIJ);
       // vel = matchVelocity(pos, vel, leaderIJ);
       float speed = length(vel);
       if (speed > maxSpeed)
@@ -250,7 +283,9 @@ const updatePositions = regl({
       } else {
         float hue = texelFetch(scalarTex, leaderIJ, 0).y;
         float factor = isAffectedByMouse ? .1 : .1*(2.*speed/maxSpeed - 1.);
-        scalars.y = hue + factor;
+        // scalars.y = hue + factor + .3*sin(flynoise*.1+time*.3);
+        // scalars.y = hue + factor + .3*sin(flynoise*.5 + time*.3);
+        scalars.y = hue + factor + .3*flynoise*sin(time);
       }
     } else {  // a leader
       const float wanderTime = 10.0;
@@ -266,7 +301,7 @@ const updatePositions = regl({
         scalars.z = rand(0.)*wanderTime/2.;
       }
 
-      float hueRate = .005 + .02*noise(vec2(ij.x, 0.));
+      float hueRate = .005 + .02*flynoise;
       scalars.y = mod(scalars.y + hueRate * dt, 1.0);
     }
     scalars.z += dt; // age
@@ -306,6 +341,7 @@ const updatePositions = regl({
     historyIdx: regl.prop("historyIdx"), // write to
     mouseDown: regl.prop("mouseDown"),
     dt: 1./24,
+    time: () => (new Date().getTime() - startTime)/1000.0, // seconds
   },
   count: 6,
   framebuffer: () => fliesFBO.dst,
@@ -400,7 +436,8 @@ const drawTails = regl({
     float scale = length(velocity)/2.;
     vec4 pos = pointAt(velocity.xyz) * vec4(position.xyz * vec3(1,1,scale), 1) + vec4(offset.xyz, 0);
     gl_Position = projection * view * pos;
-    vColor = vec4(color.rgb, alpha * pow(1.-age, 0.7));
+    float a = alpha * pow(1.-age, 0.7);
+    vColor = vec4(color.rgb, .3*a);
   }`,
 
   attributes: {
@@ -433,7 +470,7 @@ const drawTails = regl({
       srcRGB: 'src alpha',
       srcAlpha: 1,
       dstRGB: 1,
-      dstAlpha: 'dst alpha',
+      dstAlpha: 1,
     },
     equation: {
       rgb: 'add',
@@ -509,7 +546,6 @@ regl.frame(function () {
 
     let prevHistoryIdx = (frame-1) % TAIL_LENGTH;
     let historyIdx = frame % TAIL_LENGTH;
-    // console.log(prevHistoryIdx, historyIdx);
     updatePositions({historyIdx: historyIdx, prevHistoryIdx: prevHistoryIdx, mouseDown: mouseDown});
     fliesFBO.swap();
     // testDraw({quantity: fliesFBO.src.color[0]});
