@@ -294,7 +294,7 @@ const updatePositions = regl({
         scalars.z = rand(0.)*wanderTime/2.;
       }
 
-      float hueRate = .005 + .02*flynoise;
+      float hueRate = .005*(1.+flynoise);
       scalars.y = mod(scalars.y + hueRate * dt, 1.0);
     }
     scalars.z += dt; // age
