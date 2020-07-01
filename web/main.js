@@ -276,9 +276,7 @@ const updatePositions = regl({
       } else {
         float hue = texelFetch(scalarTex, leaderIJ, 0).y;
         float factor = isAffectedByMouse ? .1 : .1*(2.*speed/maxSpeed - 1.);
-        // scalars.y = hue + factor + .3*sin(flynoise*.1+time*.3);
-        // scalars.y = hue + factor + .3*sin(flynoise*.5 + time*.3);
-        scalars.y = hue + factor + .3*flynoise*sin(time);
+        scalars.y = hue + factor + .3*flynoise;
       }
     } else {  // a leader
       const float wanderTime = 10.0;
@@ -433,12 +431,13 @@ const drawTails = regl({
     gl_Position = projection * view * worldPos;
 
     vec4 color = hsv2rgb(vec4(scalars.y, .8, .8, 1.));
-    vColor = vec4(color.rgb, .3 * alpha * pow(1.-age, 0.7));
+    vColor = vec4(color.rgb, .5 * alpha * pow(1.-age, 0.7));
   }`,
 
   attributes: {
     position: [[-1,0,0], [-1,0,-1], [0,0,0], [0,0,-1], [1,0,0], [1,0,-1]],
-    alpha: [0, 0, 1, 1, 0, 0,],
+    // alpha: [0, 0, 1, 1, 0, 0,],
+    alpha: [0,0,1,1,0,0],
     instanceHistoryIdx: {
       buffer: Array.from({length: TAIL_LENGTH}, (_, i) => i),
       divisor: 1,
