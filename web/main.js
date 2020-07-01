@@ -80,8 +80,6 @@ fliesFBO.src.color[2].subimage({ // leaderIndex
     [fliesToLeader[i],leaderHues[fliesToLeader[i]],rand(0, 5),0])
 });
 
-let startTime = new Date().getTime();
-
 // Common functions some shaders share.
 const shaderCommon = `#version 300 es
 mat4 rotation(float angle, vec3 axis) {
@@ -238,15 +236,10 @@ const updatePositions = regl({
     flynoise = noise(vec2(ijf.x, 0));
 
     if (ij.y != historyIdx) {
-      // Not the current history index: this is a tail. Keep most data intact.
+      // Not the current history index: this is a tail. Keep data intact.
       fragData0 = texelFetch(positionTex, ij, 0);
       fragData1 = texelFetch(velocityTex, ij, 0);
       fragData2 = texelFetch(scalarTex, ij, 0);
-
-      // Apply wind.
-      float age = mod(1.0 + float(ij.y - historyIdx)/float(numHistory), 1.0);
-      vec3 wind = .3*normalize(vec3(2,1,1));
-      fragData0.xyz += wind * age * age * dt;
       return;
     }
 
@@ -340,14 +333,13 @@ const updatePositions = regl({
     prevHistoryIdx: regl.prop("prevHistoryIdx"), // read from
     historyIdx: regl.prop("historyIdx"), // write to
     mouseDown: regl.prop("mouseDown"),
-    dt: 1./24,
-    time: () => (new Date().getTime() - startTime)/1000.0, // seconds
+    dt: regl.prop("dt"),
+    time: regl.prop("time"),
   },
   count: 6,
   framebuffer: () => fliesFBO.dst,
 });
 
-const S = 0.1;
 const drawFly = regl({
   frag: `#version 300 es
   precision mediump float;
@@ -375,13 +367,13 @@ const drawFly = regl({
     vec4 velocity = texelFetch(velocityTex, ij, 0);
     vec4 scalars = texelFetch(scalarTex, ij, 0);
     vec4 color = hsv2rgb(vec4(scalars.y, .8, .8, 1.));
-    gl_Position = projection * view * (pointAt(velocity.xyz) * vec4(position.xyz, 1) + vec4(offset.xyz, 0));
+    float scale = .1;
+    gl_Position = projection * view * (pointAt(velocity.xyz) * vec4(position.xyz * scale, 1) + vec4(offset.xyz, 0));
     vColor = color;
   }`,
 
   attributes: {
-    position: [[0,0,S*3], [0,0,-S*1], [S,0,0], [0,-S,0], [-S,0,0], [0,S,0]],
-    // colorz: [1, 0, 0, 0, 0, 0, 0, 0]
+    position: [[0,0,3], [0,0,-1], [1,0,0], [0,-1,0], [-1,0,0], [0,1,0]],
   },
   elements: [
     [0,2,3], [0,3,4], [0,4,5], [0,5,2], // front
@@ -401,8 +393,6 @@ const drawFly = regl({
   },
 });
 
-const TW = .15;
-const TL = .15;
 const drawTails = regl({
   frag: `#version 300 es
   precision mediump float;
@@ -429,28 +419,35 @@ const drawTails = regl({
     int numHistory = textureSize(positionTex, 0).y;
     float age = mod(1.0 + float(historyIdx - int(instanceHistoryIdx))/float(numHistory), 1.0);
     ivec2 ij = ivec2(flyIdx, instanceHistoryIdx);
+    ivec2 ijPrev = ivec2(flyIdx, (int(instanceHistoryIdx) + numHistory-1) % numHistory);
     vec4 offset = texelFetch(positionTex, ij, 0);
+    vec4 prevOffset = texelFetch(positionTex, ijPrev, 0);
     vec4 velocity = texelFetch(velocityTex, ij, 0);
     vec4 scalars = texelFetch(scalarTex, ij, 0);
     vec4 color = hsv2rgb(vec4(scalars.y, .8, .8, 1.));
-    float scale = length(velocity)/2.;
-    vec4 pos = pointAt(velocity.xyz) * vec4(position.xyz * vec3(1,1,scale), 1) + vec4(offset.xyz, 0);
-    gl_Position = projection * view * pos;
-    float a = alpha * pow(1.-age, 0.7);
-    vColor = vec4(color.rgb, .3*a);
+
+    float len = distance(offset.xyz, prevOffset.xyz); // could also use length(velocity)*dt.
+    vec4 worldPos = pointAt(velocity.xyz) * vec4(position.xyz * vec3(.15,.15,len), 1) + vec4(offset.xyz, 0);
+
+    const vec3 wind = 1.5*normalize(vec3(2,1,1));
+    worldPos.xyz += wind * pow(age, 4.);
+
+    gl_Position = projection * view * worldPos;
+    vColor = vec4(color.rgb, .3 * alpha * pow(1.-age, 0.7));
   }`,
 
   attributes: {
-    position: [[-TW,0,0], [-TW,0,TL], [0,0,0], [0,0,TL], [TW,0,0], [TW,0,TL]],
+    position: [[-1,0,0], [-1,0,-1], [0,0,0], [0,0,-1], [1,0,0], [1,0,-1]],
     alpha: [0, 0, 1, 1, 0, 0,],
     instanceHistoryIdx: {
       buffer: Array.from({length: TAIL_LENGTH}, (_, i) => i),
       divisor: 1,
     }
   },
-  elements: [
-    [0,1,2], [1,2,3], [2,3,4], [3,4,5],
-  ],
+  elements: regl.elements({
+    data: [[0,1,2], [1,2,3], [2,3,4], [3,4,5]],
+    primitive: "triangles",
+  }),
 
   uniforms: {
     positionTex: () => fliesFBO.src.color[0],
@@ -526,8 +523,8 @@ const camera = regl({
 })
 
 let frame = 1;
-// let sec = 0;
-// setInterval(function() { console.log(frame / ++sec); }, 1000);
+let startTime = new Date().getTime()/1000;
+let lastTime = startTime;
 regl.frame(function () {
   camera(() => {
     regl.clear({
@@ -546,7 +543,10 @@ regl.frame(function () {
 
     let prevHistoryIdx = (frame-1) % TAIL_LENGTH;
     let historyIdx = frame % TAIL_LENGTH;
-    updatePositions({historyIdx: historyIdx, prevHistoryIdx: prevHistoryIdx, mouseDown: mouseDown});
+    let time = new Date().getTime()/1000;
+    let dt = 1/24; // using a constant time step seems to look better.
+    updatePositions({historyIdx: historyIdx, prevHistoryIdx: prevHistoryIdx, mouseDown: mouseDown, time: time, dt: dt});
+    lastTime = time;
     fliesFBO.swap();
     // testDraw({quantity: fliesFBO.src.color[0]});
 
