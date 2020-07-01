@@ -333,8 +333,6 @@ const updatePositions = regl({
     prevHistoryIdx: regl.prop("prevHistoryIdx"), // read from
     historyIdx: regl.prop("historyIdx"), // write to
     mouseDown: regl.prop("mouseDown"),
-    dt: regl.prop("dt"),
-    time: regl.prop("time"),
   },
   count: 6,
   framebuffer: () => fliesFBO.dst,
@@ -414,25 +412,27 @@ const drawTails = regl({
   uniform sampler2D velocityTex;
   uniform sampler2D scalarTex;
   uniform int flyIdx, historyIdx;
+  uniform float time;
 
   void main() {
     int numHistory = textureSize(positionTex, 0).y;
-    float age = mod(1.0 + float(historyIdx - int(instanceHistoryIdx))/float(numHistory), 1.0);
     ivec2 ij = ivec2(flyIdx, instanceHistoryIdx);
     ivec2 ijPrev = ivec2(flyIdx, (int(instanceHistoryIdx) + numHistory-1) % numHistory);
     vec4 offset = texelFetch(positionTex, ij, 0);
     vec4 prevOffset = texelFetch(positionTex, ijPrev, 0);
     vec4 velocity = texelFetch(velocityTex, ij, 0);
     vec4 scalars = texelFetch(scalarTex, ij, 0);
-    vec4 color = hsv2rgb(vec4(scalars.y, .8, .8, 1.));
 
     float len = distance(offset.xyz, prevOffset.xyz); // could also use length(velocity)*dt.
     vec4 worldPos = pointAt(velocity.xyz) * vec4(position.xyz * vec3(.15,.15,len), 1) + vec4(offset.xyz, 0);
 
+    float age = mod(1.0 + float(historyIdx - int(instanceHistoryIdx))/float(numHistory), 1.0);
     const vec3 wind = 1.5*normalize(vec3(2,1,1));
     worldPos.xyz += wind * pow(age, 4.);
 
     gl_Position = projection * view * worldPos;
+
+    vec4 color = hsv2rgb(vec4(scalars.y, .8, .8, 1.));
     vColor = vec4(color.rgb, .3 * alpha * pow(1.-age, 0.7));
   }`,
 
@@ -507,7 +507,8 @@ const testDraw = regl({
   count: 6,
 });
 
-const camera = regl({
+const startTime = new Date().getTime()/1000;
+const globalScope = regl({
   uniforms: {
     view: mat4.lookAt([],
                       [0, 0, 20],
@@ -519,14 +520,14 @@ const camera = regl({
                        viewportWidth / viewportHeight,
                        0.01,
                        100),
+    time: () => new Date().getTime()/1000 - startTime,
+    dt: 1./24., // using a constant time step seems to look better
   }
 })
 
 let frame = 1;
-let startTime = new Date().getTime()/1000;
-let lastTime = startTime;
 regl.frame(function () {
-  camera(() => {
+  globalScope(() => {
     regl.clear({
       color: [0, 0, 0, 1]
     })
@@ -543,10 +544,7 @@ regl.frame(function () {
 
     let prevHistoryIdx = (frame-1) % TAIL_LENGTH;
     let historyIdx = frame % TAIL_LENGTH;
-    let time = new Date().getTime()/1000;
-    let dt = 1/24; // using a constant time step seems to look better.
-    updatePositions({historyIdx: historyIdx, prevHistoryIdx: prevHistoryIdx, mouseDown: mouseDown, time: time, dt: dt});
-    lastTime = time;
+    updatePositions({historyIdx: historyIdx, prevHistoryIdx: prevHistoryIdx, mouseDown: mouseDown});
     fliesFBO.swap();
     // testDraw({quantity: fliesFBO.src.color[0]});
 
