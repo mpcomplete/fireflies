@@ -431,13 +431,12 @@ const drawTails = regl({
     gl_Position = projection * view * worldPos;
 
     vec4 color = hsv2rgb(vec4(scalars.y, .8, .8, 1.));
-    vColor = vec4(color.rgb, .5 * alpha * pow(1.-age, 0.7));
+    vColor = vec4(color.rgb, .7 * alpha * pow(1.-age, 0.7));
   }`,
 
   attributes: {
     position: [[-1,0,0], [-1,0,-1], [0,0,0], [0,0,-1], [1,0,0], [1,0,-1]],
-    // alpha: [0, 0, 1, 1, 0, 0,],
-    alpha: [0,0,1,1,0,0],
+    alpha: [0, 0, 1, 1, 0, 0,],
     instanceHistoryIdx: {
       buffer: Array.from({length: TAIL_LENGTH}, (_, i) => i),
       divisor: 1,
@@ -506,7 +505,6 @@ const testDraw = regl({
   count: 6,
 });
 
-const startTime = new Date().getTime()/1000;
 const globalScope = regl({
   uniforms: {
     view: mat4.lookAt([],
@@ -519,13 +517,12 @@ const globalScope = regl({
                        viewportWidth / viewportHeight,
                        0.01,
                        100),
-    time: () => new Date().getTime()/1000 - startTime,
+    time: regl.context("time"),
     dt: 1./24., // using a constant time step seems to look better
   }
 })
 
-let frame = 1;
-regl.frame(function () {
+regl.frame(function (context) {
   globalScope(() => {
     regl.clear({
       color: [0, 0, 0, 1]
@@ -541,8 +538,8 @@ regl.frame(function () {
       }
     }
 
-    let prevHistoryIdx = (frame-1) % TAIL_LENGTH;
-    let historyIdx = frame % TAIL_LENGTH;
+    let prevHistoryIdx = (context.tick-1) % TAIL_LENGTH;
+    let historyIdx = context.tick % TAIL_LENGTH;
     updatePositions({historyIdx: historyIdx, prevHistoryIdx: prevHistoryIdx, mouseDown: mouseDown});
     fliesFBO.swap();
     // testDraw({quantity: fliesFBO.src.color[0]});
@@ -555,6 +552,4 @@ regl.frame(function () {
       drawTails({flyIdx: i, historyIdx: historyIdx});
     }
   });
-
-  frame++;
 });
