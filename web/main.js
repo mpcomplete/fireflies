@@ -2,31 +2,34 @@ const webgl2 = require("./regl-webgl2-compat.js");
 const regl = webgl2.overrideContextType(() => require("regl")({extensions: ['WEBGL_draw_buffers', 'OES_texture_float', 'ANGLE_instanced_arrays']}));
 const mat4 = require("gl-mat4");
 const pointers = require("./pointers.js");
+const dat = require("dat.gui");
 
-const NUM_LEADERS = 3; // Leaders wander aimlessly.
-const NUM_FLIES = 253; // Flies chase leaders.
-const NUM_CRITTERS = NUM_FLIES + NUM_LEADERS;
-const TAIL_LENGTH = 180;
+var config = {};
+window.onload = function() {
+  var gui = new dat.GUI();
+  function addConfig(name, initial, min, max) {
+    config[name] = initial;
+    return gui.add(config, name, min, max);
+  }
+  addConfig("NUM_LEADERS", 3, 1, 10).name("flocks").step(1).onFinishChange(initFramebuffers);
+  addConfig("NUM_FLIES", 250, 10, 500).name("flies").step(10).onFinishChange(initFramebuffers);
+  addConfig("TAIL_LENGTH", 180, 0, 500).name("tail length").step(10).onFinishChange(initFramebuffers);
+  addConfig("SOFT_TAILS", true).name("soft tails");
+
+  initFramebuffers();
+};
 
 // Textures hold a single property for every critter.
 // Each critter has a single row in a given property's texture, with the column representing
 // history over time (the "tail").
 // ex. positionTexture[X, Y] = critter X's position at history Y.
 // History is done as a circular queue, with the current history index incrementing each frame from 0 to TAIL_LENGTH.
-var TEX_PROPS = {
-  type: 'float32',
-  format: 'rgba',
-  wrap: 'clamp',
-  width: NUM_CRITTERS,
-  height: TAIL_LENGTH,
-};
-
-function createFBO() {
+function createFBO(props) {
   return regl.framebuffer({
     color: [
-      regl.texture(TEX_PROPS), // position
-      regl.texture(TEX_PROPS), // velocity
-      regl.texture(TEX_PROPS), // scalars: leaderIndex, hue(leaderOnly), age, 0
+      regl.texture(props), // position
+      regl.texture(props), // velocity
+      regl.texture(props), // scalars: leaderIndex, hue(leaderOnly), age, 0
     ],
     depthStencil: false,
     depth: false,
@@ -34,10 +37,10 @@ function createFBO() {
   });
 }
 
-function createDoubleFBO() {
+function createDoubleFBO(props) {
   return {
-    src: createFBO(),
-    dst: createFBO(),
+    src: createFBO(props),
+    dst: createFBO(props),
     swap: function () {
       [this.src, this.dst] = [this.dst, this.src];
     }
@@ -50,35 +53,51 @@ const rand = (min, max) => Math.random() * (max - min) + min;
 const randInt = (min, max) => Math.floor(rand(min, max+1));
 const jitterVec = (v, d) => v.map((x) => x + rand(-d, d))
 
-// Initialize flies with random position and velocity.
-let leaderPos = Array.from({length: NUM_LEADERS}, () => jitterVec([0,0,0,0], 10));
-let leaderHues = Array.from({length: NUM_LEADERS}, () => randInt(0, 12)/12);
+var fliesFBO;
+var currentTick;
+var tailsBuffer;
+function initFramebuffers() {
+  currentTick = 1;
+  config.NUM_CRITTERS = config.NUM_LEADERS + config.NUM_FLIES;
 
-// Spawn 3 groups of flies per leader.
-let groupPos = Array.from({length: NUM_LEADERS*3}, () => jitterVec([0,0,0,0], 20));
-let fliesToGroup = Array.from({length: NUM_CRITTERS}, () => randInt(0, groupPos.length-1));
-let fliesToLeader = Array.from({length: NUM_CRITTERS}, (_, i) => i < NUM_LEADERS ? -1 : Math.floor(fliesToGroup[i]/3));
+  // Initialize flies with random position and velocity.
+  let leaderPos = Array.from({length: config.NUM_LEADERS}, () => jitterVec([0,0,0,0], 10));
+  let leaderHues = Array.from({length: config.NUM_LEADERS}, () => randInt(0, 12)/12);
 
-var fliesFBO = createDoubleFBO();
-fliesFBO.src.color[0].subimage({ // position
-  width: NUM_CRITTERS,
-  height: 1,
-  data: Array.from({length: NUM_CRITTERS}, (_, i) => i < NUM_LEADERS ?
-    leaderPos[i] :
-    jitterVec(groupPos[fliesToGroup[i]], 2))
-});
-fliesFBO.src.color[1].subimage({ // velocity
-  width: NUM_CRITTERS,
-  height: 1,
-  data: Array.from({length: NUM_CRITTERS*4}, (_, i) => i < NUM_LEADERS*4 ? rand(-1, 1) : 0)
-});
-fliesFBO.src.color[2].subimage({ // leaderIndex
-  width: NUM_CRITTERS,
-  height: 1,
-  data: Array.from({length: NUM_CRITTERS}, (_, i) => i < NUM_LEADERS ?
-    [-1,leaderHues[i],0,0] :
-    [fliesToLeader[i],leaderHues[fliesToLeader[i]],rand(0, 5),0])
-});
+  // Spawn 3 groups of flies per leader.
+  let groupPos = Array.from({length: config.NUM_LEADERS*3}, () => jitterVec([0,0,0,0], 20));
+  let fliesToGroup = Array.from({length: config.NUM_CRITTERS}, () => randInt(0, groupPos.length-1));
+  let fliesToLeader = Array.from({length: config.NUM_CRITTERS}, (_, i) => i < config.NUM_LEADERS ? -1 : Math.floor(fliesToGroup[i]/3));
+
+  fliesFBO = createDoubleFBO({
+    type: 'float32',
+    format: 'rgba',
+    wrap: 'clamp',
+    width: config.NUM_CRITTERS,
+    height: config.TAIL_LENGTH,
+  });
+  fliesFBO.src.color[0].subimage({ // position
+    width: config.NUM_CRITTERS,
+    height: 1,
+    data: Array.from({length: config.NUM_CRITTERS}, (_, i) => i < config.NUM_LEADERS ?
+      leaderPos[i] :
+      jitterVec(groupPos[fliesToGroup[i]], 2))
+  });
+  fliesFBO.src.color[1].subimage({ // velocity
+    width: config.NUM_CRITTERS,
+    height: 1,
+    data: Array.from({length: config.NUM_CRITTERS*4}, (_, i) => i < config.NUM_LEADERS*4 ? rand(-1, 1) : 0)
+  });
+  fliesFBO.src.color[2].subimage({ // leaderIndex
+    width: config.NUM_CRITTERS,
+    height: 1,
+    data: Array.from({length: config.NUM_CRITTERS}, (_, i) => i < config.NUM_LEADERS ?
+      [-1,leaderHues[i],0,0] :
+      [fliesToLeader[i],leaderHues[fliesToLeader[i]],rand(0, 5),0])
+  });
+
+  tailsBuffer = Array.from({length: config.TAIL_LENGTH}, (_, i) => i);
+}
 
 // Common functions some shaders share.
 const shaderCommon = `#version 300 es
@@ -110,12 +129,7 @@ vec4 hsv2rgb(vec4 c) {
 }`;
 
 const updatePositions = regl({
-  frag: 
-  '#version 300 es\n' +
-  // '#extension GL_EXT_draw_buffers : require\n' +
-  '#define NUM_CRITTERS ' + NUM_CRITTERS + '\n' +
-  '#define NUM_LEADERS ' + NUM_LEADERS + '\n' + `
-
+  frag: `#version 300 es
   precision mediump float;
   precision highp int;
   in vec2 ijf;
@@ -127,6 +141,7 @@ const updatePositions = regl({
   uniform int historyIdx, prevHistoryIdx;
   uniform float dt;
   uniform float time;
+  uniform int NUM_LEADERS, NUM_CRITTERS;
 
   layout(location = 0) out vec4 fragData0;
   layout(location = 1) out vec4 fragData1;
@@ -230,7 +245,6 @@ const updatePositions = regl({
   }
 
   void main () {
-    int numHistory = textureSize(positionTex, 0).y;
     ij = ivec2(ijf);
     ijPrev = ivec2(ij.x, prevHistoryIdx);
     flynoise = noise(vec2(ijf.x, 0));
@@ -331,6 +345,8 @@ const updatePositions = regl({
     prevHistoryIdx: regl.prop("prevHistoryIdx"), // read from
     historyIdx: regl.prop("historyIdx"), // write to
     mouseDown: regl.prop("mouseDown"),
+    NUM_LEADERS: () => config.NUM_LEADERS,
+    NUM_CRITTERS: () => config.NUM_CRITTERS,
   },
   count: 6,
   framebuffer: () => fliesFBO.dst,
@@ -411,11 +427,11 @@ const drawTails = regl({
   uniform sampler2D scalarTex;
   uniform int flyIdx, historyIdx;
   uniform float time;
+  uniform int TAIL_LENGTH;
 
   void main() {
-    int numHistory = textureSize(positionTex, 0).y;
     ivec2 ij = ivec2(flyIdx, instanceHistoryIdx);
-    ivec2 ijPrev = ivec2(flyIdx, (int(instanceHistoryIdx) + numHistory-1) % numHistory);
+    ivec2 ijPrev = ivec2(flyIdx, (int(instanceHistoryIdx) + TAIL_LENGTH-1) % TAIL_LENGTH);
     vec4 offset = texelFetch(positionTex, ij, 0);
     vec4 prevOffset = texelFetch(positionTex, ijPrev, 0);
     vec4 velocity = texelFetch(velocityTex, ij, 0);
@@ -424,7 +440,7 @@ const drawTails = regl({
     float len = distance(offset.xyz, prevOffset.xyz); // could also use length(velocity)*dt.
     vec4 worldPos = pointAt(velocity.xyz) * vec4(position.xyz * vec3(.15,.15,len), 1) + vec4(offset.xyz, 0);
 
-    float age = mod(1.0 + float(historyIdx - int(instanceHistoryIdx))/float(numHistory), 1.0);
+    float age = mod(1.0 + float(historyIdx - int(instanceHistoryIdx))/float(TAIL_LENGTH), 1.0);
     const vec3 wind = 1.5*normalize(vec3(2,1,1));
     worldPos.xyz += wind * pow(age, 4.);
 
@@ -438,14 +454,12 @@ const drawTails = regl({
     position: [[-1,0,0], [-1,0,-1], [0,0,0], [0,0,-1], [1,0,0], [1,0,-1]],
     alpha: [0, 0, 1, 1, 0, 0,],
     instanceHistoryIdx: {
-      buffer: Array.from({length: TAIL_LENGTH}, (_, i) => i),
+      buffer: () => tailsBuffer,
       divisor: 1,
     }
   },
-  elements: regl.elements({
-    data: [[0,1,2], [1,2,3], [2,3,4], [3,4,5]],
-    primitive: "triangles",
-  }),
+  elements: [[0,1,2], [1,2,3], [2,3,4], [3,4,5]],
+  primitive: () => config.SOFT_TAILS ? "triangles" : "lines",
 
   uniforms: {
     positionTex: () => fliesFBO.src.color[0],
@@ -453,6 +467,7 @@ const drawTails = regl({
     scalarTex: () => fliesFBO.src.color[2],
     flyIdx: regl.prop('flyIdx'),
     historyIdx: regl.prop('historyIdx'),
+    TAIL_LENGTH: () => config.TAIL_LENGTH,
   },
 
   depth: {
@@ -474,7 +489,7 @@ const drawTails = regl({
     color: [0, 0, 0, 0]
   },
 
-  instances: TAIL_LENGTH,
+  instances: () => config.TAIL_LENGTH,
 });
 
 const testDraw = regl({
@@ -523,6 +538,8 @@ const globalScope = regl({
 })
 
 regl.frame(function (context) {
+  if (!config.NUM_LEADERS)
+    return;
   globalScope(() => {
     regl.clear({
       color: [0, 0, 0, 1]
@@ -538,18 +555,20 @@ regl.frame(function (context) {
       }
     }
 
-    let prevHistoryIdx = (context.tick-1) % TAIL_LENGTH;
-    let historyIdx = context.tick % TAIL_LENGTH;
+    let prevHistoryIdx = (currentTick-1) % config.TAIL_LENGTH;
+    let historyIdx = currentTick % config.TAIL_LENGTH;
     updatePositions({historyIdx: historyIdx, prevHistoryIdx: prevHistoryIdx, mouseDown: mouseDown});
     fliesFBO.swap();
     // testDraw({quantity: fliesFBO.src.color[0]});
 
     const drawLeaders = false;
-    for (let i = 0; i < NUM_CRITTERS; i++) {
-      if (i < NUM_LEADERS && !drawLeaders)
+    for (let i = 0; i < config.NUM_CRITTERS; i++) {
+      if (i < config.NUM_LEADERS && !drawLeaders)
         continue;
       drawFly({flyIdx: i, historyIdx: historyIdx});
       drawTails({flyIdx: i, historyIdx: historyIdx});
     }
   });
+
+  currentTick++;
 });
