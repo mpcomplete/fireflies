@@ -72,8 +72,8 @@ function initFramebuffers() {
     type: 'float32',
     format: 'rgba',
     wrap: 'clamp',
-    width: 1024,
-    height: 768,
+    width: 1920,
+    height: 1090,
   });
   fliesFBO = createDoubleFBO(3, {
     type: 'float32',
@@ -705,6 +705,7 @@ regl.frame(function (context) {
   if (!config.NUM_LEADERS)
     return;
 
+  window.fbo = screenFBO.dst;
   let mouseDown = [-1,-1, -1, -1];
   for (let pointer of pointers.pointers) {
     if (pointer.isDown) {
@@ -717,6 +718,7 @@ regl.frame(function (context) {
 
   globalScope(() => {
     regl.clear({color: [0, 0, 0, 1]});
+    regl.clear({color: [0, 0, 0, 1], framebuffer: screenFBO.dst});
 
     let readHistoryIdx = currentTick % config.TAIL_LENGTH;
     let writeHistoryIdx = (currentTick+1) % config.TAIL_LENGTH;
@@ -729,9 +731,9 @@ regl.frame(function (context) {
       drawFly({flyIdx: i, historyIdx: readHistoryIdx, framebuffer: screenFBO.dst});
       drawTails({flyIdx: i, historyIdx: readHistoryIdx, framebuffer: screenFBO.dst});
     }
+    screenFBO.swap();
 
-    drawScreen({screen: screenFBO.dst, texelSize: [1/1024, 1/768]});
-    regl.clear({color: [0, 0, 0, 1], framebuffer: screenFBO.dst});
+    drawScreen({screen: screenFBO.src, texelSize: [1/screenFBO.src.width, 1/screenFBO.src.height]});
 
     if (!config.paused) {
       updatePositions({writeHistoryIdx: writeHistoryIdx, readHistoryIdx: readHistoryIdx, mouseDown: mouseDown});
