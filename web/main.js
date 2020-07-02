@@ -11,6 +11,7 @@ window.onload = function() {
     config[name] = initial;
     return gui.add(config, name, min, max);
   }
+  addConfig("paused", false);
   addConfig("NUM_LEADERS", 3, 1, 10).name("flocks").step(1).onFinishChange(initFramebuffers);
   addConfig("NUM_FLIES", 250, 10, 500).name("flies").step(10).onFinishChange(initFramebuffers);
   addConfig("TAIL_LENGTH", 180, 0, 500).name("tail length").step(10).onFinishChange(initFramebuffers);
@@ -57,7 +58,7 @@ var fliesFBO;
 var currentTick;
 var tailsBuffer;
 function initFramebuffers() {
-  currentTick = 1;
+  currentTick = 0;
   config.NUM_CRITTERS = config.NUM_LEADERS + config.NUM_FLIES;
 
   // Initialize flies with random position and velocity.
@@ -138,7 +139,7 @@ const updatePositions = regl({
   uniform sampler2D positionTex;
   uniform sampler2D velocityTex;
   uniform sampler2D scalarTex;
-  uniform int historyIdx, prevHistoryIdx;
+  uniform int writeHistoryIdx, readHistoryIdx;
   uniform float dt;
   uniform float time;
   uniform int NUM_LEADERS, NUM_CRITTERS;
@@ -179,9 +180,9 @@ const updatePositions = regl({
     vec3 center = vec3(0,0,0);
     float numNeighbors = 0.;
     for (int i = 0; i < NUM_CRITTERS; i++) {
-      int otherLeaderIdx = int(texelFetch(scalarTex, ivec2(i, prevHistoryIdx), 0).x);
+      int otherLeaderIdx = int(texelFetch(scalarTex, ivec2(i, readHistoryIdx), 0).x);
       if (otherLeaderIdx == leaderIJ.x) {
-        center += texelFetch(positionTex, ivec2(i, prevHistoryIdx), 0).xyz;
+        center += texelFetch(positionTex, ivec2(i, readHistoryIdx), 0).xyz;
         numNeighbors += 1.;
       }
     }
@@ -201,7 +202,7 @@ const updatePositions = regl({
     vec3 moveV = vec3(0,0,0);
     for (int i = 0; i < NUM_CRITTERS; i++) {
       if (i != int(ijf.x)) {
-        vec3 otherPos = texelFetch(positionTex, ivec2(i, prevHistoryIdx), 0).xyz;
+        vec3 otherPos = texelFetch(positionTex, ivec2(i, readHistoryIdx), 0).xyz;
         if (distance(pos, otherPos) < minDistance)
           moveV += pos - otherPos;
       }
@@ -216,9 +217,9 @@ const updatePositions = regl({
     vec3 avgVel = vec3(0,0,0);
     float numNeighbors = 0.;
     for (int i = 0; i < NUM_CRITTERS; i++) {
-      int otherLeaderIdx = int(texelFetch(scalarTex, ivec2(i, prevHistoryIdx), 0).x);
+      int otherLeaderIdx = int(texelFetch(scalarTex, ivec2(i, readHistoryIdx), 0).x);
       if (otherLeaderIdx == leaderIJ.x) {
-        avgVel += texelFetch(velocityTex, ivec2(i, prevHistoryIdx), 0).xyz;
+        avgVel += texelFetch(velocityTex, ivec2(i, readHistoryIdx), 0).xyz;
         numNeighbors += 1.;
       }
     }
@@ -246,10 +247,10 @@ const updatePositions = regl({
 
   void main () {
     ij = ivec2(ijf);
-    ijPrev = ivec2(ij.x, prevHistoryIdx);
+    ijPrev = ivec2(ij.x, readHistoryIdx);
     flynoise = noise(vec2(ijf.x, 0));
 
-    if (ij.y != historyIdx) {
+    if (ij.y != writeHistoryIdx) {
       // Not the current history index: this is a tail. Keep data intact.
       fragData0 = texelFetch(positionTex, ij, 0);
       fragData1 = texelFetch(velocityTex, ij, 0);
@@ -324,7 +325,7 @@ const updatePositions = regl({
   out vec4 mousePos;
   uniform sampler2D positionTex;
   uniform mat4 projection, view;
-  uniform int historyIdx, prevHistoryIdx;
+  uniform int writeHistoryIdx, readHistoryIdx;
   uniform vec4 mouseDown;
   void main () {
     ijf = vec2(textureSize(positionTex, 0)) * (position * .5 + .5);
@@ -342,8 +343,8 @@ const updatePositions = regl({
     positionTex: () => fliesFBO.src.color[0],
     velocityTex: () => fliesFBO.src.color[1],
     scalarTex: () => fliesFBO.src.color[2],
-    prevHistoryIdx: regl.prop("prevHistoryIdx"), // read from
-    historyIdx: regl.prop("historyIdx"), // write to
+    readHistoryIdx: regl.prop("readHistoryIdx"),
+    writeHistoryIdx: regl.prop("writeHistoryIdx"),
     mouseDown: regl.prop("mouseDown"),
     NUM_LEADERS: () => config.NUM_LEADERS,
     NUM_CRITTERS: () => config.NUM_CRITTERS,
@@ -540,35 +541,38 @@ const globalScope = regl({
 regl.frame(function (context) {
   if (!config.NUM_LEADERS)
     return;
+
+  let mouseDown = [-1,-1, -1, -1];
+  for (let pointer of pointers.pointers) {
+    if (pointer.isDown) {
+      mouseDown = [pointer.pos[0] - .5, pointer.pos[1] - .5, 0, 1];
+      mouseDown[0] *= 20;
+      mouseDown[1] *= 7;
+      break;
+    }
+  }
+
   globalScope(() => {
     regl.clear({
       color: [0, 0, 0, 1]
     })
 
-    let mouseDown = [-1,-1, -1, -1];
-    for (let pointer of pointers.pointers) {
-      if (pointer.isDown) {
-        mouseDown = [pointer.pos[0] - .5, pointer.pos[1] - .5, 0, 1];
-        mouseDown[0] *= 20;
-        mouseDown[1] *= 7;
-        break;
-      }
-    }
-
-    let prevHistoryIdx = (currentTick-1) % config.TAIL_LENGTH;
-    let historyIdx = currentTick % config.TAIL_LENGTH;
-    updatePositions({historyIdx: historyIdx, prevHistoryIdx: prevHistoryIdx, mouseDown: mouseDown});
-    fliesFBO.swap();
+    let readHistoryIdx = currentTick % config.TAIL_LENGTH;
+    let writeHistoryIdx = (currentTick+1) % config.TAIL_LENGTH;
     // testDraw({quantity: fliesFBO.src.color[0]});
 
     const drawLeaders = false;
     for (let i = 0; i < config.NUM_CRITTERS; i++) {
       if (i < config.NUM_LEADERS && !drawLeaders)
         continue;
-      drawFly({flyIdx: i, historyIdx: historyIdx});
-      drawTails({flyIdx: i, historyIdx: historyIdx});
+      drawFly({flyIdx: i, historyIdx: readHistoryIdx});
+      drawTails({flyIdx: i, historyIdx: readHistoryIdx});
+    }
+
+    if (!config.paused) {
+      updatePositions({writeHistoryIdx: writeHistoryIdx, readHistoryIdx: readHistoryIdx, mouseDown: mouseDown});
+      fliesFBO.swap();
+      currentTick++;
     }
   });
-
-  currentTick++;
 });
