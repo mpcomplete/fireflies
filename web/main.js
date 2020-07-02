@@ -427,18 +427,18 @@ const drawTails = regl({
   uniform sampler2D velocityTex;
   uniform sampler2D scalarTex;
   uniform int flyIdx, historyIdx;
-  uniform float time;
+  uniform float time, dt;
   uniform int TAIL_LENGTH;
 
   void main() {
     ivec2 ij = ivec2(flyIdx, instanceHistoryIdx);
-    ivec2 ijPrev = ivec2(flyIdx, (int(instanceHistoryIdx) + TAIL_LENGTH-1) % TAIL_LENGTH);
     vec4 offset = texelFetch(positionTex, ij, 0);
-    vec4 prevOffset = texelFetch(positionTex, ijPrev, 0);
     vec4 velocity = texelFetch(velocityTex, ij, 0);
     vec4 scalars = texelFetch(scalarTex, ij, 0);
 
-    float len = distance(offset.xyz, prevOffset.xyz); // could also use length(velocity)*dt.
+    // From updatePositions, we know that pos[i] = pos[i-1] + vel[i]*dt;
+    // So pos[i-1] = pos[i] - vel[i]*dt;
+    float len = length(velocity)*dt;
     vec4 worldPos = pointAt(velocity.xyz) * vec4(position.xyz * vec3(.15,.15,len), 1) + vec4(offset.xyz, 0);
 
     float age = mod(1.0 + float(historyIdx - int(instanceHistoryIdx))/float(TAIL_LENGTH), 1.0);
