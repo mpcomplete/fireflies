@@ -1,3 +1,5 @@
+// TODO: rename fragData0-3
+
 const webgl2 = require("./regl-webgl2-compat.js");
 const regl = webgl2.overrideContextType(() => require("regl")({extensions: ['WEBGL_draw_buffers', 'OES_texture_float', 'ANGLE_instanced_arrays']}));
 const mat4 = require("gl-mat4");
@@ -25,23 +27,19 @@ window.onload = function() {
 // history over time (the "tail").
 // ex. positionTexture[X, Y] = critter X's position at history Y.
 // History is done as a circular queue, with the current history index incrementing each frame from 0 to TAIL_LENGTH.
-function createFBO(props) {
+function createFBO(count, props) {
   return regl.framebuffer({
-    color: [
-      regl.texture(props), // position
-      regl.texture(props), // velocity
-      regl.texture(props), // scalars: leaderIndex, hue(leaderOnly), age, 0
-    ],
+    color: Array.from({length: count}, () => regl.texture(props)),
     depthStencil: false,
     depth: false,
     stencil: false,
   });
 }
 
-function createDoubleFBO(props) {
+function createDoubleFBO(count, props) {
   return {
-    src: createFBO(props),
-    dst: createFBO(props),
+    src: createFBO(count, props),
+    dst: createFBO(count, props),
     swap: function () {
       [this.src, this.dst] = [this.dst, this.src];
     }
@@ -49,11 +47,11 @@ function createDoubleFBO(props) {
 }
 
 // Utils.
-// const extend = (a, b) => Object.assign(b, a);
 const rand = (min, max) => Math.random() * (max - min) + min;
 const randInt = (min, max) => Math.floor(rand(min, max+1));
 const jitterVec = (v, d) => v.map((x) => x + rand(-d, d))
 
+var screenFBO;
 var fliesFBO;
 var currentTick;
 var tailsBuffer;
@@ -70,13 +68,21 @@ function initFramebuffers() {
   let fliesToGroup = Array.from({length: config.NUM_CRITTERS}, () => randInt(0, groupPos.length-1));
   let fliesToLeader = Array.from({length: config.NUM_CRITTERS}, (_, i) => i < config.NUM_LEADERS ? -1 : Math.floor(fliesToGroup[i]/3));
 
-  fliesFBO = createDoubleFBO({
+  screenFBO = createDoubleFBO(1, {
+    type: 'float32',
+    format: 'rgba',
+    wrap: 'clamp',
+    width: 1024,
+    height: 768,
+  });
+  fliesFBO = createDoubleFBO(3, {
     type: 'float32',
     format: 'rgba',
     wrap: 'clamp',
     width: config.NUM_CRITTERS,
     height: config.TAIL_LENGTH,
   });
+
   fliesFBO.src.color[0].subimage({ // position
     width: config.NUM_CRITTERS,
     height: 1,
@@ -144,9 +150,9 @@ const updatePositions = regl({
   uniform float time;
   uniform int NUM_LEADERS, NUM_CRITTERS;
 
-  layout(location = 0) out vec4 fragData0;
-  layout(location = 1) out vec4 fragData1;
-  layout(location = 2) out vec4 fragData2;
+  layout(location = 0) out vec4 fragData0; // position
+  layout(location = 1) out vec4 fragData1; // velocity
+  layout(location = 2) out vec4 fragData2; // scalars: leaderIndex, hue(leaderOnly), age, 0
 
   // https://thebookofshaders.com/10/
   float noise(vec2 st) {
@@ -392,7 +398,6 @@ const drawFly = regl({
     [0,2,3], [0,3,4], [0,4,5], [0,5,2], // front
     [1,2,3], [1,3,4], [1,4,5], [1,5,2], // back
   ],
-
   uniforms: {
     positionTex: () => fliesFBO.src.color[0],
     velocityTex: () => fliesFBO.src.color[1],
@@ -400,10 +405,10 @@ const drawFly = regl({
     flyIdx: regl.prop('flyIdx'),
     historyIdx: regl.prop('historyIdx'),
   },
-
   depth: {
     enable: false
   },
+  framebuffer: regl.prop('framebuffer'),
 });
 
 const drawTails = regl({
@@ -461,6 +466,7 @@ const drawTails = regl({
   },
   elements: [[0,1,2], [1,2,3], [2,3,4], [3,4,5]],
   primitive: () => config.SOFT_TAILS ? "triangles" : "lines",
+  instances: () => config.TAIL_LENGTH,
 
   uniforms: {
     positionTex: () => fliesFBO.src.color[0],
@@ -474,7 +480,6 @@ const drawTails = regl({
   depth: {
     enable: false
   },
-
   blend: {
     enable: true,
     func: {
@@ -490,7 +495,165 @@ const drawTails = regl({
     color: [0, 0, 0, 0]
   },
 
-  instances: () => config.TAIL_LENGTH,
+  framebuffer: regl.prop('framebuffer'),
+});
+
+const bloomBase = (opts) => regl(Object.assign(opts, {
+  vert: `#version 300 es
+  precision highp float;
+  in vec2 position;
+  out vec2 vUv;
+  out vec2 vL;
+  out vec2 vR;
+  out vec2 vT;
+  out vec2 vB;
+  uniform vec2 texelSize;
+  void main () {
+    vUv = position * 0.5 + 0.5;
+    vL = vUv - vec2(texelSize.x, 0.0);
+    vR = vUv + vec2(texelSize.x, 0.0);
+    vT = vUv + vec2(0.0, texelSize.y);
+    vB = vUv - vec2(0.0, texelSize.y);
+    gl_Position = vec4(position, 0.0, 1.0);
+  }`,
+
+  attributes: {
+    position: [[-1, -1], [-1, 1], [1, 1], [-1, -1], [1, 1], [1, -1]]
+  },
+  count: 6,
+
+  uniforms: Object.assign(opts.uniforms||{}, {
+    texelSize: regl.prop("texelSize"),
+  }),
+  framebuffer: regl.prop("framebuffer"),
+}));
+
+const bloomPrefilterShader = bloomBase({
+  frag: `#version 300 es
+  precision mediump float;
+  precision mediump sampler2D;
+
+  in vec2 vUv;
+  uniform sampler2D inputTex;
+  uniform vec3 curve;
+  uniform float threshold;
+
+  out vec4 fragColor;
+
+  void main () {
+    vec3 c = texture(inputTex, vUv).rgb;
+    float br = max(c.r, max(c.g, c.b));
+    float rq = clamp(br - curve.x, 0.0, curve.y);
+    rq = curve.z * rq * rq;
+    c *= max(rq, br - threshold) / max(br, 0.0001);
+    fragColor = vec4(c, 0.0);
+  }`,
+
+  uniforms: {
+    inputTex: regl.prop("inputTex"),
+    curve: () => {
+      let config = {BLOOM_THRESHOLD: .8, BLOOM_SOFT_KNEE: .7};
+      let knee = config.BLOOM_THRESHOLD * config.BLOOM_SOFT_KNEE + 0.0001;
+      return [config.BLOOM_THRESHOLD - knee, knee * 2, 0.25 / knee]
+    },
+    threshold: .8,
+  }
+});
+
+const bloomBlurShader = bloomBase({
+  frag: `#version 300 es
+  precision mediump float;
+  precision mediump sampler2D;
+
+  in vec2 vL, vR, vT, vB;
+  uniform sampler2D inputTex;
+
+  out vec4 fragColor;
+
+  void main () {
+    vec4 sum = vec4(0.0);
+    sum += texture(inputTex, vL);
+    sum += texture(inputTex, vR);
+    sum += texture(inputTex, vT);
+    sum += texture(inputTex, vB);
+    sum *= 0.25;
+    fragColor = sum;
+  }`,
+
+  uniforms: {
+    inputTex: regl.prop("inputTex"),
+  }
+});
+
+const bloomFinalShader = bloomBase({
+  frag: `#version 300 es
+  precision mediump float;
+  precision mediump sampler2D;
+
+  in vec2 vL, vR, vT, vB;
+  uniform sampler2D inputTex;
+  uniform float intensity;
+
+  out vec4 fragColor;
+
+  void main () {
+    vec4 sum = vec4(0.0);
+    sum += texture(inputTex, vL);
+    sum += texture(inputTex, vR);
+    sum += texture(inputTex, vT);
+    sum += texture(inputTex, vB);
+    sum *= 0.25;
+    fragColor = sum * intensity;
+  }`,
+
+  uniforms: {
+    inputTex: regl.prop("inputTex"),
+    intensity: .7,
+  }
+});
+
+const drawScreen = bloomBase({
+  frag: `#version 300 es
+  precision highp float;
+  precision highp sampler2D;
+//#define BLOOM 1
+
+  in vec2 vUv;
+  in vec2 vL, vR, vT, vB;
+  uniform sampler2D uTexture;
+  // uniform sampler2D uBloom;
+  // uniform sampler2D uDithering;
+  // uniform vec2 ditherScale;
+
+  out vec4 fragColor;
+
+  vec3 linearToGamma (vec3 color) {
+    color = max(color, vec3(0));
+    return max(1.055 * pow(color, vec3(0.416666667)) - 0.055, vec3(0));
+  }
+
+  void main () {
+    vec3 c = texture(uTexture, vUv).rgb;
+
+#ifdef BLOOM
+    vec3 bloom = texture(uBloom, vUv).rgb;
+
+    float noise = 0.5;
+    // float noise = texture(uDithering, vUv * ditherScale).r;
+    noise = noise * 2.0 - 1.0;
+    bloom += noise / 255.0;
+    bloom = linearToGamma(bloom);
+    c += bloom;
+#endif
+
+    float a = max(c.r, max(c.g, c.b));
+    fragColor = vec4(c, 1.);
+  }`,
+
+  uniforms: {
+    uTexture: regl.prop("screen"),
+    // uBloom: regl.prop("bloom"),
+  }
 });
 
 const testDraw = regl({
@@ -553,9 +716,7 @@ regl.frame(function (context) {
   }
 
   globalScope(() => {
-    regl.clear({
-      color: [0, 0, 0, 1]
-    })
+    regl.clear({color: [0, 0, 0, 1]});
 
     let readHistoryIdx = currentTick % config.TAIL_LENGTH;
     let writeHistoryIdx = (currentTick+1) % config.TAIL_LENGTH;
@@ -565,9 +726,12 @@ regl.frame(function (context) {
     for (let i = 0; i < config.NUM_CRITTERS; i++) {
       if (i < config.NUM_LEADERS && !drawLeaders)
         continue;
-      drawFly({flyIdx: i, historyIdx: readHistoryIdx});
-      drawTails({flyIdx: i, historyIdx: readHistoryIdx});
+      drawFly({flyIdx: i, historyIdx: readHistoryIdx, framebuffer: screenFBO.dst});
+      drawTails({flyIdx: i, historyIdx: readHistoryIdx, framebuffer: screenFBO.dst});
     }
+
+    drawScreen({screen: screenFBO.dst, texelSize: [1/1024, 1/768]});
+    regl.clear({color: [0, 0, 0, 1], framebuffer: screenFBO.dst});
 
     if (!config.paused) {
       updatePositions({writeHistoryIdx: writeHistoryIdx, readHistoryIdx: readHistoryIdx, mouseDown: mouseDown});
