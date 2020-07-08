@@ -1,7 +1,7 @@
 // TODO: rename fragData0-3
 
 const webgl2 = require("./regl-webgl2-compat.js");
-const regl = webgl2.overrideContextType(() => require("regl")({extensions: ['WEBGL_draw_buffers', 'OES_texture_float', 'OES_texture_half_float', 'ANGLE_instanced_arrays']}));
+const regl = webgl2.overrideContextType(() => require("regl")({extensions: ['WEBGL_draw_buffers', 'OES_texture_float', 'OES_texture_float_linear', 'ANGLE_instanced_arrays']}));
 const mat4 = require("gl-mat4");
 const pointers = require("./pointers.js");
 const dat = require("dat.gui");
@@ -79,6 +79,8 @@ function initFramebuffers() {
     type: 'float32',
     format: 'rgba',
     wrap: 'clamp',
+    // min: 'linear',
+    // mag: 'linear',
     width: 1920,
     height: 1080,
   });
@@ -114,34 +116,28 @@ function initFramebuffers() {
 }
 
 var bloomFBO;
-var bloomIterationFBOs;
+var bloomBlurFBO;
 function initBloomFramebuffers() {
-  let res = [256, 256];
+  let res = [512, 512];
   bloomFBO = createFBO(1, {
     type: 'float',
     format: 'rgba',
     wrap: 'clamp',
     width: res[0],
     height: res[1],
+    // min: 'linear',
+    // mag: 'linear',
   });
 
-  bloomIterationFBOs = [];
-  for (let i = 0; i < config.bloomIterations; i++) {
-    let width = res[0] >> (i + 1);
-    let height = res[1] >> (i + 1);
-
-    if (width < 2 || height < 2) break;
-
-    let fbo = createFBO(1, {
-      type: 'float',
-      format: 'rgba',
-      wrap: 'clamp',
-      width: width,
-      height: height,
-    });
-    bloomIterationFBOs.push(fbo);
-  }
-  console.log("bloom", bloomIterationFBOs); 
+  bloomBlurFBO = createDoubleFBO(1, {
+    type: 'float',
+    format: 'rgba',
+    wrap: 'clamp',
+    width: res[0],
+    height: res[1],
+    // min: 'linear',
+    // mag: 'linear',
+  });
 }
 
 // Common functions some shaders share.
@@ -173,6 +169,7 @@ vec4 hsv2rgb(vec4 c) {
   return vec4(c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y), c.a);
 }`;
 
+// Handles one tick of the main simulation loop.
 const updatePositions = regl({
   frag: `#version 300 es
   precision mediump float;
@@ -491,7 +488,7 @@ const drawTails = regl({
     gl_Position = projection * view * worldPos;
 
     vec4 color = hsv2rgb(vec4(scalars.y, .8, .8, 1.));
-    vColor = vec4(color.rgb, .7 * alpha * pow(1.-age, 0.7));
+    vColor = vec4(color.rgb, .3 * alpha * pow(1.-age, 0.7));
   }`,
 
   attributes: {
@@ -540,18 +537,9 @@ const bloomBase = (opts) => regl(Object.assign(opts, {
   vert: `#version 300 es
   precision highp float;
   in vec2 position;
-  out vec2 vUv;
-  out vec2 vL;
-  out vec2 vR;
-  out vec2 vT;
-  out vec2 vB;
-  uniform vec2 texelSize;
+  out vec2 uv;
   void main () {
-    vUv = position * 0.5 + 0.5;
-    vL = vUv - vec2(texelSize.x, 0.0);
-    vR = vUv + vec2(texelSize.x, 0.0);
-    vT = vUv + vec2(0.0, texelSize.y);
-    vB = vUv - vec2(0.0, texelSize.y);
+    uv = position * 0.5 + 0.5;
     gl_Position = vec4(position, 0.0, 1.0);
   }`,
 
@@ -559,19 +547,16 @@ const bloomBase = (opts) => regl(Object.assign(opts, {
     position: [[-1, -1], [-1, 1], [1, 1], [-1, -1], [1, 1], [1, -1]]
   },
   count: 6,
-
-  uniforms: Object.assign(opts.uniforms||{}, {
-    texelSize: regl.prop("texelSize"),
-  }),
   framebuffer: regl.prop("framebuffer"),
 }));
 
+// Prefilter that accepts only the brightest parts of the input image.
 const bloomPrefilterShader = bloomBase({
   frag: `#version 300 es
   precision mediump float;
   precision mediump sampler2D;
 
-  in vec2 vUv;
+  in vec2 uv;
   uniform sampler2D inputTex;
   uniform vec3 curve;
   uniform float threshold;
@@ -579,12 +564,20 @@ const bloomPrefilterShader = bloomBase({
   out vec4 fragColor;
 
   void main () {
-    vec3 c = texture(inputTex, vUv).rgb;
+    vec3 c = texture(inputTex, uv).rgb;
+#if 0 // hard cut-off
+    float brightness = dot(c.rgb, threshold*vec3(0.2126, 0.7152, 0.0722));
+    if (brightness > 1.)
+      fragColor = vec4(c, 0.);
+    else
+      fragColor = vec4(0.);
+#else // soft cut-off
     float br = max(c.r, max(c.g, c.b));
     float rq = clamp(br - curve.x, 0.0, curve.y);
     rq = curve.z * rq * rq;
     c *= max(rq, br - threshold) / max(br, 0.0001);
     fragColor = vec4(c, 0.0);
+#endif
   }`,
 
   uniforms: {
@@ -593,71 +586,42 @@ const bloomPrefilterShader = bloomBase({
       let knee = config.bloomThreshold * config.bloomSoftKnee + 0.0001;
       return [config.bloomThreshold - knee, knee * 2, 0.25 / knee]
     },
-    threshold: .8,
+    threshold: () => config.bloomThreshold,
   },
 });
 
+// Single pass of Gaussian blur, meant to be used alternatingly horizontal and vertical.
 const bloomBlurShader = bloomBase({
   frag: `#version 300 es
   precision mediump float;
-  precision mediump sampler2D;
 
-  in vec2 vL, vR, vT, vB;
+  in vec2 uv;
   uniform sampler2D inputTex;
+  uniform bool horizontal;
+  const float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
 
   out vec4 fragColor;
 
-  void main () {
-    vec4 sum = vec4(0.0);
-    sum += texture(inputTex, vL);
-    sum += texture(inputTex, vR);
-    sum += texture(inputTex, vT);
-    sum += texture(inputTex, vB);
-    sum *= 0.25;
-    fragColor = sum;
-  }`,
-
-  uniforms: {
-    inputTex: regl.prop("inputTex"),
-  },
-  blend: (_, props) => {
-    return {
-      enable: props.blendFactors !== undefined,
-      func: {
-        srcRGB: props.blendFactors[0],
-        srcAlpha: props.blendFactors[0],
-        dstRGB: props.blendFactors[1],
-        dstAlpha: rprops.blendFactors[1],
+  void main() {
+    vec2 texelSize = 1.0 / vec2(textureSize(inputTex, 0));
+    vec3 result = texture(inputTex, uv).rgb * weight[0]; // current fragment's contribution
+    if (horizontal) {
+      for (int i = 1; i < 5; i++) {
+        result += texture(inputTex, uv + vec2(texelSize.x * float(i), 0.0)).rgb * weight[i];
+        result += texture(inputTex, uv - vec2(texelSize.x * float(i), 0.0)).rgb * weight[i];
+      }
+    } else {
+      for (int i = 1; i < 5; i++) {
+        result += texture(inputTex, uv + vec2(0.0, texelSize.y * float(i))).rgb * weight[i];
+        result += texture(inputTex, uv - vec2(0.0, texelSize.y * float(i))).rgb * weight[i];
       }
     }
-  },
-  // viewport: (ctx, {framebuffer}) => { return {x: 0, y: 0, width: framebuffer.width, height: framebuffer.height} }
-});
-
-const bloomFinalShader = bloomBase({
-  frag: `#version 300 es
-  precision mediump float;
-  precision mediump sampler2D;
-
-  in vec2 vL, vR, vT, vB;
-  uniform sampler2D inputTex;
-  uniform float intensity;
-
-  out vec4 fragColor;
-
-  void main () {
-    vec4 sum = vec4(0.0);
-    sum += texture(inputTex, vL);
-    sum += texture(inputTex, vR);
-    sum += texture(inputTex, vT);
-    sum += texture(inputTex, vB);
-    sum *= 0.25;
-    fragColor = sum * intensity;
+    fragColor = vec4(result, 1.0);
   }`,
 
   uniforms: {
     inputTex: regl.prop("inputTex"),
-    intensity: () => config.bloomIntensity,
+    horizontal: regl.prop("horizontal"),
   }
 });
 
@@ -666,43 +630,49 @@ const drawScreen = bloomBase({
   precision highp float;
   precision highp sampler2D;
 #define BLOOM 1
+//#define BLOOM2 1
 
-  in vec2 vUv;
-  // in vec2 vL, vR, vT, vB;
-  uniform sampler2D uTexture;
-  uniform sampler2D uBloom;
-  // uniform sampler2D uDithering;
-  // uniform vec2 ditherScale;
+  in vec2 uv;
+  uniform sampler2D screenTex;
+  uniform sampler2D bloomTex;
+  uniform float intensity;
 
   out vec4 fragColor;
 
   vec3 linearToGamma (vec3 color) {
     color = max(color, vec3(0));
-    return max(1.055 * pow(color, vec3(0.416666667)) - 0.055, vec3(0));
+    return max(1.055 * pow(color, vec3(1. / 2.2)) - 0.055, vec3(0));
   }
 
   void main () {
-    vec3 c = texture(uTexture, vUv).rgb;
+    vec3 c = texture(screenTex, uv).rgb;
 
 #ifdef BLOOM
-    vec3 bloom = texture(uBloom, vUv).rgb;
-
-    float noise = 0.5;
-    // float noise = texture(uDithering, vUv * ditherScale).r;
-    noise = noise * 2.0 - 1.0;
-    bloom += noise / 255.0;
+    vec3 bloom = texture(bloomTex, uv).rgb;
     bloom = linearToGamma(bloom);
+    c += bloom * intensity;
+#endif
+#ifdef BLOOM2
+    const float gamma = 2.2;
+    vec3 bloom = texture(bloomTex, uv).rgb;
     c += bloom;
+    // c = vec3(1.0) - exp(-c * intensity);
+    // c = pow(c, vec3(1.0 / gamma));
 #endif
 
     float a = max(c.r, max(c.g, c.b));
     fragColor = vec4(c, 1.);
   }`,
 
+  attributes: {
+    position: [[-1, -1], [-1, 1], [1, 1], [-1, -1], [1, 1], [1, -1]]
+  },
+  count: 6,
   uniforms: {
-    uTexture: regl.prop("screen"),
-    uBloom: regl.prop("bloom"),
-  }
+    screenTex: regl.prop("screen"),
+    bloomTex: regl.prop("bloom"),
+    intensity: () => config.bloomIntensity,
+  },
 });
 
 const testDraw = regl({
@@ -785,7 +755,7 @@ regl.frame(function (context) {
     // Apply bloom.
     applyBloom(screenFBO.src, bloomFBO);
 
-    drawScreen({screen: screenFBO.src, bloom: bloomFBO, texelSize: [1/screenFBO.src.width, 1/screenFBO.src.height]});
+    drawScreen({screen: screenFBO.src, bloom: bloomFBO});
 
     if (!config.paused) {
       updatePositions({writeHistoryIdx: writeHistoryIdx, readHistoryIdx: readHistoryIdx, mouseDown: mouseDown});
@@ -797,23 +767,20 @@ regl.frame(function (context) {
 
 
 function applyBloom(src, dst) {
-  if (bloomIterationFBOs.length < 2)
+  if (!bloomFBO)
     return;
 
   let last = dst;
-  bloomPrefilterShader({framebuffer: last, inputTex: src, texelSize: [1/src.width, 1/src.height]});
+  bloomPrefilterShader({framebuffer: last, inputTex: src});
 
-  for (let i = 0; i < bloomIterationFBOs.length; i++) {
-    let dest = bloomIterationFBOs[i];
-    bloomBlurShader({framebuffer: dest, inputTex: last, texelSize: [1/last.width, 1/last.height]});
+  let horizontal = true;
+  for (let i = 0; i < 9; i++) {
+    let dest = bloomBlurFBO.dst;
+    bloomBlurShader({framebuffer: dest, inputTex: last, horizontal: horizontal});
     last = dest;
+    bloomBlurFBO.swap();
+    horizontal = !horizontal;
   }
 
-  for (let i = bloomIterationFBOs.length - 2; i >= 0; i--) {
-    let dest = bloomIterationFBOs[i];
-    bloomBlurShader({framebuffer: dest, inputTex: last, texelSize: [1/last.width, 1/last.height], blendFactors: [1, 1]});
-    last = dest;
-  }
-
-  bloomFinalShader({framebuffer: dst, inputTex: last, texelSize: [1/last.width, 1/last.height]});
+  bloomBlurShader({framebuffer: dst, inputTex: last, horizontal: horizontal});
 }
