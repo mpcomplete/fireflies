@@ -23,6 +23,7 @@ window.onload = function() {
   addConfig("numFlies", 250, 10, 500).name("flies").step(10).onFinishChange(initFramebuffers);
   addConfig("tailLength", 180, 0, 500).step(10).onFinishChange(initFramebuffers);
   addConfig("softTails", true);
+  addConfig("bloom", true);
   addConfig("bloomThreshold", .8, 0, 1).step(.1);
   addConfig("bloomIntensity", .7, .1, 2).step(.1);
 
@@ -547,7 +548,7 @@ const drawTails = regl({
   framebuffer: regl.prop('framebuffer'),
 });
 
-const bloomBase = (opts) => regl(Object.assign(opts, {
+const baseVertShader = (opts) => regl(Object.assign(opts, {
   vert: `#version 300 es
   precision highp float;
   in vec2 position;
@@ -565,7 +566,7 @@ const bloomBase = (opts) => regl(Object.assign(opts, {
 }));
 
 // Prefilter that accepts only the brightest parts of the input image.
-const bloomPrefilterShader = bloomBase({
+const bloomPrefilterShader = baseVertShader({
   frag: `#version 300 es
   precision mediump float;
   precision mediump sampler2D;
@@ -605,7 +606,7 @@ const bloomPrefilterShader = bloomBase({
 });
 
 // Single pass of Gaussian blur, meant to be used alternatingly horizontal and vertical.
-const bloomBlurShader = bloomBase({
+const bloomBlurShader = baseVertShader({
   frag: `#version 300 es
   precision mediump float;
 
@@ -639,17 +640,16 @@ const bloomBlurShader = bloomBase({
   }
 });
 
-const drawScreen = bloomBase({
+const drawScreen = baseVertShader({
   frag: `#version 300 es
   precision highp float;
   precision highp sampler2D;
-#define BLOOM 1
-//#define BLOOM2 1
 
   in vec2 uv;
   uniform sampler2D screenTex;
   uniform sampler2D bloomTex;
-  uniform float intensity;
+  uniform bool bloomEnabled;
+  uniform float bloomIntensity;
 
   out vec4 fragColor;
 
@@ -661,20 +661,20 @@ const drawScreen = bloomBase({
   void main () {
     vec3 c = texture(screenTex, uv).rgb;
 
-#ifdef BLOOM
+    if (bloomEnabled) {
+#if 1  // simple bloom with gamma
     vec3 bloom = texture(bloomTex, uv).rgb;
     bloom = linearToGamma(bloom);
-    c += bloom * intensity;
-#endif
-#ifdef BLOOM2
+    c += bloom * bloomIntensity;
+#else  // scaled bloom from https://learnopengl.com/Advanced-Lighting/Bloom
     const float gamma = 2.2;
     vec3 bloom = texture(bloomTex, uv).rgb;
     c += bloom;
-    // c = vec3(1.0) - exp(-c * intensity);
-    // c = pow(c, vec3(1.0 / gamma));
+    c = vec3(1.0) - exp(-c * bloomIntensity);
+    c = pow(c, vec3(1.0 / gamma));
 #endif
+    }
 
-    float a = max(c.r, max(c.g, c.b));
     fragColor = vec4(c, 1.);
   }`,
 
@@ -685,11 +685,12 @@ const drawScreen = bloomBase({
   uniforms: {
     screenTex: regl.prop("screen"),
     bloomTex: regl.prop("bloom"),
-    intensity: () => config.bloomIntensity,
+    bloomEnabled: () => config.bloom,
+    bloomIntensity: () => config.bloomIntensity,
   },
 });
 
-const testDraw = regl({
+const testDraw = baseVertShader({
   frag: `#version 300 es
   precision mediump float;
   uniform sampler2D quantity;
@@ -699,22 +700,9 @@ const testDraw = regl({
   void main() {
     fragColor = vec4(texture(quantity, uv).rgb, 1.);
   }`,
-  vert: `#version 300 es
-  precision mediump float;
-  in vec2 position;
-  out vec2 uv;
-  void main () {
-    uv = position * 0.5 + 0.5;
-    gl_Position = vec4(position, 0., 1.);
-  }`,
-
-  attributes: {
-    position: [[-1, -1], [-1, 1], [1, 1], [-1, -1], [1, 1], [1, -1]]
-  },
   uniforms: {
     quantity: regl.prop('quantity'),
   },
-  count: 6,
 });
 
 const globalScope = regl({
@@ -767,7 +755,8 @@ regl.frame(function (context) {
     screenFBO.swap();
 
     // Apply bloom.
-    applyBloom(screenFBO.src, bloomFBO);
+    if (config.bloom)
+      applyBloom(screenFBO.src, bloomFBO);
 
     drawScreen({screen: screenFBO.src, bloom: bloomFBO});
 
