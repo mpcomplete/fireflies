@@ -1,32 +1,39 @@
 // TODO: rename fragData0-3
 
 const webgl2 = require("./regl-webgl2-compat.js");
-const regl = webgl2.overrideContextType(() => require("regl")({extensions: ['WEBGL_draw_buffers', 'OES_texture_float', 'ANGLE_instanced_arrays']}));
+const regl = webgl2.overrideContextType(() => require("regl")({extensions: ['WEBGL_draw_buffers', 'OES_texture_float', 'OES_texture_half_float', 'ANGLE_instanced_arrays']}));
 const mat4 = require("gl-mat4");
 const pointers = require("./pointers.js");
 const dat = require("dat.gui");
 
-var config = {};
+var config = {
+  bloomIterations: 8,
+  bloomSoftKnee: .6,
+};
 window.onload = function() {
   var gui = new dat.GUI();
+  const readableName = (n) => n.replace(/([A-Z])/g, ' $1').toLowerCase()
   function addConfig(name, initial, min, max) {
     config[name] = initial;
-    return gui.add(config, name, min, max);
+    return gui.add(config, name, min, max).name(readableName(name));
   }
   addConfig("paused", false);
-  addConfig("NUM_LEADERS", 3, 1, 10).name("flocks").step(1).onFinishChange(initFramebuffers);
-  addConfig("NUM_FLIES", 250, 10, 500).name("flies").step(10).onFinishChange(initFramebuffers);
-  addConfig("TAIL_LENGTH", 180, 0, 500).name("tail length").step(10).onFinishChange(initFramebuffers);
-  addConfig("SOFT_TAILS", true).name("soft tails");
+  addConfig("numLeaders", 3, 1, 10).name("flocks").step(1).onFinishChange(initFramebuffers);
+  addConfig("numFlies", 250, 10, 500).name("flies").step(10).onFinishChange(initFramebuffers);
+  addConfig("tailLength", 180, 0, 500).step(10).onFinishChange(initFramebuffers);
+  addConfig("softTails", true);
+  addConfig("bloomThreshold", .8, 0, 1).step(.1);
+  addConfig("bloomIntensity", .7, .1, 2).step(.1);
 
   initFramebuffers();
+  initBloomFramebuffers();
 };
 
 // Textures hold a single property for every critter.
 // Each critter has a single row in a given property's texture, with the column representing
 // history over time (the "tail").
 // ex. positionTexture[X, Y] = critter X's position at history Y.
-// History is done as a circular queue, with the current history index incrementing each frame from 0 to TAIL_LENGTH.
+// History is done as a circular queue, with the current history index incrementing each frame from 0 to tailLength.
 function createFBO(count, props) {
   return regl.framebuffer({
     color: Array.from({length: count}, () => regl.texture(props)),
@@ -57,53 +64,84 @@ var currentTick;
 var tailsBuffer;
 function initFramebuffers() {
   currentTick = 0;
-  config.NUM_CRITTERS = config.NUM_LEADERS + config.NUM_FLIES;
+  config.NUM_CRITTERS = config.numLeaders + config.numFlies;
 
   // Initialize flies with random position and velocity.
-  let leaderPos = Array.from({length: config.NUM_LEADERS}, () => jitterVec([0,0,0,0], 10));
-  let leaderHues = Array.from({length: config.NUM_LEADERS}, () => randInt(0, 12)/12);
+  let leaderPos = Array.from({length: config.numLeaders}, () => jitterVec([0,0,0,0], 10));
+  let leaderHues = Array.from({length: config.numLeaders}, () => randInt(0, 12)/12);
 
   // Spawn 3 groups of flies per leader.
-  let groupPos = Array.from({length: config.NUM_LEADERS*3}, () => jitterVec([0,0,0,0], 20));
+  let groupPos = Array.from({length: config.numLeaders*3}, () => jitterVec([0,0,0,0], 20));
   let fliesToGroup = Array.from({length: config.NUM_CRITTERS}, () => randInt(0, groupPos.length-1));
-  let fliesToLeader = Array.from({length: config.NUM_CRITTERS}, (_, i) => i < config.NUM_LEADERS ? -1 : Math.floor(fliesToGroup[i]/3));
+  let fliesToLeader = Array.from({length: config.NUM_CRITTERS}, (_, i) => i < config.numLeaders ? -1 : Math.floor(fliesToGroup[i]/3));
 
   screenFBO = createDoubleFBO(1, {
     type: 'float32',
     format: 'rgba',
     wrap: 'clamp',
     width: 1920,
-    height: 1090,
+    height: 1080,
   });
   fliesFBO = createDoubleFBO(3, {
     type: 'float32',
     format: 'rgba',
     wrap: 'clamp',
     width: config.NUM_CRITTERS,
-    height: config.TAIL_LENGTH,
+    height: config.tailLength,
   });
 
   fliesFBO.src.color[0].subimage({ // position
     width: config.NUM_CRITTERS,
     height: 1,
-    data: Array.from({length: config.NUM_CRITTERS}, (_, i) => i < config.NUM_LEADERS ?
+    data: Array.from({length: config.NUM_CRITTERS}, (_, i) => i < config.numLeaders ?
       leaderPos[i] :
       jitterVec(groupPos[fliesToGroup[i]], 2))
   });
   fliesFBO.src.color[1].subimage({ // velocity
     width: config.NUM_CRITTERS,
     height: 1,
-    data: Array.from({length: config.NUM_CRITTERS*4}, (_, i) => i < config.NUM_LEADERS*4 ? rand(-1, 1) : 0)
+    data: Array.from({length: config.NUM_CRITTERS*4}, (_, i) => i < config.numLeaders*4 ? rand(-1, 1) : 0)
   });
   fliesFBO.src.color[2].subimage({ // leaderIndex
     width: config.NUM_CRITTERS,
     height: 1,
-    data: Array.from({length: config.NUM_CRITTERS}, (_, i) => i < config.NUM_LEADERS ?
+    data: Array.from({length: config.NUM_CRITTERS}, (_, i) => i < config.numLeaders ?
       [-1,leaderHues[i],0,0] :
       [fliesToLeader[i],leaderHues[fliesToLeader[i]],rand(0, 5),0])
   });
 
-  tailsBuffer = Array.from({length: config.TAIL_LENGTH}, (_, i) => i);
+  tailsBuffer = Array.from({length: config.tailLength}, (_, i) => i);
+}
+
+var bloomFBO;
+var bloomIterationFBOs;
+function initBloomFramebuffers() {
+  let res = [256, 256];
+  bloomFBO = createFBO(1, {
+    type: 'float',
+    format: 'rgba',
+    wrap: 'clamp',
+    width: res[0],
+    height: res[1],
+  });
+
+  bloomIterationFBOs = [];
+  for (let i = 0; i < config.bloomIterations; i++) {
+    let width = res[0] >> (i + 1);
+    let height = res[1] >> (i + 1);
+
+    if (width < 2 || height < 2) break;
+
+    let fbo = createFBO(1, {
+      type: 'float',
+      format: 'rgba',
+      wrap: 'clamp',
+      width: width,
+      height: height,
+    });
+    bloomIterationFBOs.push(fbo);
+  }
+  console.log("bloom", bloomIterationFBOs); 
 }
 
 // Common functions some shaders share.
@@ -148,7 +186,7 @@ const updatePositions = regl({
   uniform int writeHistoryIdx, readHistoryIdx;
   uniform float dt;
   uniform float time;
-  uniform int NUM_LEADERS, NUM_CRITTERS;
+  uniform int numLeaders, NUM_CRITTERS;
 
   layout(location = 0) out vec4 fragData0; // position
   layout(location = 1) out vec4 fragData1; // velocity
@@ -290,7 +328,7 @@ const updatePositions = regl({
 
       if (scalars.z > followTime) {
         // Switch leaders.
-        int leaderIdx = int(rand(0.)*float(NUM_LEADERS));
+        int leaderIdx = int(rand(0.)*float(numLeaders));
         float hue = texelFetch(scalarTex, ivec2(leaderIdx, ijPrev.y), 0).y; // new leader's hue
         float age = rand(0.)*followTime/2.;
         scalars.xyz = vec3(float(leaderIdx), hue, age);
@@ -352,7 +390,7 @@ const updatePositions = regl({
     readHistoryIdx: regl.prop("readHistoryIdx"),
     writeHistoryIdx: regl.prop("writeHistoryIdx"),
     mouseDown: regl.prop("mouseDown"),
-    NUM_LEADERS: () => config.NUM_LEADERS,
+    numLeaders: () => config.numLeaders,
     NUM_CRITTERS: () => config.NUM_CRITTERS,
   },
   count: 6,
@@ -433,7 +471,7 @@ const drawTails = regl({
   uniform sampler2D scalarTex;
   uniform int flyIdx, historyIdx;
   uniform float time, dt;
-  uniform int TAIL_LENGTH;
+  uniform int tailLength;
 
   void main() {
     ivec2 ij = ivec2(flyIdx, instanceHistoryIdx);
@@ -446,7 +484,7 @@ const drawTails = regl({
     float len = length(velocity)*dt;
     vec4 worldPos = pointAt(velocity.xyz) * vec4(position.xyz * vec3(.15,.15,len), 1) + vec4(offset.xyz, 0);
 
-    float age = mod(1.0 + float(historyIdx - int(instanceHistoryIdx))/float(TAIL_LENGTH), 1.0);
+    float age = mod(1.0 + float(historyIdx - int(instanceHistoryIdx))/float(tailLength), 1.0);
     const vec3 wind = 1.5*normalize(vec3(2,1,1));
     worldPos.xyz += wind * pow(age, 4.);
 
@@ -465,8 +503,8 @@ const drawTails = regl({
     }
   },
   elements: [[0,1,2], [1,2,3], [2,3,4], [3,4,5]],
-  primitive: () => config.SOFT_TAILS ? "triangles" : "lines",
-  instances: () => config.TAIL_LENGTH,
+  primitive: () => config.softTails ? "triangles" : "lines",
+  instances: () => config.tailLength,
 
   uniforms: {
     positionTex: () => fliesFBO.src.color[0],
@@ -474,7 +512,7 @@ const drawTails = regl({
     scalarTex: () => fliesFBO.src.color[2],
     flyIdx: regl.prop('flyIdx'),
     historyIdx: regl.prop('historyIdx'),
-    TAIL_LENGTH: () => config.TAIL_LENGTH,
+    tailLength: () => config.tailLength,
   },
 
   depth: {
@@ -552,12 +590,11 @@ const bloomPrefilterShader = bloomBase({
   uniforms: {
     inputTex: regl.prop("inputTex"),
     curve: () => {
-      let config = {BLOOM_THRESHOLD: .8, BLOOM_SOFT_KNEE: .7};
-      let knee = config.BLOOM_THRESHOLD * config.BLOOM_SOFT_KNEE + 0.0001;
-      return [config.BLOOM_THRESHOLD - knee, knee * 2, 0.25 / knee]
+      let knee = config.bloomThreshold * config.bloomSoftKnee + 0.0001;
+      return [config.bloomThreshold - knee, knee * 2, 0.25 / knee]
     },
     threshold: .8,
-  }
+  },
 });
 
 const bloomBlurShader = bloomBase({
@@ -582,7 +619,19 @@ const bloomBlurShader = bloomBase({
 
   uniforms: {
     inputTex: regl.prop("inputTex"),
-  }
+  },
+  blend: (_, props) => {
+    return {
+      enable: props.blendFactors !== undefined,
+      func: {
+        srcRGB: props.blendFactors[0],
+        srcAlpha: props.blendFactors[0],
+        dstRGB: props.blendFactors[1],
+        dstAlpha: rprops.blendFactors[1],
+      }
+    }
+  },
+  // viewport: (ctx, {framebuffer}) => { return {x: 0, y: 0, width: framebuffer.width, height: framebuffer.height} }
 });
 
 const bloomFinalShader = bloomBase({
@@ -608,7 +657,7 @@ const bloomFinalShader = bloomBase({
 
   uniforms: {
     inputTex: regl.prop("inputTex"),
-    intensity: .7,
+    intensity: () => config.bloomIntensity,
   }
 });
 
@@ -616,12 +665,12 @@ const drawScreen = bloomBase({
   frag: `#version 300 es
   precision highp float;
   precision highp sampler2D;
-//#define BLOOM 1
+#define BLOOM 1
 
   in vec2 vUv;
-  in vec2 vL, vR, vT, vB;
+  // in vec2 vL, vR, vT, vB;
   uniform sampler2D uTexture;
-  // uniform sampler2D uBloom;
+  uniform sampler2D uBloom;
   // uniform sampler2D uDithering;
   // uniform vec2 ditherScale;
 
@@ -652,7 +701,7 @@ const drawScreen = bloomBase({
 
   uniforms: {
     uTexture: regl.prop("screen"),
-    // uBloom: regl.prop("bloom"),
+    uBloom: regl.prop("bloom"),
   }
 });
 
@@ -702,7 +751,7 @@ const globalScope = regl({
 })
 
 regl.frame(function (context) {
-  if (!config.NUM_LEADERS)
+  if (!config.numLeaders)
     return;
 
   window.fbo = screenFBO.dst;
@@ -720,20 +769,23 @@ regl.frame(function (context) {
     regl.clear({color: [0, 0, 0, 1]});
     regl.clear({color: [0, 0, 0, 1], framebuffer: screenFBO.dst});
 
-    let readHistoryIdx = currentTick % config.TAIL_LENGTH;
-    let writeHistoryIdx = (currentTick+1) % config.TAIL_LENGTH;
+    let readHistoryIdx = currentTick % config.tailLength;
+    let writeHistoryIdx = (currentTick+1) % config.tailLength;
     // testDraw({quantity: fliesFBO.src.color[0]});
 
     const drawLeaders = false;
     for (let i = 0; i < config.NUM_CRITTERS; i++) {
-      if (i < config.NUM_LEADERS && !drawLeaders)
+      if (i < config.numLeaders && !drawLeaders)
         continue;
       drawFly({flyIdx: i, historyIdx: readHistoryIdx, framebuffer: screenFBO.dst});
       drawTails({flyIdx: i, historyIdx: readHistoryIdx, framebuffer: screenFBO.dst});
     }
     screenFBO.swap();
 
-    drawScreen({screen: screenFBO.src, texelSize: [1/screenFBO.src.width, 1/screenFBO.src.height]});
+    // Apply bloom.
+    applyBloom(screenFBO.src, bloomFBO);
+
+    drawScreen({screen: screenFBO.src, bloom: bloomFBO, texelSize: [1/screenFBO.src.width, 1/screenFBO.src.height]});
 
     if (!config.paused) {
       updatePositions({writeHistoryIdx: writeHistoryIdx, readHistoryIdx: readHistoryIdx, mouseDown: mouseDown});
@@ -742,3 +794,26 @@ regl.frame(function (context) {
     }
   });
 });
+
+
+function applyBloom(src, dst) {
+  if (bloomIterationFBOs.length < 2)
+    return;
+
+  let last = dst;
+  bloomPrefilterShader({framebuffer: last, inputTex: src, texelSize: [1/src.width, 1/src.height]});
+
+  for (let i = 0; i < bloomIterationFBOs.length; i++) {
+    let dest = bloomIterationFBOs[i];
+    bloomBlurShader({framebuffer: dest, inputTex: last, texelSize: [1/last.width, 1/last.height]});
+    last = dest;
+  }
+
+  for (let i = bloomIterationFBOs.length - 2; i >= 0; i--) {
+    let dest = bloomIterationFBOs[i];
+    bloomBlurShader({framebuffer: dest, inputTex: last, texelSize: [1/last.width, 1/last.height], blendFactors: [1, 1]});
+    last = dest;
+  }
+
+  bloomFinalShader({framebuffer: dst, inputTex: last, texelSize: [1/last.width, 1/last.height]});
+}
