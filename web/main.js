@@ -80,7 +80,7 @@ function initFramebuffers() {
   let fliesToLeader = Array.from({length: config.NUM_CRITTERS}, (_, i) => i < config.numLeaders ? -1 : Math.floor(fliesToGroup[i]/3));
 
   screenFBO = createDoubleFBO(1, {
-    type: 'float32',
+    type: 'half float',
     format: 'rgba',
     wrap: 'clamp',
     min: 'linear',
