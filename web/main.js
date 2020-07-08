@@ -1,7 +1,7 @@
 // TODO: rename fragData0-3
 
 const webgl2 = require("./regl-webgl2-compat.js");
-const regl = webgl2.overrideContextType(() => require("regl")({extensions: ['WEBGL_draw_buffers', 'OES_texture_float', 'OES_texture_float_linear', 'ANGLE_instanced_arrays']}));
+const regl = webgl2.overrideContextType(() => require("regl")({extensions: ['WEBGL_draw_buffers', 'OES_texture_float', 'OES_texture_float_linear', 'OES_texture_half_float', 'ANGLE_instanced_arrays']}));
 const mat4 = require("gl-mat4");
 const pointers = require("./pointers.js");
 const dat = require("dat.gui");
@@ -123,23 +123,23 @@ var bloomBlurFBO;
 function initBloomFramebuffers() {
   let res = getResolution(config.bloomResolution);
   bloomFBO = createFBO(1, {
-    type: 'float',
+    type: 'half float',
     format: 'rgba',
     wrap: 'clamp',
     width: res[0],
     height: res[1],
-    // min: 'linear',
-    // mag: 'linear',
+    min: 'linear',
+    mag: 'linear',
   });
 
   bloomBlurFBO = createDoubleFBO(1, {
-    type: 'float',
+    type: 'half float',
     format: 'rgba',
     wrap: 'clamp',
     width: res[0],
     height: res[1],
-    // min: 'linear',
-    // mag: 'linear',
+    min: 'linear',
+    mag: 'linear',
   });
 }
 

@@ -13,7 +13,7 @@ var gl2Extensions = {
   'OES_texture_float': {},
   // 'OES_texture_float_linear': {},
   'OES_texture_half_float': {
-    'HALF_FLOAT_OES': 0x8D61
+    'HALF_FLOAT_OES': HALF_FLOAT_OES
   },
   // 'OES_texture_half_float_linear': {},
   'EXT_color_buffer_float': {},
@@ -66,10 +66,10 @@ module.exports = {
     gl.texImage2D = function(target, miplevel, iformat, a, typeFor6, c, d, typeFor9, f) {
       if (arguments.length == 6) {
         var ifmt = webgl2.getInternalFormat(gl, iformat, typeFor6);
-        origTexImage.apply(gl, [target, miplevel, ifmt, a, typeFor6, c]);
+        origTexImage.apply(gl, [target, miplevel, ifmt, a, webgl.getTextureType(gl, typeFor6), c]);
       } else { // arguments.length == 9
         var ifmt = webgl2.getInternalFormat(gl, iformat, typeFor9);
-        origTexImage.apply(gl, [target, miplevel, ifmt, a, typeFor6, c, d, typeFor9, f]);
+        origTexImage.apply(gl, [target, miplevel, ifmt, a, typeFor6, c, d, webgl2.getTextureType(gl, typeFor9), f]);
       }
     }
 
@@ -125,23 +125,17 @@ module.exports = {
     // reference:
     // https://webgl2fundamentals.org/webgl/lessons/webgl-data-textures.html
     if (format === GL_DEPTH_COMPONENT) {
-      // gl.DEPTH_COMPONENT24
-      return 0x81A6
+      return gl.DEPTH_COMPONENT24
     } else if (format === GL_DEPTH_STENCIL) {
-      // gl.DEPTH24_STENCIL8
-      return 0x88F0
+      return gl.DEPTH24_STENCIL8
     } else if (type === HALF_FLOAT_OES && format === gl.RGBA) {
-      // gl.RGBA16F
-      return 0x881A
+      return gl.RGBA16F;
     } else if (type === HALF_FLOAT_OES && format === gl.RGB) {
-      // gl.RGB16F
-      return 0x881B
+      return gl.RGB16F
     } else if (type === gl.FLOAT && format === gl.RGBA) {
-      // gl.RGBA32F
-      return 0x8814
+      return gl.RGBA32F
     } else if (type === gl.FLOAT && format === gl.RGB) {
-      // gl.RGB32F
-      return 0x8815
+      return gl.RGB32F
     }
     return format
   },
