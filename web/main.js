@@ -7,8 +7,9 @@ const pointers = require("./pointers.js");
 const dat = require("dat.gui");
 
 var config = {
-  bloomIterations: 8,
+  bloomIterations: 5,
   bloomSoftKnee: .6,
+  bloomResolution: 256,
 };
 window.onload = function() {
   var gui = new dat.GUI();
@@ -63,6 +64,8 @@ var fliesFBO;
 var currentTick;
 var tailsBuffer;
 function initFramebuffers() {
+  let canvas = document.getElementsByTagName("canvas")[0];
+
   currentTick = 0;
   config.NUM_CRITTERS = config.numLeaders + config.numFlies;
 
@@ -79,10 +82,10 @@ function initFramebuffers() {
     type: 'float32',
     format: 'rgba',
     wrap: 'clamp',
-    // min: 'linear',
-    // mag: 'linear',
-    width: 1920,
-    height: 1080,
+    min: 'linear',
+    mag: 'linear',
+    width: canvas.width,
+    height: canvas.height,
   });
   fliesFBO = createDoubleFBO(3, {
     type: 'float32',
@@ -118,7 +121,7 @@ function initFramebuffers() {
 var bloomFBO;
 var bloomBlurFBO;
 function initBloomFramebuffers() {
-  let res = [512, 512];
+  let res = getResolution(config.bloomResolution);
   bloomFBO = createFBO(1, {
     type: 'float',
     format: 'rgba',
@@ -138,6 +141,17 @@ function initBloomFramebuffers() {
     // min: 'linear',
     // mag: 'linear',
   });
+}
+
+function getResolution(resolution) {
+  let canvas = document.getElementsByTagName("canvas")[0];
+  let aspectRatio = canvas.width / canvas.height;
+  if (aspectRatio < 1)
+    aspectRatio = 1.0 / aspectRatio;
+
+  let min = Math.round(resolution);
+  let max = Math.round(resolution * aspectRatio);
+  return (canvas.width > canvas.height) ? [max,min] : [min,max];
 }
 
 // Common functions some shaders share.
@@ -773,8 +787,9 @@ function applyBloom(src, dst) {
   let last = dst;
   bloomPrefilterShader({framebuffer: last, inputTex: src});
 
+  // Do bloomIterations total iterations per axis (horizontal and vertical).
   let horizontal = true;
-  for (let i = 0; i < 9; i++) {
+  for (let i = 0; i < config.bloomIterations*2 - 1; i++) {
     let dest = bloomBlurFBO.dst;
     bloomBlurShader({framebuffer: dest, inputTex: last, horizontal: horizontal});
     last = dest;

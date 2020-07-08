@@ -11,11 +11,11 @@ var gl2Extensions = {
   },
   'OES_element_index_uint': {},
   'OES_texture_float': {},
-  'OES_texture_float_linear': {},
+  // 'OES_texture_float_linear': {},
   'OES_texture_half_float': {
     'HALF_FLOAT_OES': 0x8D61
   },
-  'OES_texture_half_float_linear': {},
+  // 'OES_texture_half_float_linear': {},
   'EXT_color_buffer_float': {},
   'OES_standard_derivatives': {},
   'EXT_frag_depth': {},
@@ -55,13 +55,14 @@ module.exports = {
     gl.getExtension('EXT_color_buffer_float');
 
     // Now override getExtension to return ours.
+    const origGetExtension = gl.getExtension;
     gl.getExtension = function(n) {
-      return extensions[n.toLowerCase()];
+      return extensions[n.toLowerCase()] || origGetExtension.apply(gl, [n]);
     }
 
     // And texImage2D to convert the internalFormat to webgl2.
     const webgl2 = this;
-    var origTexImage = gl.texImage2D;
+    const origTexImage = gl.texImage2D;
     gl.texImage2D = function(target, miplevel, iformat, a, typeFor6, c, d, typeFor9, f) {
       if (arguments.length == 6) {
         var ifmt = webgl2.getInternalFormat(gl, iformat, typeFor6);
