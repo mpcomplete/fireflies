@@ -5,4 +5,4 @@ to the GPU.
 
 # Live version
 
-See it in in action [here](http://mpcomplete.github.io/fireflies/)
+See it in action [here](http://mpcomplete.github.io/fireflies/).
